@@ -3,41 +3,47 @@
 #include <Windows.h>
 #include <process.h>
 
-unsigned WINAPI ThreadFunc(void* arg);
+#define THREAD_NUM 50
+#define MAX_COUNT_NUM 500000
+unsigned WINAPI ThreadInc(void* arg);
+unsigned WINAPI ThreadDes(void* arg);
+long long num = 0;
 
 int main(int argc, char* argv[])
 {
-	HANDLE hThread;
-	DWORD wr;
-	unsigned threadID;
-	int param = 5;
+	HANDLE hThreads[THREAD_NUM];
+	int i = 0;
 
-	hThread = (HANDLE)_beginthreadex(NULL, 0, ThreadFunc, (void*)&param, 0, &threadID);
-	if (hThread == 0)
+	std::cout << "long long size : " << sizeof(long long) << std::endl;
+	for (i = 0; i < THREAD_NUM; i++)
 	{
-		std::cout << "_beginthreadex() error" << std::endl;
-		return -1;
+		if (i % 2)
+			hThreads[i] = (HANDLE)_beginthreadex(NULL, 0, ThreadInc, NULL, 0, NULL);
+		else
+			hThreads[i] = (HANDLE)_beginthreadex(NULL, 0, ThreadDes, NULL, 0, NULL);
 	}
 
-	if ((wr = WaitForSingleObject(hThread, INFINITE)) == WAIT_FAILED)
-	{
-		std::cout << "WaitForSingleObject() error" << std::endl;
-		return -1;
-	}
-
-	printf("wait result : %s\n", (wr == WAIT_OBJECT_0) ? "signaled" : "time-out");
-
+	WaitForMultipleObjects(THREAD_NUM, hThreads, TRUE, INFINITE);
+	std::cout << "result : " << num << std::endl;
 	return 0;
 }
 
-unsigned WINAPI ThreadFunc(void* arg)
+unsigned WINAPI ThreadInc(void* arg)
 {
 	int i = 0;
-	int cnt = *((int*)arg);
-	for (int i = 0; i < cnt; i++)
+	for (i = 0; i < MAX_COUNT_NUM; i++)
 	{
-		Sleep(1000);
-		std::cout << "running Thread" << std::endl;
+		num++;
+	}
+	return 0;
+}
+
+unsigned WINAPI ThreadDes(void* arg)
+{
+	int i = 0;
+	for (i = 0; i < MAX_COUNT_NUM; i++)
+	{
+		num--;
 	}
 	return 0;
 }
