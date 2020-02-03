@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 #include <Windows.h>
 #include <process.h>
 
@@ -7,6 +8,7 @@ unsigned WINAPI ThreadFunc(void* arg);
 int main(int argc, char* argv[])
 {
 	HANDLE hThread;
+	DWORD wr;
 	unsigned threadID;
 	int param = 5;
 
@@ -17,8 +19,13 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Sleep(3000);
-	std::cout << "end Main()" << std::endl;
+	if ((wr = WaitForSingleObject(hThread, INFINITE)) == WAIT_FAILED)
+	{
+		std::cout << "WaitForSingleObject() error" << std::endl;
+		return -1;
+	}
+
+	printf("wait result : %s\n", (wr == WAIT_OBJECT_0) ? "signaled" : "time-out");
 
 	return 0;
 }
