@@ -19,21 +19,25 @@ char msg[BUF_SIZE];
 
 int main(int argc, const char* argv[])
 {
+	std::cout << "Input Name : ";
+	char tempName[NAME_SIZE];
+	std::cin >> tempName;
+	sprintf(name, "[%s]", tempName);
+
 	WSADATA wsaData;
 	SOCKET hSock;
 	SOCKADDR_IN servAdr;
 	HANDLE hSndThread, hRcvThread;
 
-	if (argc != 4)
+	if (argc != 3)
 	{
-		std::cout << "Usage : " << argv[0] << " <IP> <port> <name>" << std::endl;
+		std::cout << "Usage : " << argv[0] << " <IP> <port>" << std::endl;
 		exit(1);
 	}
 
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		ErrorHandleing("WSAStartUp() error");
 
-	sprintf(name, "[%s]", argv[3]);
 	hSock = socket(PF_INET, SOCK_STREAM, 0);
 
 	ZeroMemory(&servAdr, 0);
