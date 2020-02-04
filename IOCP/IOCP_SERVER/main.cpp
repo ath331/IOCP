@@ -8,14 +8,14 @@
 unsigned WINAPI ThreadInc(void* arg);
 unsigned WINAPI ThreadDes(void* arg);
 long long num = 0;
-CRITICAL_SECTION cs;
+HANDLE hMutex;
 
 int main(int argc, char* argv[])
 {
 	HANDLE hThreads[THREAD_NUM];
 	int i = 0;
 
-	InitializeCriticalSection(&cs);
+	hMutex = CreateMutex(NULL, false, NULL);
 	for (i = 0; i < THREAD_NUM; i++)
 	{
 		if (i % 2)
@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	}
 
 	WaitForMultipleObjects(THREAD_NUM, hThreads, TRUE, INFINITE);
-	DeleteCriticalSection(&cs);
+	CloseHandle(hMutex);
 	std::cout << "result : " << num << std::endl;
 	return 0;
 }
@@ -33,23 +33,23 @@ int main(int argc, char* argv[])
 unsigned WINAPI ThreadInc(void* arg)
 {
 	int i = 0;
-	EnterCriticalSection(&cs);
+	WaitForSingleObject(hMutex,INFINITE);
 	for (i = 0; i < MAX_COUNT_NUM; i++)
 	{
 		num++;
 	}
-	LeaveCriticalSection(&cs);
+	ReleaseMutex(hMutex);
 	return 0;
 }
 
 unsigned WINAPI ThreadDes(void* arg)
 {
 	int i = 0;
-	EnterCriticalSection(&cs);
+	WaitForSingleObject(hMutex, INFINITE);
 	for (i = 0; i < MAX_COUNT_NUM; i++)
 	{
 		num--;
 	}
-	LeaveCriticalSection(&cs);
+	ReleaseMutex(hMutex);
 	return 0;
 }
