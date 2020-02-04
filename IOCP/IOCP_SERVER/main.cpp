@@ -3,53 +3,55 @@
 #include <Windows.h>
 #include <process.h>
 
-#define THREAD_NUM 50
-#define MAX_COUNT_NUM 500000
-unsigned WINAPI ThreadInc(void* arg);
-unsigned WINAPI ThreadDes(void* arg);
-long long num = 0;
-HANDLE hSM;
+#define STR_LEN 100
+unsigned WINAPI NumberOfA(void* arg);
+unsigned WINAPI NumberOfOthers(void* arg);
+static char str[STR_LEN];
+static HANDLE hEvents;
 
 int main(int argc, char* argv[])
 {
-	HANDLE hThreads[THREAD_NUM];
-	int i = 0;
+	HANDLE hThread1, hThread2;
+	hEvents = CreateEvent(NULL, TRUE, FALSE, NULL); //ManualMode
+	hThread1 = (HANDLE)_beginthreadex(NULL, 0, NumberOfA, NULL, 0, NULL);
+	hThread2 = (HANDLE)_beginthreadex(NULL, 0, NumberOfOthers, NULL, 0, NULL);
 
-	hSM = CreateSemaphore(NULL, 1, 1, NULL);
-	for (i = 0; i < THREAD_NUM; i++)
-	{
-		if (i % 2)
-			hThreads[i] = (HANDLE)_beginthreadex(NULL, 0, ThreadInc, NULL, 0, NULL);
-		else
-			hThreads[i] = (HANDLE)_beginthreadex(NULL, 0, ThreadDes, NULL, 0, NULL);
-	}
+	std::cout << "Input String : ";
+	fgets(str, STR_LEN, stdin);
+	SetEvent(hEvents);// N.S -> S
 
-	WaitForMultipleObjects(THREAD_NUM, hThreads, TRUE, INFINITE);
-	CloseHandle(hSM);
-	std::cout << "result : " << num << std::endl;
+	WaitForSingleObject(hThread1, INFINITE);
+	WaitForSingleObject(hThread2, INFINITE);
+	ResetEvent(hEvents);
+	CloseHandle(hEvents);
+
 	return 0;
 }
 
-unsigned WINAPI ThreadInc(void* arg)
+unsigned WINAPI NumberOfA(void* arg)
 {
-	int i = 0;
-	WaitForSingleObject(hSM,INFINITE);
-	for (i = 0; i < MAX_COUNT_NUM; i++)
+	int cnt = 0;
+	WaitForSingleObject(hEvents, INFINITE);
+	for (int i = 0; i < str[i] != 0; i++)
 	{
-		num++;
+		if (str[i] == 'A')
+			cnt++;
 	}
-	ReleaseSemaphore(hSM, 1, NULL);
+	std::cout << "Num Of 'A' : " << cnt << std::endl;
 	return 0;
 }
 
-unsigned WINAPI ThreadDes(void* arg)
+unsigned WINAPI NumberOfOthers(void* arg)
 {
-	int i = 0;
-	WaitForSingleObject(hSM, INFINITE);
-	for (i = 0; i < MAX_COUNT_NUM; i++)
+	int cnt = 0;
+	WaitForSingleObject(hEvents, INFINITE);
+	for (int i = 0; i < str[i] != 0; i++)
 	{
-		num--;
+		if (str[i] != 'A')
+			cnt++;
 	}
-	ReleaseSemaphore(hSM, 1, NULL);
+	std::cout << "Num Of Others : " << cnt-1 << std::endl; //마지막 NULL값 까지 ++해서 -1을 하는듯
 	return 0;
 }
+
+//스레드가 동시에 실행 되서 출력이 이쁘게 안나올수도있다.
