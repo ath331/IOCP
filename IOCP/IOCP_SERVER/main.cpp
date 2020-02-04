@@ -1,57 +1,111 @@
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string>
 #include <Windows.h>
 #include <process.h>
 
-#define STR_LEN 100
-unsigned WINAPI NumberOfA(void* arg);
-unsigned WINAPI NumberOfOthers(void* arg);
-static char str[STR_LEN];
-static HANDLE hEvents;
+const static int BUF_SIZE = 100;
+const static int  MAX_CLNT = 256;
 
-int main(int argc, char* argv[])
+unsigned WINAPI HandleClnt(void* arg);
+void SendMsg(const char* msg, int len);
+void ErrorHandleing(const char* msg);
+
+int clntCnt = 0;
+SOCKET clientSockets[MAX_CLNT];
+HANDLE hMutex;
+
+int main(int argc, const char* argv[])
 {
-	HANDLE hThread1, hThread2;
-	hEvents = CreateEvent(NULL, TRUE, FALSE, NULL); //ManualMode
-	hThread1 = (HANDLE)_beginthreadex(NULL, 0, NumberOfA, NULL, 0, NULL);
-	hThread2 = (HANDLE)_beginthreadex(NULL, 0, NumberOfOthers, NULL, 0, NULL);
-
-	std::cout << "Input String : ";
-	fgets(str, STR_LEN, stdin);
-	SetEvent(hEvents);// N.S -> S
-
-	WaitForSingleObject(hThread1, INFINITE);
-	WaitForSingleObject(hThread2, INFINITE);
-	ResetEvent(hEvents);
-	CloseHandle(hEvents);
-
-	return 0;
-}
-
-unsigned WINAPI NumberOfA(void* arg)
-{
-	int cnt = 0;
-	WaitForSingleObject(hEvents, INFINITE);
-	for (int i = 0; i < str[i] != 0; i++)
+	WSADATA wsaData;
+	SOCKET hServerSock, hClntSock;
+	SOCKADDR_IN servAdr, clntAdr;
+	int clntAdrSz = 0;
+	HANDLE hThread;
+	
+	if (argc != 2)
 	{
-		if (str[i] == 'A')
-			cnt++;
+		std::cout << "Usage : " << argv[0] << " <port> " << std::endl;
+		exit(1);
 	}
-	std::cout << "Num Of 'A' : " << cnt << std::endl;
-	return 0;
-}
 
-unsigned WINAPI NumberOfOthers(void* arg)
-{
-	int cnt = 0;
-	WaitForSingleObject(hEvents, INFINITE);
-	for (int i = 0; i < str[i] != 0; i++)
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+		ErrorHandleing("WSAStartUp() error");
+
+	hMutex = CreateMutex(NULL, FALSE, NULL);
+	hServerSock = socket(PF_INET, SOCK_STREAM, 0);
+
+	ZeroMemory(&hServerSock, 0);
+	servAdr.sin_family = AF_INET;
+	servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
+	servAdr.sin_port = htons(atoi(argv[1]));
+
+	if (bind(hServerSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
+		ErrorHandleing("bind() error");
+	if (listen(hServerSock, 5) == SOCKET_ERROR)
+		ErrorHandleing("listen() error");
+
+	while (1)
 	{
-		if (str[i] != 'A')
-			cnt++;
+		clntAdrSz = sizeof(clntAdr);
+		hClntSock = accept(hServerSock, (SOCKADDR*)&clntAdr, &clntAdrSz);
+
+		WaitForSingleObject(hMutex, INFINITE);
+		clientSockets[clntCnt++] = hClntSock;
+		ReleaseMutex(hMutex);
+		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
+		std::cout << "Connet client IP : " << inet_ntoa(clntAdr.sin_addr) << std::endl;
 	}
-	std::cout << "Num Of Others : " << cnt-1 << std::endl; //마지막 NULL값 까지 ++해서 -1을 하는듯
+	
+	closesocket(hServerSock);
+	WSACleanup();
 	return 0;
 }
 
-//스레드가 동시에 실행 되서 출력이 이쁘게 안나올수도있다.
+unsigned WINAPI HandleClnt(void* arg)
+{
+	SOCKET hClntSock = *((SOCKET*)arg);
+	int strLen = 0;
+	char msg[BUF_SIZE];
+
+	while ((strLen = recv(hClntSock, msg, sizeof(msg), 0)) != 0)
+	{
+		SendMsg(msg, strLen);
+	}
+
+	WaitForSingleObject(hMutex, INFINITE);
+	for (int i = 0; i < clntCnt; i++)
+	{
+		if (hClntSock == clientSockets[i])
+		{
+			while (i++ < clntCnt - 1)
+			{
+				clientSockets[i] = clientSockets[i + 1];
+			}
+			break;
+		}
+	}
+	clntCnt--;
+	ReleaseMutex(hMutex);
+	closesocket(hClntSock);
+	return 0;
+}
+
+void SendMsg(const char* msg, int len)
+{
+	int i = 0;
+	WaitForSingleObject(hMutex, INFINITE);
+	for (i = 0; i < clntCnt; i++)
+	{
+		send(clientSockets[i],msg, len, 0);
+	}
+	ReleaseMutex(hMutex);
+}
+
+void ErrorHandleing(const char* msg)
+{
+	fputs(msg, stderr);
+	fputc('\n', stderr);
+	exit(1);
+}
