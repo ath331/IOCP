@@ -8,14 +8,14 @@
 unsigned WINAPI ThreadInc(void* arg);
 unsigned WINAPI ThreadDes(void* arg);
 long long num = 0;
-HANDLE hMutex;
+HANDLE hSM;
 
 int main(int argc, char* argv[])
 {
 	HANDLE hThreads[THREAD_NUM];
 	int i = 0;
 
-	hMutex = CreateMutex(NULL, false, NULL);
+	hSM = CreateSemaphore(NULL, 1, 1, NULL);
 	for (i = 0; i < THREAD_NUM; i++)
 	{
 		if (i % 2)
@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	}
 
 	WaitForMultipleObjects(THREAD_NUM, hThreads, TRUE, INFINITE);
-	CloseHandle(hMutex);
+	CloseHandle(hSM);
 	std::cout << "result : " << num << std::endl;
 	return 0;
 }
@@ -33,23 +33,23 @@ int main(int argc, char* argv[])
 unsigned WINAPI ThreadInc(void* arg)
 {
 	int i = 0;
-	WaitForSingleObject(hMutex,INFINITE);
+	WaitForSingleObject(hSM,INFINITE);
 	for (i = 0; i < MAX_COUNT_NUM; i++)
 	{
 		num++;
 	}
-	ReleaseMutex(hMutex);
+	ReleaseSemaphore(hSM, 1, NULL);
 	return 0;
 }
 
 unsigned WINAPI ThreadDes(void* arg)
 {
 	int i = 0;
-	WaitForSingleObject(hMutex, INFINITE);
+	WaitForSingleObject(hSM, INFINITE);
 	for (i = 0; i < MAX_COUNT_NUM; i++)
 	{
 		num--;
 	}
-	ReleaseMutex(hMutex);
+	ReleaseSemaphore(hSM, 1, NULL);
 	return 0;
 }
