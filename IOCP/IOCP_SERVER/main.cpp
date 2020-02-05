@@ -66,7 +66,7 @@ int main(int argc, const char* argv[])
 		posInfo = WSAWaitForMultipleEvents(numOfClntSock, hEventArr, FALSE, WSA_INFINITE, FALSE);
 		startIdx = posInfo - WSA_WAIT_EVENT_0;
 
-		for (i = 0; i < numOfClntSock; i++)
+		for (i = startIdx; i < numOfClntSock; i++)
 		{
 			int sigEventIdx = WSAWaitForMultipleEvents(1, &hEventArr[i], TRUE, 0, FALSE);
 			if ((sigEventIdx == WSA_WAIT_FAILED || sigEventIdx == WSA_WAIT_TIMEOUT))
@@ -105,7 +105,11 @@ int main(int argc, const char* argv[])
 						break;
 					}
 					strLen = recv(hSockArr[sigEventIdx], msg, sizeof(msg), 0);
-					send(hSockArr[sigEventIdx], msg, strLen, 0);
+					for (int i = 0; i < numOfClntSock; i++)
+					{
+						if (i != sigEventIdx)
+							send(hSockArr[i], msg, strLen, 0);
+					}
 				}
 
 				else if (netEvents.lNetworkEvents & FD_CLOSE)
