@@ -58,6 +58,7 @@ int main()
 
 	closesocket(hSock);
 	WSACleanup();
+	
 	return 0;
 }
 
@@ -103,5 +104,8 @@ void ErrorHandleing(const char* msg)
 {
 	fputs(msg, stderr);
 	fputc('\n', stderr);
+	std::cout << "끌려면 아무거나입력";
+	int temp = 0;
+	std::cin >> temp;
 	exit(1);
 }
