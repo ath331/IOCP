@@ -14,11 +14,19 @@ unsigned WINAPI SendMsg(void* arg);
 unsigned WINAPI RecvMsg(void* arg);
 void ErrorHandleing(const char* msg);
 
+std::string ip;
 char name[NAME_SIZE] = "[DEFAULT]";
 char msg[BUF_SIZE];
 
-int main(int argc, const char* argv[])
+int main()
 {
+	std::cout << "Input IP : ";
+	std::cin >> ip;
+
+	int portNum = 0;
+	std::cout << "Input portNum : ";
+	std::cin >> portNum;
+
 	std::cout << "Input Name : ";
 	char tempName[NAME_SIZE];
 	std::cin >> tempName;
@@ -29,12 +37,6 @@ int main(int argc, const char* argv[])
 	SOCKADDR_IN servAdr;
 	HANDLE hSndThread, hRcvThread;
 
-	if (argc != 3)
-	{
-		std::cout << "Usage : " << argv[0] << " <IP> <port>" << std::endl;
-		exit(1);
-	}
-
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		ErrorHandleing("WSAStartUp() error");
 
@@ -42,8 +44,8 @@ int main(int argc, const char* argv[])
 
 	ZeroMemory(&servAdr, 0);
 	servAdr.sin_family = AF_INET;
-	servAdr.sin_addr.s_addr = inet_addr(argv[1]);
-	servAdr.sin_port = htons(atoi(argv[2]));
+	servAdr.sin_addr.s_addr = inet_addr(ip.c_str());
+	servAdr.sin_port = htons(portNum);
 
 	if (connect(hSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
 		ErrorHandleing("connet() error");
