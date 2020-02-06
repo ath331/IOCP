@@ -2,28 +2,24 @@
 #include <string>
 #include <WinSock2.h>
 
-const static int BUF_SIZE = 100;
-
-void CompressSockets(SOCKET hSockArr[], int idx, int total);
-void CompressEvents(WSAEVENT hEventArr[], int idx, int total);
+const static int BUF_SIZE = 1024;
 void ErrorHandling(const char* msg);
 
 int main(int argc, const char* argv[])
 {
 	WSADATA wsaData;
-	SOCKET hServSock, hClntSock;
-	SOCKADDR_IN servAdr, clntAdr;
+	SOCKET hLisnSock, hRecvSock;
+	SOCKADDR_IN lisnAdr,recvAdr;
 
-	SOCKET hSockArr[WSA_MAXIMUM_WAIT_EVENTS];
-	WSAEVENT hEventArr[WSA_MAXIMUM_WAIT_EVENTS];
-	WSAEVENT newEvent;
-	WSANETWORKEVENTS netEvents;
+	WSABUF dataBuf;
+	memset(&dataBuf, 0, sizeof(dataBuf));
+	int recvAdrSz = 0;
 
-	int numOfClntSock = 0;
-	int strLen = 0, i = 0;
-	int posInfo = 0, startIdx = 0;
-	int clntAdrLen = 0;
-	char msg[BUF_SIZE];
+	WSAEVENT evObj;
+	WSAOVERLAPPED overlapped;
+
+	char buf[BUF_SIZE];
+	int recvBytes = 0, flags = 0;
 
 	if (argc != 2)
 	{
@@ -36,120 +32,48 @@ int main(int argc, const char* argv[])
 		ErrorHandling("WSAStartup() error");
 	}
 
-	hServSock = socket(PF_INET, SOCK_STREAM, 0);
-	memset(&servAdr, 0, sizeof(servAdr));
-	servAdr.sin_family = AF_INET;
-	servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servAdr.sin_port = htons(atoi(argv[1]));
+	hLisnSock = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	memset(&lisnAdr, 0, sizeof(lisnAdr));
+	lisnAdr.sin_family = AF_INET;
+	lisnAdr.sin_addr.s_addr = htonl(INADDR_ANY);
+	lisnAdr.sin_port = htons(atoi(argv[1]));
 
-	if (bind(hServSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
-	{
+	if (bind(hLisnSock, (SOCKADDR*)&lisnAdr, sizeof(lisnAdr)) == SOCKET_ERROR)
 		ErrorHandling("bind() error");
-	}
-	if (listen(hServSock, 5) == SOCKET_ERROR)
-	{
+	if (listen(hLisnSock, 5) == SOCKET_ERROR)
 		ErrorHandling("listen() error");
-	}
 
-	newEvent = WSACreateEvent();
-	if (WSAEventSelect(hServSock, newEvent, FD_ACCEPT) == SOCKET_ERROR)
+	recvAdrSz = sizeof(recvAdr);
+	hRecvSock = accept(hLisnSock, (SOCKADDR*)&recvAdr, &recvAdrSz);
+
+	evObj = WSACreateEvent();
+	memset(&overlapped, 0, sizeof(overlapped));
+	overlapped.hEvent = evObj;
+	dataBuf.len = BUF_SIZE;
+	dataBuf.buf = buf;
+
+	if (WSARecv(hRecvSock, &dataBuf, 1, (LPDWORD)&recvAdrSz, (LPDWORD)&flags, &overlapped, NULL) == SOCKET_ERROR)
 	{
-		ErrorHandling("WSAEventSelect() error");
-	}
-
-	hSockArr[numOfClntSock] = hServSock;
-	hEventArr[numOfClntSock] = newEvent;
-	numOfClntSock++;
-
-	while (1)
-	{
-		posInfo = WSAWaitForMultipleEvents(numOfClntSock, hEventArr, FALSE, WSA_INFINITE, FALSE);
-		startIdx = posInfo - WSA_WAIT_EVENT_0;
-
-		for (i = startIdx; i < numOfClntSock; i++)
+		if (WSAGetLastError() == WSA_IO_PENDING)
 		{
-			int sigEventIdx = WSAWaitForMultipleEvents(1, &hEventArr[i], TRUE, 0, FALSE);
-			if ((sigEventIdx == WSA_WAIT_FAILED || sigEventIdx == WSA_WAIT_TIMEOUT))
-			{
-				continue;
-			}
-
-			else
-			{
-				sigEventIdx = i;
-				WSAEnumNetworkEvents(hSockArr[sigEventIdx], hEventArr[sigEventIdx], &netEvents);
-
-				if (netEvents.lNetworkEvents & FD_ACCEPT)
-				{
-					if (netEvents.iErrorCode[FD_ACCEPT_BIT] != 0)
-					{
-						puts("ACCEPT error");
-						break;
-					}
-					clntAdrLen = sizeof(clntAdr);
-					hClntSock = accept(hSockArr[sigEventIdx], (SOCKADDR*)&clntAdr, &clntAdrLen);
-					newEvent = WSACreateEvent();
-					WSAEventSelect(hClntSock, newEvent, FD_READ | FD_CLOSE);
-
-					hEventArr[numOfClntSock] = newEvent;
-					hSockArr[numOfClntSock] = hClntSock;
-					numOfClntSock++;
-					puts("connect new client...");
-				}
-
-				else if (netEvents.lNetworkEvents & FD_READ)
-				{
-					if (netEvents.iErrorCode[FD_READ_BIT] != 0)
-					{
-						puts("READ error");
-						break;
-					}
-					strLen = recv(hSockArr[sigEventIdx], msg, sizeof(msg), 0);
-					for (int i = 0; i < numOfClntSock; i++)
-					{
-						if (i != sigEventIdx)
-							send(hSockArr[i], msg, strLen, 0);
-					}
-				}
-
-				else if (netEvents.lNetworkEvents & FD_CLOSE)
-				{
-					if (netEvents.iErrorCode[FD_CLOSE_BIT] != 0)
-					{
-						puts("CLOSE error");
-						break;
-					}
-					WSACloseEvent(hEventArr[sigEventIdx]);
-					closesocket(hSockArr[sigEventIdx]);
-
-					numOfClntSock--;
-					CompressSockets(hSockArr, sigEventIdx, numOfClntSock);
-					CompressEvents(hEventArr, sigEventIdx, numOfClntSock);
-				}
-			}
+			puts("BackGround data recv");
+			WSAWaitForMultipleEvents(1, &evObj, TRUE, WSA_INFINITE, FALSE);
+			WSAGetOverlappedResult(hRecvSock, &overlapped, (LPDWORD)&recvBytes, FALSE, NULL);
+		}
+		else
+		{
+			ErrorHandling("WSARecv() error");
 		}
 	}
 
+	printf("Recv data : %s \n", buf);
+	WSACloseEvent(evObj);
+	closesocket(hLisnSock);
+	closesocket(hRecvSock);
 	WSACleanup();
 	return 0;
 }
 
-void CompressSockets(SOCKET hSockArr[], int idx, int total)
-{
-	int i = 0;
-	for (i = idx; i < total; i++)
-	{
-		hSockArr[i] = hSockArr[i + 1];
-	}
-}
-void CompressEvents(WSAEVENT hEventArr[], int idx, int total)
-{
-	int i = 0;
-	for (i = idx; i < total; i++)
-	{
-		hEventArr[i] = hEventArr[i + 1];
-	}
-}
 void ErrorHandling(const char* msg)
 {
 	fputs(msg, stderr);
