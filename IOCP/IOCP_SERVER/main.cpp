@@ -3,23 +3,27 @@
 #include <WinSock2.h>
 
 const static int BUF_SIZE = 1024;
-void CALLBACK CompRoutine(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
+void CALLBACK ReadCompRoutine(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
+void CALLBACK WriteCompRoutine(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
 void ErrorHandling(const char* msg);
 
-WSABUF dataBuf;
-char buf[BUF_SIZE];
-int recvBytes = 0;
+typedef struct
+{
+	SOCKET hClntSock;
+	char buf[BUF_SIZE];
+	WSABUF wsaBuf;
+} PER_IO_DATA, *LPPER_IO_DATA;
 
 int main(int argc, const char* argv[])
 {
 	WSADATA wsaData;
 	SOCKET hLisnSock, hRecvSock;
 	SOCKADDR_IN lisnAdr, recvAdr;
+	LPWSAOVERLAPPED lpOvlp;
+	DWORD recvBytes;
+	LPPER_IO_DATA hbInfo;
+	int mode = 1, recvAdrSz = 0, flagInfo = 0;
 
-	WSAEVENT evObj;
-	WSAOVERLAPPED overlapped;
-
-	int idx = 0, recvAdrSz = 0, flags = 0;
 	if (argc != 2)
 	{
 		printf("Usage : %s <port>\n", argv[0]);
@@ -32,6 +36,7 @@ int main(int argc, const char* argv[])
 	}
 
 	hLisnSock = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	ioctlsocket(hLisnSock, FIONBIO, (u_long*)&mode);
 	memset(&lisnAdr, 0, sizeof(lisnAdr));
 	lisnAdr.sin_family = AF_INET;
 	lisnAdr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -43,46 +48,67 @@ int main(int argc, const char* argv[])
 		ErrorHandling("listen() error");
 
 	recvAdrSz = sizeof(recvAdr);
-	hRecvSock = accept(hLisnSock, (SOCKADDR*)&recvAdr, &recvAdrSz);
-	if (hRecvSock == INVALID_SOCKET)
-		ErrorHandling("accept() error");
 
-	evObj = WSACreateEvent(); //dummy
-	memset(&overlapped, 0, sizeof(overlapped));
-	overlapped.hEvent = evObj;
-	dataBuf.len = BUF_SIZE;
-	dataBuf.buf = buf;
-
-	if (WSARecv(hRecvSock, &dataBuf, 1, (LPDWORD)&recvAdrSz, (LPDWORD)&flags, &overlapped, CompRoutine) == SOCKET_ERROR)
+	while (1)
 	{
-		if (WSAGetLastError() == WSA_IO_PENDING)
+		SleepEx(100,TRUE);
+		hRecvSock = accept(hLisnSock, (SOCKADDR*)&recvAdr, &recvAdrSz);
+		if (hRecvSock == INVALID_SOCKET)
 		{
-			puts("BackGround data recv");
+			if (WSAGetLastError() == WSAEWOULDBLOCK)
+				continue;
+			else
+			{
+				ErrorHandling("accept() error");
+			}
 		}
+		puts("Client connected..");
+		lpOvlp = new WSAOVERLAPPED;
+		memset(lpOvlp, 0, sizeof(WSAOVERLAPPED));
+
+		hbInfo = new PER_IO_DATA;
+		hbInfo->hClntSock = (DWORD)hRecvSock;
+		(hbInfo->wsaBuf).buf = hbInfo->buf;
+		(hbInfo->wsaBuf).len = BUF_SIZE;
+
+		lpOvlp->hEvent = (HANDLE)hbInfo;
+		WSARecv(hRecvSock, &(hbInfo->wsaBuf), 1, &recvBytes, (LPDWORD)&flagInfo, lpOvlp, ReadCompRoutine);
 	}
 
-	idx = WSAWaitForMultipleEvents(1, &evObj, FALSE, WSA_INFINITE, TRUE);
-	if (idx = WAIT_IO_COMPLETION)
-		puts("\nOverlapped I/O Completed!");
-	else
-		ErrorHandling("WSARecv() error");
-
-	WSACloseEvent(evObj);
 	closesocket(hLisnSock);
 	closesocket(hRecvSock);
 	WSACleanup();
 	return 0;
 }
 
-void CALLBACK CompRoutine(DWORD dwError, DWORD szRecvBytes, LPWSAOVERLAPPED lpOverlapped, DWORD falgs)
+void CALLBACK ReadCompRoutine(DWORD dwError, DWORD szRecvBytes, LPWSAOVERLAPPED lpOverlapped, DWORD flags)
 {
-	if (dwError != 0)
-		ErrorHandling("CompRoutine error!");
+	LPPER_IO_DATA hbInfo = (LPPER_IO_DATA)(lpOverlapped->hEvent);
+	SOCKET hSock = hbInfo->hClntSock;
+	LPWSABUF bufInfo = &(hbInfo->wsaBuf);
+	DWORD sentBytes;
+	if (szRecvBytes == 0)
+	{
+		closesocket(hSock);
+		delete(lpOverlapped->hEvent);
+		delete(lpOverlapped);
+		puts("Client disconnected..");
+	}
 	else
 	{
-		recvBytes = szRecvBytes;
-		printf("Recv Data : %s ", buf);
+		bufInfo->len = szRecvBytes;
+		WSASend(hSock, bufInfo, 1, &sentBytes, 0, lpOverlapped, WriteCompRoutine);
 	}
+}
+
+void CALLBACK WriteCompRoutine(DWORD dwError, DWORD szSendBytes, LPWSAOVERLAPPED lpOverlapped, DWORD flags)
+{
+	LPPER_IO_DATA hbInfo = (LPPER_IO_DATA)(lpOverlapped->hEvent);
+	SOCKET hSock = hbInfo->hClntSock;
+	LPWSABUF bufInfo = &(hbInfo->wsaBuf);
+	DWORD recvBytes;
+	int flagInfo = 0;
+	WSARecv(hSock, bufInfo, 1, &recvBytes, (LPDWORD)&flagInfo, lpOverlapped, ReadCompRoutine);
 }
 
 void ErrorHandling(const char* msg)
