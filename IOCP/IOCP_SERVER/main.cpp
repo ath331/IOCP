@@ -75,7 +75,7 @@ int main(int argc, const char* argv[])
 		handleInfo->hClntSock = hClntSock;
 		memcpy(&(handleInfo->clntAdr), &clntAdr, addrLen);
 
-		CreateIoCompletionPort((HANDLE)hClntSock, hComPort, (DWORD)handleInfo, 0);
+		CreateIoCompletionPort((HANDLE)hClntSock, hComPort, (ULONG_PTR)handleInfo, 0);
 
 		ioInfo = new PER_IO_DATA();
 		memset(&(ioInfo->overlapped), 0, sizeof(OVERLAPPED));
