@@ -4,22 +4,16 @@
 
 #pragma warning(disable:4996)
 
-const static int BUF_SIZE = 100;
+const static int BUF_SIZE = 1024;
 void ErrorHandling(const char* msg);
 
 int main(int argc, const char* argv[])
 {
 	WSADATA wsaData;
-	SOCKET hSock;
-	SOCKADDR_IN sendAdr;
-
-	WSABUF dataBuf;
-	memset(&dataBuf, 0, sizeof(dataBuf));
-	std::string msg = "Network is Computer!";
-	int sendBytes = 0;
-
-	WSAEVENT evObj;
-	WSAOVERLAPPED overlapped;
+	SOCKET hSocket;
+	SOCKADDR_IN servAdr;
+	char message[BUF_SIZE];
+	int strLen = 0, readLen = 0;
 
 	if (argc != 3)
 	{
@@ -32,40 +26,49 @@ int main(int argc, const char* argv[])
 		ErrorHandling("WSAStartup() error");
 	}
 
-	hSock = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
-	memset(&sendAdr, 0, sizeof(sendAdr));
-	sendAdr.sin_family = AF_INET;
-	sendAdr.sin_addr.s_addr = inet_addr(argv[1]);
-	sendAdr.sin_port = htons(atoi(argv[2]));
+	hSocket = socket(PF_INET, SOCK_STREAM, 0);
+	if (hSocket == INVALID_SOCKET)
+	{
+		ErrorHandling("socket() error");
+	}
+	memset(&servAdr, 0, sizeof(servAdr));
+	servAdr.sin_family = AF_INET;
+	servAdr.sin_addr.s_addr = inet_addr(argv[1]);
+	servAdr.sin_port = htons(atoi(argv[2]));
 
-	if (connect(hSock, (SOCKADDR*)&sendAdr, sizeof(sendAdr)) == SOCKET_ERROR)
+	if (connect(hSocket, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
 	{
 		ErrorHandling("connect() error");
 	}
-
-	evObj = WSACreateEvent();
-	memset(&overlapped, 0, sizeof(overlapped));
-	overlapped.hEvent = evObj;
-	dataBuf.len = strlen(msg.c_str()) +1;
-	dataBuf.buf = (char*)msg.c_str();
-
-	if (WSASend(hSock, &dataBuf, 1, (LPDWORD)&sendBytes, 0, &overlapped, NULL) == SOCKET_ERROR)
+	else
 	{
-		if (WSAGetLastError() == WSA_IO_PENDING)
-		{
-			puts("BackGround data send");
-			WSAWaitForMultipleEvents(1, &evObj, TRUE, WSA_INFINITE, FALSE);
-			WSAGetOverlappedResult(hSock, &overlapped, (LPDWORD)&sendBytes, FALSE, NULL);
-		}
-		else
-		{
-			ErrorHandling("WSASend() error");
-		}
+		puts("connected..");
 	}
 
-	printf("Send data size : %d \n", sendBytes);
-	WSACloseEvent(evObj);
-	closesocket(hSock);
+	while (1)
+	{
+		fputs("Input message(Q is quit) : ", stdout);
+		fgets(message, BUF_SIZE, stdin);
+		if (!strcmp(message, "q\n") || !strcmp(message, "Q\n"))
+			break;
+
+		strLen = strlen(message);
+		send(hSocket, message, strLen, 0);
+		readLen = 0;
+
+		while (1)
+		{
+			readLen += recv(hSocket, &message[readLen], BUF_SIZE - 1, 0);
+			if (readLen >= strLen)
+			{
+				break;
+			}
+		}
+		message[strLen] = 0;
+		printf("Message from Server : %s", message);
+	}
+
+	closesocket(hSocket);
 	WSACleanup();
 	return 0;
 }
