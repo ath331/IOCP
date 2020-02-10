@@ -3,8 +3,11 @@
 #include <windows.h>
 
 
-const static int READ = 3;
-const static int WRITE = 5;
+enum class IO_TYPE :int
+{
+	READ,
+	WRITE,
+};
 
 class ThreadManager
 {

@@ -71,7 +71,7 @@ void Server::RunServer()
 		memset(&(ioInfo->overlapped), 0, sizeof(OVERLAPPED));
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
 		ioInfo->wsaBuf.len = BUF_SIZE;
-		ioInfo->rwMode = READ;
+		ioInfo->rwMode = (int)IO_TYPE::READ;
 		WSARecv(handleInfo->hClntSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
 	}
 }
