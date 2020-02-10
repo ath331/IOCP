@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <process.h>
@@ -37,12 +38,10 @@ int main(int argc, const char* argv[])
 	SOCKET hServSock;
 	SOCKADDR_IN servAdr;
 	int recvBytes = 0, i = 0, flags = 0;
-
-	if (argc != 2)
-	{
-		printf("Usage : %s <port>\n", argv[0]);
-		exit(1);
-	}
+	int portNum = 0;
+	
+	std::cout << "Input PortNum : ";
+	std::cin >> portNum;
 
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
@@ -58,7 +57,7 @@ int main(int argc, const char* argv[])
 	memset(&servAdr, 0, sizeof(servAdr));
 	servAdr.sin_family = AF_INET;
 	servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servAdr.sin_port = htons(atoi(argv[1]));
+	servAdr.sin_port = portNum;
 
 	if (bind(hServSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
 		ErrorHandling("bind() error");
