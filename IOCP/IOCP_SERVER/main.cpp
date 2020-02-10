@@ -29,42 +29,42 @@ typedef struct
 
 int main(int argc, const char* argv[])
 {
-	WSADATA wsaData;
-	HANDLE hComPort;
+	//WSADATA wsaData;
+	//HANDLE hComPort;
 	SYSTEM_INFO sysInfo;
 	LPPER_IO_DATA ioInfo;
 	LPPER_HANDLE_DATA handleInfo;
 
-	SOCKET hServSock;
-	SOCKADDR_IN servAdr;
+	/*SOCKET hServSock;
+	SOCKADDR_IN servAdr;*/
 	int recvBytes = 0, i = 0, flags = 0;
-	int portNum = 0;
+	//int portNum = 0;
 	
-	std::cout << "Input PortNum : ";
-	std::cin >> portNum;
+	/*std::cout << "Input PortNum : ";
+	std::cin >> portNum;*/
 
-	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+	/*if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
 		ErrorHandling("WSAStartup() error");
-	}
+	}*/
 
-	hComPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
+	//hComPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 	GetSystemInfo(&sysInfo);
 	for (i = 0; i < sysInfo.dwNumberOfProcessors; i++)
 		_beginthreadex(NULL, 0, EchoThreadMain, (LPVOID)hComPort, 0, NULL);
 
-	hServSock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	/*hServSock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	memset(&servAdr, 0, sizeof(servAdr));
 	servAdr.sin_family = AF_INET;
 	servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servAdr.sin_port = portNum;
+	servAdr.sin_port = portNum;*/
 
-	if (bind(hServSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
+	/*if (bind(hServSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
 		ErrorHandling("bind() error");
 	if (listen(hServSock, 5) == SOCKET_ERROR)
-		ErrorHandling("listen() error");
+		ErrorHandling("listen() error");*/
 
-	while (1)
+	/*while (1)
 	{
 		SOCKET hClntSock;
 		SOCKADDR_IN clntAdr;
@@ -82,7 +82,7 @@ int main(int argc, const char* argv[])
 		ioInfo->wsaBuf.len = BUF_SIZE;
 		ioInfo->rwMode = READ;
 		WSARecv(handleInfo->hClntSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&recvBytes, (LPDWORD)&flags, &(ioInfo->overlapped), NULL);
-	}
+	}*/
 
 	return 0;
 }
