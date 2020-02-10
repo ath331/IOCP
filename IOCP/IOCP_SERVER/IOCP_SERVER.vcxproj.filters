@@ -13,10 +13,39 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{f1a4dce6-5cf7-4983-a0d2-bcde17d650d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThreadMamager">
+      <UniqueIdentifier>{b6302f92-1a9e-4cbe-a746-2c7832da1dfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Basic">
+      <UniqueIdentifier>{da12a7f6-aa0f-4ef6-a837-c6bf0cfc25fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Server\Server.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadManager\ThreadManager.cpp">
+      <Filter>ThreadMamager</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Server\Server.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadManager\ThreadManager.h">
+      <Filter>ThreadMamager</Filter>
+    </ClInclude>
+    <ClInclude Include="Basic\OVERLAPPED.h">
+      <Filter>Basic</Filter>
+    </ClInclude>
+    <ClInclude Include="Basic\ClientInfo.h">
+      <Filter>Basic</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

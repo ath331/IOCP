@@ -1,22 +1,11 @@
 #include "Server.h"
 #include "../ThreadManager/ThreadManager.h"
+#include "../Basic/OVERLAPPED.h"
+#include "../Basic/ClientInfo.h"
+
 #include <iostream>
 
 const static int BUF_SIZE = 100;
-
-typedef struct
-{
-	SOCKET hClntSock;
-	SOCKADDR_IN clntAdr;
-} PER_HANDLE_DATA, * LPPER_HANDLE_DATA;
-
-typedef struct
-{
-	OVERLAPPED overlapped;
-	WSABUF wsaBuf;
-	char buffer[BUF_SIZE];
-	int rwMode;
-} PER_IO_DATA, * LPPER_IO_DATA;
 
 void Server::InputPortNum()
 {
@@ -43,10 +32,8 @@ void Server::InitServer()
 	_servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
 	_servAdr.sin_port = _portNum;
 
-	if (bind(_servSock, (SOCKADDR*)&_servAdr, sizeof(_servAdr)) == SOCKET_ERROR);
-	//ErrorHandling("bind() error");
-	if (listen(_servSock, 5) == SOCKET_ERROR);
-	//ErrorHandling("listen() error");
+	bind(_servSock, (SOCKADDR*)&_servAdr, sizeof(_servAdr));
+	listen(_servSock, 5);
 }
 
 
@@ -54,24 +41,24 @@ void Server::RunServer()
 {
 	while (1)
 	{
-		SOCKET hClntSock;
+		SOCKET clntSock;
 		SOCKADDR_IN clntAdr;
-		LPPER_HANDLE_DATA handleInfo;
-		LPPER_IO_DATA ioInfo;
+		ClientInfo* handleInfo;
+		Overlapped* ioInfo;
 
 		int addrLen = sizeof(clntAdr);
-		hClntSock = accept(_servSock, (SOCKADDR*)&clntAdr, &addrLen);
-		handleInfo = new PER_HANDLE_DATA();
-		handleInfo->hClntSock = hClntSock;
+		clntSock = accept(_servSock, (SOCKADDR*)&clntAdr, &addrLen);
+		handleInfo = new ClientInfo();
+		handleInfo->hClntSock = clntSock;
 		memcpy(&(handleInfo->clntAdr), &clntAdr, addrLen);
 
-		CreateIoCompletionPort((HANDLE)hClntSock, _comPort, (ULONG_PTR)handleInfo, 0);
+		CreateIoCompletionPort((HANDLE)clntSock, _comPort, (ULONG_PTR)handleInfo, 0);
 
-		ioInfo = new PER_IO_DATA();
-		memset(&(ioInfo->overlapped), 0, sizeof(OVERLAPPED));
+		ioInfo = new Overlapped();
+		ioInfo->Init();
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
 		ioInfo->wsaBuf.len = BUF_SIZE;
-		ioInfo->rwMode = (int)IO_TYPE::READ;
+		ioInfo->rwMode = Overlapped::IO_TYPE::READ;
 		WSARecv(handleInfo->hClntSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
 	}
 }

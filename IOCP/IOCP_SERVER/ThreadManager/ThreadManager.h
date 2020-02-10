@@ -2,13 +2,6 @@
 #include <WinSock2.h>
 #include <windows.h>
 
-
-enum class IO_TYPE :int
-{
-	READ,
-	WRITE,
-};
-
 class ThreadManager
 {
 public:

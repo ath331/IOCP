@@ -1,4 +1,6 @@
 #include "ThreadManager.h"
+#include "../Basic/ClientInfo.h"
+#include "../Basic/OVERLAPPED.h"
 
 #include <process.h>
 #include <iostream>
@@ -34,8 +36,8 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 	HANDLE comPort = completionPort;
 	SOCKET sock;
 	DWORD bytesTrans;
-	LPPER_HANDLE_DATA handleInfo;
-	LPPER_IO_DATA ioInfo;
+	ClientInfo* handleInfo;
+	Overlapped* ioInfo;
 	DWORD flags = 0;
 
 	while (1)
@@ -43,7 +45,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 		GetQueuedCompletionStatus(comPort, &bytesTrans, (PULONG_PTR)&handleInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
 		sock = handleInfo->hClntSock;
 
-		if (ioInfo->rwMode == IO_TYPE::READ)
+		if (ioInfo->rwMode == Overlapped::IO_TYPE::READ)
 		{
 			std::cout << "message received!";
 			if (bytesTrans == 0)
@@ -56,14 +58,14 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 
 			memset(&(ioInfo->overlapped), 0, sizeof(OVERLAPPED));
 			ioInfo->wsaBuf.len = bytesTrans;
-			ioInfo->rwMode = IO_TYPE::WRITE;
+			ioInfo->rwMode = Overlapped::IO_TYPE::WRITE;
 			WSASend(sock, &(ioInfo->wsaBuf), 1, NULL, 0, &(ioInfo->overlapped), NULL);
 
-			ioInfo = new PER_IO_DATA;
-			memset(&(ioInfo->overlapped), 0, sizeof(OVERLAPPED));
+			ioInfo = new Overlapped();
+			ioInfo->Init();
 			ioInfo->wsaBuf.buf = ioInfo->buffer;
 			ioInfo->wsaBuf.len = BUF_SIZE;
-			ioInfo->rwMode = IO_TYPE::READ;
+			ioInfo->rwMode = Overlapped::IO_TYPE::READ;
 			WSARecv(sock, &(ioInfo->wsaBuf), 1, NULL, &flags, &(ioInfo->overlapped), NULL);
 		}
 		else
@@ -77,5 +79,5 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 
 unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 {
-
+	return 0;
 }
