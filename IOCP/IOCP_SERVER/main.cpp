@@ -1,8 +1,4 @@
-#include<iostream>
-
 #include "Server/Server.h"
-
-void ErrorHandling(const char* msg);
 
 int main()
 {
@@ -12,12 +8,4 @@ int main()
 	server.RunServer();
 
 	return 0;
-}
-
-
-void ErrorHandling(const char* msg)
-{
-	fputs(msg, stderr);
-	fputs("\n", stderr);
-	exit(1);
 }

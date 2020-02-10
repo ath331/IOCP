@@ -3,6 +3,6 @@
 
 struct ClientInfo
 {
-	SOCKET hClntSock;
-	SOCKADDR_IN clntAdr;
+	SOCKET clientSock;
+	SOCKADDR_IN clientAdr;
 };

@@ -16,7 +16,8 @@ void Server::InitServer()
 
 	if (WSAStartup(MAKEWORD(2, 2), &_wsaData) != 0)
 	{
-		//ErrorHandling("WSAStartup() error");
+		std::cout << "WSAStartup() error";
+		exit(1);
 	}
 
 	_comPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
@@ -47,22 +48,22 @@ void Server::RunServer()
 	while (1)
 	{
 		SOCKET clntSock;
-		SOCKADDR_IN clntAdr;
-		ClientInfo* handleInfo;
+		SOCKADDR_IN clientAdr;
+		ClientInfo* clientInfo;
 		Overlapped* ioInfo;
 
-		int addrLen = sizeof(clntAdr);
-		clntSock = accept(_servSock, (SOCKADDR*)&clntAdr, &addrLen);
-		handleInfo = new ClientInfo();
-		handleInfo->hClntSock = clntSock;
-		memcpy(&(handleInfo->clntAdr), &clntAdr, addrLen);
+		int addrLen = sizeof(clientAdr);
+		clntSock = accept(_servSock, (SOCKADDR*)&clientAdr, &addrLen);
+		clientInfo = new ClientInfo();
+		clientInfo->clientSock = clntSock;
+		memcpy(&(clientInfo->clientAdr), &clientAdr, addrLen);
 
-		CreateIoCompletionPort((HANDLE)clntSock, _comPort, (ULONG_PTR)handleInfo, 0);
+		CreateIoCompletionPort((HANDLE)clntSock, _comPort, (ULONG_PTR)clientInfo, 0);
 
 		ioInfo = new Overlapped();
 		ioInfo->Init();
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
 		ioInfo->rwMode = Overlapped::IO_TYPE::READ;
-		WSARecv(handleInfo->hClntSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
+		WSARecv(clientInfo->clientSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
 	}
 }

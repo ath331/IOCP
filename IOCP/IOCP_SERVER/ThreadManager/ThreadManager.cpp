@@ -43,7 +43,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 	while (1)
 	{
 		GetQueuedCompletionStatus(comPort, &bytesTrans, (PULONG_PTR)&handleInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
-		sock = handleInfo->hClntSock;
+		sock = handleInfo->clientSock;
 
 		if (ioInfo->rwMode == Overlapped::IO_TYPE::READ)
 		{
