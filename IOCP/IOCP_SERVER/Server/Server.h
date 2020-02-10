@@ -3,7 +3,8 @@
 #include <WinSock2.h>
 #include <windows.h>
 
-class ThreadManager;
+#include "../ThreadManager/ThreadManager.h"
+
 class Server
 {
 public:
@@ -19,7 +20,7 @@ private:
 	SOCKET _servSock;
 	SOCKADDR_IN _servAdr;
 
-	ThreadManager* _threadManager;
+	ThreadManager _threadManager;
 
 	int _portNum;
 	int _recvBytes = 0, _flags = 0;

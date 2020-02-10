@@ -1,11 +1,8 @@
 #include "Server.h"
-#include "../ThreadManager/ThreadManager.h"
 #include "../Basic/OVERLAPPED.h"
 #include "../Basic/ClientInfo.h"
 
 #include <iostream>
-
-const static int BUF_SIZE = 100;
 
 void Server::InputPortNum()
 {
@@ -23,8 +20,8 @@ void Server::InitServer()
 	}
 
 	_comPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-	_threadManager->InitThreadManager(_sysInfo.dwNumberOfProcessors, _comPort);
-	_threadManager->MakeThread();
+	_threadManager.InitThreadManager(_sysInfo.dwNumberOfProcessors, _comPort);
+	_threadManager.MakeThread();
 
 	_servSock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	memset(&_servAdr, 0, sizeof(_servAdr));
@@ -32,8 +29,16 @@ void Server::InitServer()
 	_servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
 	_servAdr.sin_port = _portNum;
 
-	bind(_servSock, (SOCKADDR*)&_servAdr, sizeof(_servAdr));
-	listen(_servSock, 5);
+	if (bind(_servSock, (SOCKADDR*)&_servAdr, sizeof(_servAdr)) == SOCKET_ERROR)
+	{
+		std::cout << "bind() error";
+		exit(1);
+	}
+	if (listen(_servSock, 5) == SOCKET_ERROR)
+	{
+		std::cout << "listen() error";
+		exit(1);
+	}
 }
 
 
@@ -57,7 +62,6 @@ void Server::RunServer()
 		ioInfo = new Overlapped();
 		ioInfo->Init();
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
-		ioInfo->wsaBuf.len = BUF_SIZE;
 		ioInfo->rwMode = Overlapped::IO_TYPE::READ;
 		WSARecv(handleInfo->hClntSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
 	}

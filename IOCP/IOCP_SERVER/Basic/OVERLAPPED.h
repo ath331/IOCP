@@ -14,6 +14,7 @@ struct Overlapped : public WSAOVERLAPPED
 	void Init()
 	{
 		memset(&overlapped, 0, sizeof(OVERLAPPED));
+		wsaBuf.len = BUF_SIZE;
 	}
 
 	OVERLAPPED overlapped;

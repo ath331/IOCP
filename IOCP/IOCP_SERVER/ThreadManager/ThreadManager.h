@@ -9,7 +9,7 @@ public:
 	void MakeThread();
 private:
 	HANDLE _comPort;
-	int _maxThreadNum;
+	int _maxThreadNum=0;
 
 	void _MakeIOThreads();
 	void _MakeLogicThread();
