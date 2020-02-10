@@ -1,6 +1,22 @@
 #include "Server.h"
+#include "../ThreadManager/ThreadManager.h"
 #include <iostream>
 
+const static int BUF_SIZE = 100;
+
+typedef struct
+{
+	SOCKET hClntSock;
+	SOCKADDR_IN clntAdr;
+} PER_HANDLE_DATA, * LPPER_HANDLE_DATA;
+
+typedef struct
+{
+	OVERLAPPED overlapped;
+	WSABUF wsaBuf;
+	char buffer[BUF_SIZE];
+	int rwMode;
+} PER_IO_DATA, * LPPER_IO_DATA;
 
 void Server::InputPortNum()
 {
@@ -10,12 +26,16 @@ void Server::InputPortNum()
 
 void Server::InitServer()
 {
+	GetSystemInfo(&_sysInfo);
+
 	if (WSAStartup(MAKEWORD(2, 2), &_wsaData) != 0)
 	{
 		//ErrorHandling("WSAStartup() error");
 	}
 
 	_comPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
+	_threadManager->InitThreadManager(_sysInfo.dwNumberOfProcessors, _comPort);
+	_threadManager->MakeThread();
 
 	_servSock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	memset(&_servAdr, 0, sizeof(_servAdr));
@@ -36,6 +56,9 @@ void Server::RunServer()
 	{
 		SOCKET hClntSock;
 		SOCKADDR_IN clntAdr;
+		LPPER_HANDLE_DATA handleInfo;
+		LPPER_IO_DATA ioInfo;
+
 		int addrLen = sizeof(clntAdr);
 		hClntSock = accept(_servSock, (SOCKADDR*)&clntAdr, &addrLen);
 		handleInfo = new PER_HANDLE_DATA();
@@ -49,6 +72,6 @@ void Server::RunServer()
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
 		ioInfo->wsaBuf.len = BUF_SIZE;
 		ioInfo->rwMode = READ;
-		WSARecv(handleInfo->hClntSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&recvBytes, (LPDWORD)&flags, &(ioInfo->overlapped), NULL);
+		WSARecv(handleInfo->hClntSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
 	}
 }
