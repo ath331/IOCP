@@ -150,7 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic\ClientInfo.h" />
-    <ClInclude Include="Basic\OVERLAPPED.h" />
+    <ClInclude Include="Basic\OverlappedCustom.h" />
     <ClInclude Include="Server\Server.h" />
     <ClInclude Include="ThreadManager\ThreadManager.h" />
   </ItemGroup>

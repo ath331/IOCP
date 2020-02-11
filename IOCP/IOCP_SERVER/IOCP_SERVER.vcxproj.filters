@@ -41,10 +41,10 @@
     <ClInclude Include="ThreadManager\ThreadManager.h">
       <Filter>ThreadMamager</Filter>
     </ClInclude>
-    <ClInclude Include="Basic\OVERLAPPED.h">
+    <ClInclude Include="Basic\ClientInfo.h">
       <Filter>Basic</Filter>
     </ClInclude>
-    <ClInclude Include="Basic\ClientInfo.h">
+    <ClInclude Include="Basic\OverlappedCustom.h">
       <Filter>Basic</Filter>
     </ClInclude>
   </ItemGroup>
