@@ -33,7 +33,6 @@ void ThreadManager::_MakeLogicThread()
 
 unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 {
-	HANDLE comPort = completionPort;
 	SOCKET sock;
 	DWORD bytesTrans;
 	ClientInfo* handleInfo;
@@ -42,7 +41,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 
 	while (1)
 	{
-		GetQueuedCompletionStatus(comPort, &bytesTrans, (PULONG_PTR)&handleInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
+		GetQueuedCompletionStatus(completionPort, &bytesTrans, (PULONG_PTR)&handleInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
 		sock = handleInfo->clientSock;
 
 		if (ioInfo->rwMode == Overlapped::IO_TYPE::READ)
@@ -68,7 +67,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 			ioInfo->rwMode = Overlapped::IO_TYPE::READ;
 			WSARecv(sock, &(ioInfo->wsaBuf), 1, NULL, &flags, &(ioInfo->overlapped), NULL);
 		}
-		else
+		else if (ioInfo->rwMode == Overlapped::IO_TYPE::WRITE)
 		{
 			std::cout << "message sent!";
 			delete ioInfo;

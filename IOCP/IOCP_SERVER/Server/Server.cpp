@@ -22,13 +22,12 @@ void Server::InitServer()
 
 	_comPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 	_threadManager.InitThreadManager(_sysInfo.dwNumberOfProcessors, _comPort);
-	_threadManager.MakeThread();
 
-	_servSock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	_servSock = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	memset(&_servAdr, 0, sizeof(_servAdr));
 	_servAdr.sin_family = AF_INET;
 	_servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
-	_servAdr.sin_port = _portNum;
+	_servAdr.sin_port = htons(_portNum);
 
 	if (bind(_servSock, (SOCKADDR*)&_servAdr, sizeof(_servAdr)) == SOCKET_ERROR)
 	{
@@ -45,20 +44,18 @@ void Server::InitServer()
 
 void Server::RunServer()
 {
+	_threadManager.MakeThread();
 	while (1)
 	{
-		SOCKET clntSock;
-		SOCKADDR_IN clientAdr;
 		ClientInfo* clientInfo;
 		Overlapped* ioInfo;
 
-		int addrLen = sizeof(clientAdr);
-		clntSock = accept(_servSock, (SOCKADDR*)&clientAdr, &addrLen);
 		clientInfo = new ClientInfo();
-		clientInfo->clientSock = clntSock;
-		memcpy(&(clientInfo->clientAdr), &clientAdr, addrLen);
+		int addrLen = sizeof(clientInfo->clientAdr);
+		clientInfo->clientSock = accept(_servSock, (SOCKADDR*)&(clientInfo->clientAdr), &addrLen);
+		std::cout << "client connected..";
 
-		CreateIoCompletionPort((HANDLE)clntSock, _comPort, (ULONG_PTR)clientInfo, 0);
+		CreateIoCompletionPort((HANDLE)clientInfo->clientSock, _comPort, (ULONG_PTR)clientInfo, 0);
 
 		ioInfo = new Overlapped();
 		ioInfo->Init();
