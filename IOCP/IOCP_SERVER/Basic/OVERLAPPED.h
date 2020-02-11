@@ -3,22 +3,23 @@
 
 const static int BUF_SIZE = 100;
 
-struct Overlapped : public WSAOVERLAPPED
+struct Overlapped
 {
+	OVERLAPPED overlapped;
+	WSABUF wsaBuf;
+	char buffer[BUF_SIZE];
+
 	enum class IO_TYPE : int
 	{
 		READ,
 		WRITE,
 	};
+	IO_TYPE rwMode;
 
-	void Init()
+	Overlapped()
 	{
 		memset(&overlapped, 0, sizeof(OVERLAPPED));
 		wsaBuf.len = BUF_SIZE;
 	}
 
-	OVERLAPPED overlapped;
-	WSABUF wsaBuf;
-	char buffer[BUF_SIZE];
-	IO_TYPE rwMode;
 };

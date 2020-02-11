@@ -53,12 +53,11 @@ void Server::RunServer()
 		clientInfo = new ClientInfo();
 		int addrLen = sizeof(clientInfo->clientAdr);
 		clientInfo->clientSock = accept(_servSock, (SOCKADDR*)&(clientInfo->clientAdr), &addrLen);
-		std::cout << "client connected..";
+		std::cout << "client connected..\n";
 
 		CreateIoCompletionPort((HANDLE)clientInfo->clientSock, _comPort, (ULONG_PTR)clientInfo, 0);
 
 		ioInfo = new Overlapped();
-		ioInfo->Init();
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
 		ioInfo->rwMode = Overlapped::IO_TYPE::READ;
 		WSARecv(clientInfo->clientSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
