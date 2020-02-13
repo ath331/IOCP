@@ -1,5 +1,4 @@
 #include "Server/Server.h"
-#include "Interface.h"
 
 int main()
 {
