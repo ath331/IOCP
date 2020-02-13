@@ -3,9 +3,6 @@
 
 int main()
 {
-	Interface i;
-	i.InterfaceMake();
-
 	Server server;
 	server.InputPortNum();
 	server.InitServer();

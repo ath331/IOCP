@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{BF41C080-6859-4EF5-B138-FC8B357ABBF9}</ProjectGuid>
+    <ProjectGuid>{612808D4-5BB1-4E5A-AB44-EC70A1BC4818}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>SERVERINTERFACE</RootNamespace>
+    <RootNamespace>Interface</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,10 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Interface.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Interface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
