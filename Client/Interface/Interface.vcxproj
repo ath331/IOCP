@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\ClientLogic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,6 +147,11 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Interface.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClientLogic\ClientLogic.vcxproj">
+      <Project>{dda165a5-33e6-4a90-9fd8-4cfb576b9eae}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

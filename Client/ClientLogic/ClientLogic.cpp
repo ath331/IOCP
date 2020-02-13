@@ -38,7 +38,7 @@ int main(int argc, const char* argv[])
 
 	if (connect(hSocket, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
 	{
-		printf("WSAGetLastError() : %d\n",WSAGetLastError());
+		printf("WSAGetLastError() : %d\n", WSAGetLastError());
 		ErrorHandling("connect() error");
 	}
 	else
