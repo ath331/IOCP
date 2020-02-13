@@ -141,6 +141,9 @@
   <ItemGroup>
     <ClCompile Include="ClientLogic.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ClientLogic.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

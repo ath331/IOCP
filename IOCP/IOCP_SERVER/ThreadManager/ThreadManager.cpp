@@ -49,6 +49,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 			std::cout << "message received!\n";
 			if (bytesTrans == 0)
 			{
+				std::cout << "client out!" << std::endl;
 				closesocket(sock);
 				continue;
 			}

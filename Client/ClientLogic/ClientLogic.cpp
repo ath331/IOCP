@@ -1,42 +1,56 @@
 #include <stdio.h>
 #include <string>
-#include <WinSock2.h>
+
+#include "ClientLogic.h"
 
 #pragma warning(disable:4996)
 
-const static int BUF_SIZE = 1024;
 void ErrorHandling(const char* msg);
 
-int main(int argc, const char* argv[])
+void ClientLogic::Init(std::string IP, short portNum)
 {
-	WSADATA wsaData;
-	SOCKET hSocket;
-	SOCKADDR_IN servAdr;
-	char message[BUF_SIZE];
-	int strLen = 0, readLen = 0;
-
-	if (argc != 3)
-	{
-		printf("Usage : %s <IP> <port>\n", argv[0]);
-		exit(1);
-	}
-
-	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+	if (WSAStartup(MAKEWORD(2, 2), &_wsaData) != 0)
 	{
 		ErrorHandling("WSAStartup() error");
 	}
 
-	hSocket = socket(PF_INET, SOCK_STREAM, 0);
-	if (hSocket == INVALID_SOCKET)
+	_socket = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	if (_socket == INVALID_SOCKET)
 	{
 		ErrorHandling("socket() error");
 	}
-	memset(&servAdr, 0, sizeof(servAdr));
-	servAdr.sin_family = AF_INET;
-	servAdr.sin_addr.s_addr = inet_addr(argv[1]);
-	servAdr.sin_port = htons(atoi(argv[2]));
+	memset(&_servAdr, 0, sizeof(_servAdr));
+	_servAdr.sin_family = AF_INET;
+	_servAdr.sin_addr.s_addr = inet_addr(IP.c_str());
+	_servAdr.sin_port = htons(portNum);
 
-	if (connect(hSocket, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
+	//while (1)
+	//{
+	//	fputs("Input message(Q is quit) : ", stdout);
+	//	fgets(_message, BUF_SIZE, stdin);
+	//	if (!strcmp(_message, "q\n") || !strcmp(_message, "Q\n"))
+	//		break;
+
+	//	_strLen = strlen(_message);
+	//	send(_hSocket, _message, _strLen, 0);
+	//	_readLen = 0;
+
+	//	while (1)
+	//	{
+	//		_readLen += recv(_hSocket, &_message[_readLen], BUF_SIZE - 1, 0);
+	//		if (_readLen >= _strLen)
+	//		{
+	//			break;
+	//		}
+	//	}
+	//	_message[_strLen] = 0; //전송전에 null붙이기
+	//	printf("Message from Server : %s", _message);
+	//}
+}
+
+void ClientLogic::Connect()
+{
+	if (connect(_socket, (SOCKADDR*)&_servAdr, sizeof(_servAdr)) == SOCKET_ERROR)
 	{
 		printf("WSAGetLastError() : %d\n", WSAGetLastError());
 		ErrorHandling("connect() error");
@@ -45,33 +59,12 @@ int main(int argc, const char* argv[])
 	{
 		puts("connected..");
 	}
+}
 
-	while (1)
-	{
-		fputs("Input message(Q is quit) : ", stdout);
-		fgets(message, BUF_SIZE, stdin);
-		if (!strcmp(message, "q\n") || !strcmp(message, "Q\n"))
-			break;
-
-		strLen = strlen(message);
-		send(hSocket, message, strLen, 0);
-		readLen = 0;
-
-		while (1)
-		{
-			readLen += recv(hSocket, &message[readLen], BUF_SIZE - 1, 0);
-			if (readLen >= strLen)
-			{
-				break;
-			}
-		}
-		message[strLen] = 0;
-		printf("Message from Server : %s", message);
-	}
-
-	closesocket(hSocket);
+void ClientLogic::ExitClient()
+{
+	closesocket(_socket);
 	WSACleanup();
-	return 0;
 }
 
 void ErrorHandling(const char* msg)

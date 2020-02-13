@@ -155,11 +155,6 @@
     <ClInclude Include="Server\Server.h" />
     <ClInclude Include="ThreadManager\ThreadManager.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SERVER_INTERFACE\SERVER_INTERFACE.vcxproj">
-      <Project>{bf41c080-6859-4ef5-b138-fc8b357abbf9}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
