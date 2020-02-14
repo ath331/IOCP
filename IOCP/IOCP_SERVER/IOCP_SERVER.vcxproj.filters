@@ -22,6 +22,9 @@
     <Filter Include="Basic">
       <UniqueIdentifier>{da12a7f6-aa0f-4ef6-a837-c6bf0cfc25fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{6ced5bf6-b308-45cf-872b-97b856a91e20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -46,6 +49,9 @@
     </ClInclude>
     <ClInclude Include="Basic\OverlappedCustom.h">
       <Filter>Basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Packet\packet.h">
+      <Filter>Packet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

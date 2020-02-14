@@ -2,7 +2,6 @@
 // Microsoft Visual C++에서 생성한 포함 파일입니다.
 // Interface.rc에서 사용되고 있습니다.
 //
-#define IDD_DIALOG1                     101
 #define IDD_ChatLogin                   101
 #define IDD_ChatMain                    103
 #define ID_EXIT                         1002

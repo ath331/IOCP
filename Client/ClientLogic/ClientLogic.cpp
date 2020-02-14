@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string>
 
+#include "packet.h"
 #include "ClientLogic.h"
 
 #pragma warning(disable:4996)
@@ -66,6 +67,33 @@ void ClientLogic::ExitClient()
 {
 	closesocket(_socket);
 	WSACleanup();
+}
+
+void ClientLogic::SendPacket(SendType type)
+{
+	switch (type)
+	{
+	case SendType::Login:
+	{
+		PacketLogin packetLogin;
+		strcpy((char*)packetLogin.name, _name.c_str());
+		send(_socket, (const char*)&packetLogin, packetLogin.header.headerSize, 0);
+	}
+	break;
+
+	default:
+		break;
+	}
+}
+
+
+void ClientLogic::SetName(std::string name)
+{
+	_name = name;
+}
+std::string ClientLogic::GetName()
+{
+	return _name;
 }
 
 void ErrorHandling(const char* msg)

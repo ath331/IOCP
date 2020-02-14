@@ -1,7 +1,7 @@
 #pragma once
 #include <WinSock2.h>
 
-const static int BUF_SIZE = 100;
+const static int BUF_SIZE = 1024;
 
 struct Overlapped
 {

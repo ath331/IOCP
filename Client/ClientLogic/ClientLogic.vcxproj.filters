@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Pakcet">
+      <UniqueIdentifier>{68344e55-885d-4ac2-a976-90e3d00f4ba8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientLogic.cpp">
@@ -22,6 +25,9 @@
   <ItemGroup>
     <ClInclude Include="ClientLogic.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Packet\packet.h">
+      <Filter>Pakcet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

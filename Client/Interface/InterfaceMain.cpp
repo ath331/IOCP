@@ -1,12 +1,15 @@
 #include "ClientLogic.h"
 #include <windows.h>
+#include <string>
 
 #include "resource.h"
 
 BOOL CALLBACK DlgProcLogin(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK DlgProcMain(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 
 HBRUSH g_hbrBackground = NULL;
 ClientLogic clientLogic;
+TCHAR name[20];
 BOOL isConnect = false;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -55,17 +58,22 @@ BOOL CALLBACK DlgProcLogin(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam
 			if (clientLogic.Connect() == 0)
 			{
 				isConnect = true;
+				GetDlgItemText(hwnd, ID_NAME, name, 10);
+				std::string tempName;
+				tempName = name;
+				clientLogic.SetName(tempName);
+				clientLogic.SendPacket(SendType::Login);
 				EndDialog(hwnd, 0);
 			}
 			else
 			{
-				msgboxID = MessageBox(hwnd, L"서버와 연결실패", L"연결실패", MB_OK);
+				msgboxID = MessageBox(hwnd, "서버와 연결실패", "연결실패", MB_OK);
 				if (msgboxID == 6)
 					EndDialog(hwnd, 0);
 			}
 			break;
 		case ID_EXIT:
-			msgboxID = MessageBox(hwnd, L"프로그램을 종료할까요?", L"종료확인", MB_YESNO);
+			msgboxID = MessageBox(hwnd, "프로그램을 종료할까요?", "종료확인", MB_YESNO);
 
 			if (msgboxID == 6)
 				EndDialog(hwnd, 0);
@@ -120,13 +128,13 @@ BOOL CALLBACK DlgProcMain(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				msgboxID = MessageBox(hwnd, L"서버와 연결실패", L"연결실패", MB_OK);
+				msgboxID = MessageBox(hwnd, "서버와 연결실패", "연결실패", MB_OK);
 				if (msgboxID == 6)
 					EndDialog(hwnd, 0);
 			}
 			break;
 		case ID_EXIT:
-			msgboxID = MessageBox(hwnd, L"프로그램을 종료할까요?", L"종료확인", MB_YESNO);
+			msgboxID = MessageBox(hwnd, "프로그램을 종료할까요?", "종료확인", MB_YESNO);
 
 			if (msgboxID == 6)
 				EndDialog(hwnd, 0);
