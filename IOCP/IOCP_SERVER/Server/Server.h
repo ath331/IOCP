@@ -22,7 +22,7 @@ private:
 
 	ThreadManager _threadManager;
 
-	int _portNum = 0;
+	int _portNum = 9999;
 	int _recvBytes = 0, _flags = 0;
 
 };

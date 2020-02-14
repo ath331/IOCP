@@ -1,5 +1,6 @@
 #include "ClientLogic.h"
 #include <windows.h>
+
 #include "resource.h" 
 
 BOOL CALLBACK DlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);

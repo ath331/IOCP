@@ -3,7 +3,7 @@
 int main()
 {
 	Server server;
-	server.InputPortNum();
+	//server.InputPortNum();
 	server.InitServer();
 	server.RunServer();
 
