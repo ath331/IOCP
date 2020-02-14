@@ -48,7 +48,7 @@ void ClientLogic::Init(std::string IP, short portNum)
 	//}
 }
 
-void ClientLogic::Connect()
+int ClientLogic::Connect()
 {
 	if (connect(_socket, (SOCKADDR*)&_servAdr, sizeof(_servAdr)) == SOCKET_ERROR)
 	{
@@ -58,6 +58,7 @@ void ClientLogic::Connect()
 	else
 	{
 		puts("connected..");
+		return 0;
 	}
 }
 

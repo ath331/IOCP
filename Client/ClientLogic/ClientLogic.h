@@ -10,7 +10,7 @@ class ClientLogic
 {
 public:
 	void Init(std::string IP,short portNum);
-	void Connect();
+	int Connect();
 	void ExitClient();
 private:
 	WSADATA _wsaData;
