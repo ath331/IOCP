@@ -121,22 +121,14 @@ BOOL CALLBACK DlgProcMain(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam))
 		{
 		case ID_ENTER:
-			if (clientLogic.Connect() == 0)
-			{
-				isConnect = true;
-				EndDialog(hwnd, 0);
-			}
-			else
-			{
-				msgboxID = MessageBox(hwnd, "서버와 연결실패", "연결실패", MB_OK);
-				if (msgboxID == 6)
-					EndDialog(hwnd, 0);
-			}
+		{
+			//TODO : 방목록체크 데이터 가져와서 접속 패킷전송 구현
+		}
 			break;
 		case ID_EXIT:
 			msgboxID = MessageBox(hwnd, "프로그램을 종료할까요?", "종료확인", MB_YESNO);
 
-			if (msgboxID == 6)
+			if (msgboxID == 6) //확인버튼 누름
 				EndDialog(hwnd, 0);
 			break;
 		}
