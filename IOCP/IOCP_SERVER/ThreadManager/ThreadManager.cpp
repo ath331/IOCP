@@ -67,14 +67,14 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 				}
 			}
 			PacketHeader packetHeader;
-			memcpy(&packetHeader, &(ioInfo->wsaBuf.buf), sizeof(packetHeader.headerSize));
+			memcpy(&packetHeader, &(ioInfo->buffer), sizeof(packetHeader.headerSize));
 			//TODO : Packet별로 처리 구현, singleLogicThread가 처리 할 수있게 Queue만들기
 			switch (packetHeader.index)
 			{
 			case PacketIndex::Login:
 			{
 				PacketLogin packetLogin;
-				memcpy(&packetLogin, &(ioInfo->wsaBuf.buf), sizeof(packetLogin));
+				memcpy(&packetLogin, &(ioInfo->buffer), sizeof(packetLogin));
 				std::cout << packetLogin.name << " Login!" << std::endl;
 			}
 			break;
