@@ -5,8 +5,13 @@ const static int MAX_NAME_LENGTH = 10;
 
 enum class PacketIndex : int
 {
-	Exit,
 	Login,
+};
+
+struct PacketInfo
+{
+	PacketIndex packetIndex;
+	const char* packetBuffer;
 };
 
 struct PacketHeader
@@ -19,7 +24,7 @@ struct PacketLogin
 {
 	PacketHeader header;
 	const char name[MAX_NAME_LENGTH] = {};
-	//const char* password[];
+	//const char* password[]; //TOCO : DB추가시 아이디생성 로직 만들때 구현하기
 
 	PacketLogin()
 	{

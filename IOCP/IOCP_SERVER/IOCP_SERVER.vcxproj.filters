@@ -53,5 +53,8 @@
     <ClInclude Include="..\..\Packet\packet.h">
       <Filter>Packet</Filter>
     </ClInclude>
+    <ClInclude Include="Basic\Lock.h">
+      <Filter>Basic</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

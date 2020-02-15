@@ -1,10 +1,12 @@
 #include "ThreadManager.h"
-#include "packet.h"
-#include "../Basic/ClientInfo.h"
-#include "../Basic/OverlappedCustom.h"
+#include "ClientInfo.h"
+#include "OverlappedCustom.h"
 
 #include <process.h>
 #include <iostream>
+
+Lock ThreadManager::_packetQueueLock;
+queue<PacketInfo> ThreadManager::_packetQueue;
 
 void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort)
 {
@@ -18,7 +20,6 @@ void ThreadManager::MakeThread()
 	_MakeLogicThread();
 }
 
-
 void ThreadManager::_MakeIOThreads()
 {
 	for (int i = 0; i < _maxThreadNum - 1; i++) //한개의 쓰레드는 SingleLogicThread로 사용
@@ -31,6 +32,14 @@ void ThreadManager::_MakeLogicThread()
 {
 	_beginthreadex(NULL, 0, _RunLogicThreadMain, NULL, 0, NULL);
 }
+
+void ThreadManager::_pushPacketQueue(PacketIndex packetIndex, const char buffer[])
+{
+	LockGuard pushQueueLockGuard(_packetQueueLock);
+	PacketInfo tempPacketInfo = { packetIndex, buffer };
+	_packetQueue.push(tempPacketInfo);
+}
+
 
 unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 {
@@ -54,7 +63,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 				closesocket(sock); //TODO : client 관리하는 class 만들기
 				continue;
 			}
-			else if (bytesTrans < sizeof(PacketHeader))
+			else if (bytesTrans < sizeof(PacketHeader)) //PacketHeader size만큼 수신하지 못했으면 추가로 읽기
 			{
 				int readDataLen = bytesTrans;
 				while (1)
@@ -68,20 +77,9 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 			}
 			PacketHeader packetHeader;
 			memcpy(&packetHeader, &(ioInfo->buffer), sizeof(packetHeader.headerSize));
-			//TODO : Packet별로 처리 구현, singleLogicThread가 처리 할 수있게 Queue만들기
-			switch (packetHeader.index)
-			{
-			case PacketIndex::Login:
-			{
-				PacketLogin packetLogin;
-				memcpy(&packetLogin, &(ioInfo->buffer), sizeof(packetLogin));
-				std::cout << packetLogin.name << " Login!" << std::endl;
-			}
-			break;
+			//TODO : packetHeader.headerSize가 패킷의 총 길이이므로 추가로 읽어야한다면 recv 구현
 
-			default:
-				break;
-			}
+			_pushPacketQueue(packetHeader.index, ioInfo->buffer);
 		}
 		else if (ioInfo->rwMode == Overlapped::IO_TYPE::WRITE)
 		{
@@ -101,5 +99,30 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 
 unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 {
+	while (true)
+	{
+		Sleep(1);
+		LockGuard pushQueueLockGuard(_packetQueueLock); //queue에 패킷을 넣을때와 같은 lock객체를 이용
+		if (!_packetQueue.empty())
+		{
+			PacketInfo packetInfo;
+			packetInfo = _packetQueue.front();
+			_packetQueue.pop();
+
+			switch (packetInfo.packetIndex)
+			{
+			case PacketIndex::Login:
+			{
+				PacketLogin packetLogin;
+				memcpy(&packetLogin, packetInfo.packetBuffer, sizeof(PacketLogin));
+				cout << packetLogin.name << " connect!" << endl;
+			}
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
 	return 0;
 }
