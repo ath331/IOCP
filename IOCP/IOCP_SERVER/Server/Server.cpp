@@ -21,7 +21,7 @@ void Server::InitServer()
 	}
 
 	_comPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-	_threadManager.InitThreadManager(_sysInfo.dwNumberOfProcessors, _comPort);
+	_threadManager.InitThreadManager(_sysInfo.dwNumberOfProcessors, _comPort,&_clientManager);
 
 	_servSock = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	memset(&_servAdr, 0, sizeof(_servAdr));
@@ -47,13 +47,13 @@ void Server::RunServer()
 	_threadManager.MakeThread();
 	while (1)
 	{
-		ClientInfo* clientInfo;
+		ClientSocketInfo* clientInfo;
 		Overlapped* ioInfo;
 
-		clientInfo = new ClientInfo();
+		clientInfo = new ClientSocketInfo();
 		int addrLen = sizeof(clientInfo->clientAdr);
 		clientInfo->clientSock = accept(_servSock, (SOCKADDR*)&(clientInfo->clientAdr), &addrLen);
-		std::cout << "client connected..\n";
+		_clientManager.InputClientInfo(clientInfo->clientSock);
 
 		CreateIoCompletionPort((HANDLE)clientInfo->clientSock, _comPort, (ULONG_PTR)clientInfo, 0);
 

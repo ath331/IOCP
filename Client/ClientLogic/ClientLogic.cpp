@@ -24,29 +24,6 @@ void ClientLogic::Init(std::string IP, short portNum)
 	_servAdr.sin_family = AF_INET;
 	_servAdr.sin_addr.s_addr = inet_addr(IP.c_str());
 	_servAdr.sin_port = htons(portNum);
-
-	//while (1)
-	//{
-	//	fputs("Input message(Q is quit) : ", stdout);
-	//	fgets(_message, BUF_SIZE, stdin);
-	//	if (!strcmp(_message, "q\n") || !strcmp(_message, "Q\n"))
-	//		break;
-
-	//	_strLen = strlen(_message);
-	//	send(_hSocket, _message, _strLen, 0);
-	//	_readLen = 0;
-
-	//	while (1)
-	//	{
-	//		_readLen += recv(_hSocket, &_message[_readLen], BUF_SIZE - 1, 0);
-	//		if (_readLen >= _strLen)
-	//		{
-	//			break;
-	//		}
-	//	}
-	//	_message[_strLen] = 0; //전송전에 null붙이기
-	//	printf("Message from Server : %s", _message);
-	//}
 }
 
 int ClientLogic::Connect()

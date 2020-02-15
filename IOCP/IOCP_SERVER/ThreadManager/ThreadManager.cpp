@@ -1,17 +1,21 @@
 #include "ThreadManager.h"
 #include "ClientInfo.h"
 #include "OverlappedCustom.h"
+#include "..\Server\ClientManager\ClientManager.h"
 
 #include <process.h>
 #include <iostream>
 
 Lock ThreadManager::_packetQueueLock;
 queue<PacketInfo> ThreadManager::_packetQueue;
+ClientManager* ThreadManager::_clientManager;
 
-void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort)
+
+void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager)
 {
 	_maxThreadNum = maxThreadNum;
 	_comPort = comPort;
+	_clientManager = clientManager;
 }
 
 void ThreadManager::MakeThread()
@@ -45,7 +49,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 {
 	SOCKET sock;
 	DWORD bytesTrans;
-	ClientInfo* clientInfo;
+	ClientSocketInfo* clientInfo;
 	Overlapped* ioInfo;
 	DWORD flags = 0;
 
@@ -59,8 +63,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 			std::cout << "message received!\n";
 			if (bytesTrans == 0)
 			{
-				std::cout << "client out!" << std::endl;
-				closesocket(sock); //TODO : client 관리하는 class 만들기
+				_clientManager->OutClient(sock);
 				continue;
 			}
 			else if (bytesTrans < sizeof(PacketHeader)) //PacketHeader size만큼 수신하지 못했으면 추가로 읽기
