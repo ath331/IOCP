@@ -120,6 +120,12 @@ BOOL CALLBACK DlgProcMain(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
+		case IDC_MAKE_ROOM:
+		{
+			//TODO : 방만들기 다이얼로그 필요
+		}
+		break;
+
 		case ID_ENTER:
 		{
 			//TODO : 방목록체크 데이터 가져와서 접속 패킷전송 구현
