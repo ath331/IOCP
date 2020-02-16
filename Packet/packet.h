@@ -3,10 +3,12 @@
 #include <WinSock2.h>
 
 const static int MAX_NAME_LENGTH = 10;
+const static int MAX_ROOM_NAME_LENGTH = 20;
 
 enum class PacketIndex : int
 {
 	Login,
+	MAKE_ROOM,
 };
 
 struct PacketInfo
@@ -32,5 +34,20 @@ struct PacketLogin
 	{
 		header.index = PacketIndex::Login;
 		header.headerSize = sizeof(PacketLogin);
+	}
+};
+
+struct PacketMakeRoom
+{
+	PacketHeader header;
+	char roomName[MAX_ROOM_NAME_LENGTH] = {};
+	int maxClientCount = 2;
+	bool isPrivateRoom = false;
+	int password = 0000;
+
+	PacketMakeRoom()
+	{
+		header.index = PacketIndex::MAKE_ROOM;
+		header.headerSize = sizeof(PacketMakeRoom);
 	}
 };
