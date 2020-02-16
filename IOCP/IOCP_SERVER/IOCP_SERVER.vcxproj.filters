@@ -25,12 +25,6 @@
     <Filter Include="Packet">
       <UniqueIdentifier>{6ced5bf6-b308-45cf-872b-97b856a91e20}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\ClientManager">
-      <UniqueIdentifier>{35acdda8-4d38-451e-8ad2-b873c1d05284}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Server\RoomManager">
-      <UniqueIdentifier>{b114a4d6-2dbc-4931-8363-92c1a84aefaa}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,15 +35,6 @@
     </ClCompile>
     <ClCompile Include="ThreadManager\ThreadManager.cpp">
       <Filter>ThreadMamager</Filter>
-    </ClCompile>
-    <ClCompile Include="Server\ClientManager\ClientManager.cpp">
-      <Filter>Server\ClientManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Server\RoomManager\RoomManager.cpp">
-      <Filter>Server\RoomManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Server\RoomManager\Room.cpp">
-      <Filter>Server\RoomManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,15 +55,6 @@
     </ClInclude>
     <ClInclude Include="Basic\Lock.h">
       <Filter>Basic</Filter>
-    </ClInclude>
-    <ClInclude Include="Server\ClientManager\ClientManager.h">
-      <Filter>Server\ClientManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Server\RoomManager\RoomManager.h">
-      <Filter>Server\RoomManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Server\RoomManager\Room.h">
-      <Filter>Server\RoomManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

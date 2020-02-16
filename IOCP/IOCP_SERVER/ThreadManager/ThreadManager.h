@@ -7,15 +7,13 @@
 
 using namespace std;
 
-class ClientManager;
 class ThreadManager
 {
 public:
-	void InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager);
+	void InitThreadManager(int maxThreadNum, HANDLE comPort);
 	void MakeThread();
 private:
 	HANDLE _comPort;
-	static ClientManager* _clientManager;
 	int _maxThreadNum = 0;
 
 	void _MakeIOThreads();
