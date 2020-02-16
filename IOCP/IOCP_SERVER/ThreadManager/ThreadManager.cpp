@@ -1,17 +1,20 @@
 #include "ThreadManager.h"
 #include "ClientInfo.h"
 #include "OverlappedCustom.h"
+#include "../Server/ClientManager/ClientManager.h"
 
 #include <process.h>
 #include <iostream>
 
 Lock ThreadManager::_packetQueueLock;
 queue<PacketInfo> ThreadManager::_packetQueue;
+ClientManager* ThreadManager::_clientManager;
 
-void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort)
+void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager)
 {
 	_maxThreadNum = maxThreadNum;
 	_comPort = comPort;
+	_clientManager = clientManager;
 }
 
 void ThreadManager::MakeThread()
@@ -33,10 +36,10 @@ void ThreadManager::_MakeLogicThread()
 	_beginthreadex(NULL, 0, _RunLogicThreadMain, NULL, 0, NULL);
 }
 
-void ThreadManager::_pushPacketQueue(PacketIndex packetIndex, const char buffer[])
+void ThreadManager::_pushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[])
 {
 	LockGuard pushQueueLockGuard(_packetQueueLock);
-	PacketInfo tempPacketInfo = { packetIndex, buffer };
+	PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
 	_packetQueue.push(tempPacketInfo);
 }
 
@@ -59,8 +62,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 			std::cout << "message received!\n";
 			if (bytesTrans == 0)
 			{
-				std::cout << "client out!" << std::endl;
-				closesocket(sock); //TODO : client 관리하는 class 만들기
+				_clientManager->PopClientInfo(clientInfo->clientSock);
 				continue;
 			}
 			else if (bytesTrans < sizeof(PacketHeader)) //PacketHeader size만큼 수신하지 못했으면 추가로 읽기
@@ -79,7 +81,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 			memcpy(&packetHeader, &(ioInfo->buffer), sizeof(packetHeader.headerSize));
 			//TODO : packetHeader.headerSize가 패킷의 총 길이이므로 추가로 읽어야한다면 recv 구현
 
-			_pushPacketQueue(packetHeader.index, ioInfo->buffer);
+			_pushPacketQueue(clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 		}
 		else if (ioInfo->rwMode == Overlapped::IO_TYPE::WRITE)
 		{
@@ -115,9 +117,12 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			{
 				PacketLogin packetLogin;
 				memcpy(&packetLogin, packetInfo.packetBuffer, sizeof(PacketLogin));
-				cout << packetLogin.name << " connect!" << endl;
+
+				ClientInfo clientInfo = { packetInfo.sock };
+				memcpy((void*)clientInfo.clientName, packetLogin.name, sizeof(packetLogin.name));
+				_clientManager->PushClientInfo(clientInfo);
 			}
-				break;
+			break;
 
 			default:
 				break;

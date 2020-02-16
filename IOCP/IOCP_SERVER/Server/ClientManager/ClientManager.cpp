@@ -4,7 +4,7 @@
 void ClientManager::PushClientInfo(ClientInfo clientInfo)
 {
 	_clientVec.push_back(clientInfo);
-	cout << clientInfo.clientName << "connect!" << endl;
+	cout << clientInfo.clientName << " connect!" << endl;
 }
 
 void ClientManager::PopClientInfo(SOCKET sock)
@@ -14,7 +14,9 @@ void ClientManager::PopClientInfo(SOCKET sock)
 		if (iter->clientSock == sock)
 		{
 			cout << iter->clientName << " out.." << endl;
-			iter = _clientVec.erase(iter);
+			closesocket(sock);
+			_clientVec.erase(iter);
+			break;
 		}
 	}
 }

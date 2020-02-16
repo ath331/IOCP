@@ -1,5 +1,6 @@
 #pragma once
 //server <-> client 통신관련 packet 저장
+#include <WinSock2.h>
 
 const static int MAX_NAME_LENGTH = 10;
 
@@ -10,6 +11,7 @@ enum class PacketIndex : int
 
 struct PacketInfo
 {
+	SOCKET sock;
 	PacketIndex packetIndex;
 	const char* packetBuffer;
 };

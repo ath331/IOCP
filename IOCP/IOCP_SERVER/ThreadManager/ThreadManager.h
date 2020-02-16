@@ -7,10 +7,11 @@
 
 using namespace std;
 
+class ClientManager;
 class ThreadManager
 {
 public:
-	void InitThreadManager(int maxThreadNum, HANDLE comPort);
+	void InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager);
 	void MakeThread();
 private:
 	HANDLE _comPort;
@@ -24,6 +25,8 @@ private:
 
 	static Lock _packetQueueLock;
 	static queue<PacketInfo> _packetQueue;
-	static void _pushPacketQueue(PacketIndex packetIndex, const char buffer[]);
+	static void _pushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[]);
+
+	static ClientManager* _clientManager;
 };
 
