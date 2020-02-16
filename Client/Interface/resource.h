@@ -5,6 +5,7 @@
 #define IDD_MAKE_ROOM                   5
 #define IDD_ChatLogin                   101
 #define IDD_ChatMain                    103
+#define IDD_ChatROom                    107
 #define ID_EXIT                         1002
 #define ID_NAME                         1003
 #define IDC_NAME                        1006
@@ -17,14 +18,17 @@
 #define IDC_ROOM_PRIVATE                1015
 #define IDC_ROOM_MAX_CLIENT_NUM         1021
 #define IDC_CHECK1                      1022
+#define IDC_INPUT_KEY                   1023
+#define IDC_LIST2                       1027
+#define IDC_CLIENTINFO                  1029
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        107
+#define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1023
+#define _APS_NEXT_CONTROL_VALUE         1030
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
