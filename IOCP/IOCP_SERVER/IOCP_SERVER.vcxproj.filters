@@ -28,7 +28,7 @@
     <Filter Include="Server\ClientManager">
       <UniqueIdentifier>{ae57f057-daf7-4ae6-9494-3272ffc5d8f2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\RoomManager">
+    <Filter Include="ThreadMamager\RoomManager">
       <UniqueIdentifier>{d6d27152-28fd-48e7-98ad-4a19c84e238d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -45,11 +45,11 @@
     <ClCompile Include="Server\ClientManager\ClientManager.cpp">
       <Filter>Server\ClientManager</Filter>
     </ClCompile>
-    <ClCompile Include="Server\RoomManager\RoomManager.cpp">
-      <Filter>Server\RoomManager</Filter>
+    <ClCompile Include="ThreadManager\RoomManager\Room.cpp">
+      <Filter>ThreadMamager\RoomManager</Filter>
     </ClCompile>
-    <ClCompile Include="Server\RoomManager\Room.cpp">
-      <Filter>Server\RoomManager</Filter>
+    <ClCompile Include="ThreadManager\RoomManager\RoomManager.cpp">
+      <Filter>ThreadMamager\RoomManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,11 +74,11 @@
     <ClInclude Include="Server\ClientManager\ClientManager.h">
       <Filter>Server\ClientManager</Filter>
     </ClInclude>
-    <ClInclude Include="Server\RoomManager\Room.h">
-      <Filter>Server\RoomManager</Filter>
+    <ClInclude Include="ThreadManager\RoomManager\Room.h">
+      <Filter>ThreadMamager\RoomManager</Filter>
     </ClInclude>
-    <ClInclude Include="Server\RoomManager\RoomManager.h">
-      <Filter>Server\RoomManager</Filter>
+    <ClInclude Include="ThreadManager\RoomManager\RoomManager.h">
+      <Filter>ThreadMamager\RoomManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

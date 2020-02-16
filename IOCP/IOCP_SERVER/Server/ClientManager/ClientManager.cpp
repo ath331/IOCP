@@ -20,3 +20,14 @@ void ClientManager::PopClientInfo(SOCKET sock)
 		}
 	}
 }
+
+ClientInfo ClientManager::GetClientInfo(SOCKET sock)
+{
+	for (auto iter = _clientVec.begin(); iter != _clientVec.end(); iter++)
+	{
+		if (iter->clientSock == sock)
+		{
+			return *iter;
+		}
+	}
+}

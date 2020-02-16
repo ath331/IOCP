@@ -9,6 +9,7 @@
 Lock ThreadManager::_packetQueueLock;
 queue<PacketInfo> ThreadManager::_packetQueue;
 ClientManager* ThreadManager::_clientManager;
+RoomManager ThreadManager::_roomManager;
 
 void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager)
 {
@@ -128,6 +129,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			{
 				PacketMakeRoom packetMakeRoom;
 				memcpy(&packetMakeRoom, packetInfo.packetBuffer, sizeof(PacketMakeRoom));
+				ClientInfo clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
+				_roomManager.MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
 			}
 			break;
 

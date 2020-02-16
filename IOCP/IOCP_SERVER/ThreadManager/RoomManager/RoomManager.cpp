@@ -1,8 +1,8 @@
 #include "RoomManager.h"
 
-void RoomManager::MakeRoom(ClientInfo clientInfo, int maxClientCount, bool privateRoom)
+void RoomManager::MakeRoom(const char* roomName, ClientInfo clientInfo, int maxClientCount, bool privateRoom)
 {
-	Room room(clientInfo, maxClientCount, privateRoom);
+	Room room(roomName,clientInfo, maxClientCount, privateRoom);
 	_roomVec.push_back(room);
 }
 
