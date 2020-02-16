@@ -1,14 +1,14 @@
 #pragma once
-#include <vector>
 #include "ClientInfo.h"
+#include <vector>
 
 using namespace std;
 
 class ClientManager
 {
 public:
-	void PushClientInfo(SOCKET clientSocket);
-	void OutClient(SOCKET clientSocket);
+	void PushClientInfo(ClientInfo clientInfo);
+	void PopClientInfo(SOCKET sock);
 private:
 	vector<ClientInfo> _clientVec;
 };

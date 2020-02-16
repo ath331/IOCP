@@ -1,24 +1,20 @@
+#include "ClientManager.h"
 #include <iostream>
 
-#include "ClientManager.h"
-
-void ClientManager::PushClientInfo(SOCKET clientSocket)
+void ClientManager::PushClientInfo(ClientInfo clientInfo)
 {
-	ClientInfo clientInfo = { clientSocket };
 	_clientVec.push_back(clientInfo);
-
-	std::cout << "client connected..\n";
+	cout << clientInfo.clientName << "connect!" << endl;
 }
 
-void ClientManager::OutClient(SOCKET clientSocket)
+void ClientManager::PopClientInfo(SOCKET sock)
 {
 	for (auto iter = _clientVec.begin(); iter != _clientVec.end(); iter++)
 	{
-		if (clientSocket == iter->clientSocket)
+		if (iter->clientSock == sock)
 		{
-			closesocket(clientSocket);
-			_clientVec.erase(iter);
-			cout << "client out.." << endl;
+			cout << iter->clientName << " out.." << endl;
+			iter = _clientVec.erase(iter);
 		}
 	}
 }

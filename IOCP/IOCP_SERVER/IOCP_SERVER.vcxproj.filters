@@ -25,6 +25,9 @@
     <Filter Include="Packet">
       <UniqueIdentifier>{6ced5bf6-b308-45cf-872b-97b856a91e20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server\ClientManager">
+      <UniqueIdentifier>{ae57f057-daf7-4ae6-9494-3272ffc5d8f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -35,6 +38,9 @@
     </ClCompile>
     <ClCompile Include="ThreadManager\ThreadManager.cpp">
       <Filter>ThreadMamager</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\ClientManager\ClientManager.cpp">
+      <Filter>Server\ClientManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="Basic\Lock.h">
       <Filter>Basic</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\ClientManager\ClientManager.h">
+      <Filter>Server\ClientManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
