@@ -6,11 +6,7 @@
 
 const static int BUF_SIZE = 1024;
 
-enum class SendType : int
-{
-	Login,
-};
-
+enum class PacketIndex;
 class ClientLogic
 {
 public:
@@ -20,13 +16,12 @@ public:
 
 	void SetName(std::string name);
 	std::string GetName();
-	void SendPacket(SendType type);
+	void SendPacket(PacketIndex type, const char buffer[]);
 private:
 	WSADATA _wsaData;
 	SOCKET _socket;
 	SOCKADDR_IN _servAdr;
 
 	std::string _name;
-	char _message[BUF_SIZE];
 	int _strLen = 0, _readLen = 0;
 };

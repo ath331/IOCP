@@ -124,6 +124,13 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			}
 			break;
 
+			case PacketIndex::MAKE_ROOM:
+			{
+				PacketMakeRoom packetMakeRoom;
+				memcpy(&packetMakeRoom, packetInfo.packetBuffer, sizeof(PacketMakeRoom));
+			}
+			break;
+
 			default:
 				break;
 			}

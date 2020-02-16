@@ -147,6 +147,8 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server\ClientManager\ClientManager.cpp" />
+    <ClCompile Include="Server\RoomManager\Room.cpp" />
+    <ClCompile Include="Server\RoomManager\RoomManager.cpp" />
     <ClCompile Include="Server\Server.cpp" />
     <ClCompile Include="ThreadManager\ThreadManager.cpp" />
   </ItemGroup>
@@ -156,6 +158,8 @@
     <ClInclude Include="Basic\Lock.h" />
     <ClInclude Include="Basic\OverlappedCustom.h" />
     <ClInclude Include="Server\ClientManager\ClientManager.h" />
+    <ClInclude Include="Server\RoomManager\Room.h" />
+    <ClInclude Include="Server\RoomManager\RoomManager.h" />
     <ClInclude Include="Server\Server.h" />
     <ClInclude Include="ThreadManager\ThreadManager.h" />
   </ItemGroup>

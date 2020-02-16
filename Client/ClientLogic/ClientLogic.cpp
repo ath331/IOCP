@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string>
-
 #include "packet.h"
 #include "ClientLogic.h"
 
@@ -46,15 +45,24 @@ void ClientLogic::ExitClient()
 	WSACleanup();
 }
 
-void ClientLogic::SendPacket(SendType type)
+void ClientLogic::SendPacket(PacketIndex type, const char buffer[])
 {
 	switch (type)
 	{
-	case SendType::Login:
+	case PacketIndex::Login:
 	{
 		PacketLogin packetLogin;
-		strcpy((char*)packetLogin.name, _name.c_str());
+		memcpy(&packetLogin,buffer,sizeof(PacketLogin));
 		send(_socket, (const char*)&packetLogin, packetLogin.header.headerSize, 0);
+	}
+	break;
+
+	case PacketIndex::MAKE_ROOM:
+	{
+		PacketMakeRoom packetMakeRoom;
+		memcpy(&packetMakeRoom, buffer, sizeof(PacketMakeRoom));
+		send(_socket, (const char*)&packetMakeRoom, packetMakeRoom.header.headerSize, 0);
+		//TODO : 만든 방의정보(roomNum 정도?)를 서버로부터받기까지 기다리고 ChatRoomDialog띄우기
 	}
 	break;
 
