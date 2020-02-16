@@ -218,6 +218,11 @@ BOOL CALLBACK DlgProcMakeRoom(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 			PacketMakeRoom packetMakeRoom;
 			GetDlgItemText(hwnd, IDC_ROOM_NAME, packetMakeRoom.roomName, 10);
 			packetMakeRoom.maxClientCount = GetDlgItemInt(hwnd, IDC_ROOM_MAX_CLIENT_NUM, NULL, FALSE);
+			if (packetMakeRoom.maxClientCount < 2)
+				packetMakeRoom.maxClientCount = 2;
+			else if (packetMakeRoom.maxClientCount > 10)
+				packetMakeRoom.maxClientCount = 10;
+
 			clientLogic.SendPacket(PacketIndex::MAKE_ROOM,(const char*)&packetMakeRoom);
 		}
 		break;
