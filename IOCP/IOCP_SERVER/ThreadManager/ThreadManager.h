@@ -2,8 +2,11 @@
 #include <WinSock2.h>
 #include <windows.h>
 #include <queue>
+
 #include "packet.h"
 #include "Lock.h"
+
+#include "RoomManager/RoomManager.h"
 
 using namespace std;
 
@@ -28,5 +31,8 @@ private:
 	static void _pushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 
 	static ClientManager* _clientManager;
+
+	//static이라 스레드 동기화 이슈가 있겠지만 해당 객체는 singleLogicThread만 접근한다
+	static RoomManager _roomManager;
 };
 
