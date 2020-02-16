@@ -7,7 +7,7 @@ using namespace std;
 class ClientManager
 {
 public:
-	void InputClientInfo(SOCKET clientSocket);
+	void PushClientInfo(SOCKET clientSocket);
 	void OutClient(SOCKET clientSocket);
 private:
 	vector<ClientInfo> _clientVec;

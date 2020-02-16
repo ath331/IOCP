@@ -2,7 +2,7 @@
 
 #include "ClientManager.h"
 
-void ClientManager::InputClientInfo(SOCKET clientSocket)
+void ClientManager::PushClientInfo(SOCKET clientSocket)
 {
 	ClientInfo clientInfo = { clientSocket };
 	_clientVec.push_back(clientInfo);
@@ -18,7 +18,7 @@ void ClientManager::OutClient(SOCKET clientSocket)
 		{
 			closesocket(clientSocket);
 			_clientVec.erase(iter);
-			cout << "Client Out.." << endl;
+			cout << "client out.." << endl;
 		}
 	}
 }

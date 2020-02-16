@@ -47,19 +47,19 @@ void Server::RunServer()
 	_threadManager.MakeThread();
 	while (1)
 	{
-		ClientSocketInfo* clientInfo;
+		ClientSocketInfo* clientSocketInfo;
 		Overlapped* ioInfo;
 
-		clientInfo = new ClientSocketInfo();
-		int addrLen = sizeof(clientInfo->clientAdr);
-		clientInfo->clientSock = accept(_servSock, (SOCKADDR*)&(clientInfo->clientAdr), &addrLen);
-		_clientManager.InputClientInfo(clientInfo->clientSock);
+		clientSocketInfo = new ClientSocketInfo();
+		int addrLen = sizeof(clientSocketInfo->clientAdr);
+		clientSocketInfo->clientSock = accept(_servSock, (SOCKADDR*)&(clientSocketInfo->clientAdr), &addrLen);
+		_clientManager.PushClientInfo(clientSocketInfo->clientSock);
 
-		CreateIoCompletionPort((HANDLE)clientInfo->clientSock, _comPort, (ULONG_PTR)clientInfo, 0);
+		CreateIoCompletionPort((HANDLE)clientSocketInfo->clientSock, _comPort, (ULONG_PTR)clientSocketInfo, 0);
 
 		ioInfo = new Overlapped();
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
 		ioInfo->rwMode = Overlapped::IO_TYPE::READ;
-		WSARecv(clientInfo->clientSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
+		WSARecv(clientSocketInfo->clientSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
 	}
 }

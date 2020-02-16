@@ -16,7 +16,7 @@ struct PacketInfo
 
 struct PacketHeader
 {
-	PacketIndex index;
+	PacketIndex index = (PacketIndex)-1;
 	int headerSize = sizeof(PacketHeader);
 };
 
