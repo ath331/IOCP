@@ -33,7 +33,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	clientLogic.Init("182.230.110.26", 9999);
 
 	DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ChatLogin), NULL, (DLGPROC)DlgProcLogin);
-	if (isConnect)
+	//if (isConnect)
 		DialogBox(hInstance, MAKEINTRESOURCE(IDD_ChatMain), NULL, (DLGPROC)DlgProcMain);
 
 	clientLogic.ExitClient();
