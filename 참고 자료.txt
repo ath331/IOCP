@@ -1,0 +1,1 @@
+class 안에서 callback함수 사용과, callback 함수 안에서 class 멤버/함수 변수 접근하기 : https://drcarter.tistory.com/17 
