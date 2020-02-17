@@ -16,6 +16,7 @@ using namespace std;
 BOOL CALLBACK DlgProcLogin(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DlgProcMain(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DlgProcMakeRoom(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK DlgProcChatRoom(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 
 
 HBRUSH g_hbrBackground = NULL;
@@ -23,6 +24,7 @@ ClientLogic clientLogic;
 TCHAR name[20];
 BOOL isConnect = false;
 HINSTANCE g_hInst;
+string _roomName;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
@@ -77,7 +79,7 @@ BOOL CALLBACK DlgProcLogin(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam
 				tempName = name;
 				clientLogic.SetName(tempName);
 				PacketLogin* packetLogin = new PacketLogin();
-				memcpy((void*)packetLogin->name, name,sizeof(name));
+				memcpy((void*)packetLogin->name, name, sizeof(name));
 				clientLogic.SendPacket(PacketIndex::Login, (const char*)packetLogin);
 				//delete packetLogin;
 				EndDialog(hwnd, 0);
@@ -166,7 +168,6 @@ BOOL CALLBACK DlgProcMain(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 	}
 	return TRUE;
 }
-
 BOOL CALLBACK DlgProcMakeRoom(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message)
@@ -223,7 +224,71 @@ BOOL CALLBACK DlgProcMakeRoom(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 			else if (packetMakeRoom.maxClientCount > 10)
 				packetMakeRoom.maxClientCount = 10;
 
-			clientLogic.SendPacket(PacketIndex::MAKE_ROOM,(const char*)&packetMakeRoom);
+			PacketIndex packetIndex = PacketIndex::MAKE_ROOM;
+			int temp = clientLogic.SendPacket(packetIndex, (const char*)&packetMakeRoom);
+			if (temp != -1 && packetIndex == PacketIndex::MAKE_ROOM)
+			{
+				//temp = roomNum
+				_roomName = to_string(temp);
+				_roomName += "¹ø¹æ ";
+				_roomName += packetMakeRoom.roomName;
+				EndDialog(hwnd, 0);
+				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ChatROom), NULL, (DLGPROC)DlgProcChatRoom);
+			}
+		}
+		break;
+
+		case IDCANCEL:
+			EndDialog(hwnd, 0);
+			break;
+		}
+		break;
+
+	case WM_DESTROY:
+		DeleteObject(g_hbrBackground);
+		break;
+	default:
+		return FALSE;
+	}
+	return TRUE;
+}
+
+BOOL CALLBACK DlgProcChatRoom(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+	switch (Message)
+	{
+	case WM_INITDIALOG:
+		g_hbrBackground = CreateSolidBrush(RGB(128, 128, 128));
+
+		SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(NULL,
+			MAKEINTRESOURCE(IDI_APPLICATION)));
+		SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(NULL,
+			MAKEINTRESOURCE(IDI_APPLICATION)));
+		SetWindowText(hwnd, _roomName.c_str());
+		break;
+	case WM_CLOSE:
+		EndDialog(hwnd, 0);
+		break;
+	case WM_CTLCOLORDLG:
+		return (LONG)g_hbrBackground;
+	case WM_CTLCOLORSTATIC:
+	{
+		HDC hdcStatic = (HDC)wParam;
+		SetTextColor(hdcStatic, RGB(255, 255, 255));
+		SetBkMode(hdcStatic, TRANSPARENT);
+		return (LONG)g_hbrBackground;
+	}
+	break;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_ROOM_PRIVATE:
+		{
+		}
+		break;
+
+		case IDOK:
+		{
 		}
 		break;
 

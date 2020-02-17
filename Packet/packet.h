@@ -1,5 +1,6 @@
 #pragma once
 //server <-> client 통신관련 packet 저장
+//RES_ is Server Packet
 #include <WinSock2.h>
 
 const static int MAX_NAME_LENGTH = 10;
@@ -9,6 +10,7 @@ enum class PacketIndex : int
 {
 	Login,
 	MAKE_ROOM,
+	RES_MAKE_ROOM,
 };
 
 struct PacketInfo
@@ -49,5 +51,17 @@ struct PacketMakeRoom
 	{
 		header.index = PacketIndex::MAKE_ROOM;
 		header.headerSize = sizeof(PacketMakeRoom);
+	}
+};
+
+struct RES_PacketMakeRoom
+{
+	PacketHeader header;
+	int roomNum = 100;
+
+	RES_PacketMakeRoom()
+	{
+		header.index = PacketIndex::RES_MAKE_ROOM;
+		header.headerSize = sizeof(RES_PacketMakeRoom);
 	}
 };

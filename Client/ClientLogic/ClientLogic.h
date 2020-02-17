@@ -16,7 +16,7 @@ public:
 
 	void SetName(std::string name);
 	std::string GetName();
-	void SendPacket(PacketIndex type, const char buffer[]);
+	int SendPacket(PacketIndex type, const char buffer[]);
 private:
 	WSADATA _wsaData;
 	SOCKET _socket;

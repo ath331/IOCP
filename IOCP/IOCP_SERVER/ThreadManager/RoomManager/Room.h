@@ -12,7 +12,6 @@ public:
 	Room(const char* name, ClientInfo clientInfo, int maxClientCount = 2, bool privateRoom = false)
 		: _roomName(name), _maxClientCount(maxClientCount), _isPublicRoom(privateRoom)
 	{
-		cout << clientInfoVec.size() << "번방 " << name << "생성" << endl;
 		clientInfoVec.push_back(clientInfo);
 	}
 

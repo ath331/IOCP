@@ -4,6 +4,8 @@ void RoomManager::MakeRoom(const char* roomName, ClientInfo clientInfo, int maxC
 {
 	Room room(roomName,clientInfo, maxClientCount, privateRoom);
 	_roomVec.push_back(room);
+	cout << GetRoomVecSize() << "번방 " << roomName << "생성" << endl;
+
 }
 
 void RoomManager::EnterRoom(int roomNum, ClientInfo clientInfo)
@@ -13,3 +15,9 @@ void RoomManager::EnterRoom(int roomNum, ClientInfo clientInfo)
 
 	_roomVec[roomNum].clientInfoVec.push_back(clientInfo);
 }
+
+int RoomManager::GetRoomVecSize()
+{
+	return _roomVec.size();
+}
+
