@@ -140,9 +140,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DialogManager\DialogManager.cpp" />
     <ClCompile Include="InterfaceMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DialogManager\DialogManager.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
