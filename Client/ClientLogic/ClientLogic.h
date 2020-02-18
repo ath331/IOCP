@@ -17,6 +17,9 @@ public:
 	std::string GetName();
 	template <typename PacketKind>
 	PacketKind SendPacket(PacketIndex type, const char* buffer);
+	template <>
+	int SendPacket(PacketIndex type, const char* buffer);
+
 private:
 	WSADATA _wsaData;
 	SOCKET _socket;
