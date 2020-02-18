@@ -11,6 +11,8 @@ enum class PacketIndex : int
 	Login,
 	MAKE_ROOM,
 	RES_MAKE_ROOM,
+	ROOM_LIST,
+	RES_ROOM_LIST,
 };
 
 struct PacketInfo
@@ -63,5 +65,31 @@ struct RES_PacketMakeRoom
 	{
 		header.index = PacketIndex::RES_MAKE_ROOM;
 		header.headerSize = sizeof(RES_PacketMakeRoom);
+	}
+};
+
+struct PacketRoomList
+{
+	PacketHeader header;
+
+	PacketRoomList()
+	{
+		header.index = PacketIndex::ROOM_LIST;
+		header.headerSize = sizeof(PacketRoomList);
+	}
+};
+
+struct RES_PacketRoomList
+{
+	PacketHeader header;
+	//TODO : ListBox에 출력하기 위해 필요한 룸의 정보들을 배열로 전송
+	const char* roomName = "DEFAULT";
+	const int maxClientInRoom = 10;
+	const int curClientNum = 1;
+
+	RES_PacketRoomList()
+	{
+		header.index = PacketIndex::RES_ROOM_LIST;
+		header.headerSize = sizeof(RES_PacketRoomList);
 	}
 };
