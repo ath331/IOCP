@@ -21,3 +21,8 @@ int RoomManager::GetRoomVecSize()
 	return _roomVec.size();
 }
 
+Room RoomManager::GetRoomInfo()
+{
+	//TODO : 지금은 처음 방만 리턴한다
+	return _roomVec[0];
+}

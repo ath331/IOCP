@@ -17,6 +17,8 @@ public:
 
 	vector<ClientInfo> clientInfoVec;
 	bool GetAccessInfoThisRoom();
+	const char* GetRoomName();
+	int GetMaxClientCount();
 
 private:
 	const char* _roomName;

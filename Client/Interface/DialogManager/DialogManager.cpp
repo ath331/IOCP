@@ -132,6 +132,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		{
 			RES_PacketRoomList resPacketRoomList =
 			_instance->_clientLogic->SendPacket<RES_PacketRoomList>(PacketIndex::ROOM_LIST,NULL);
+			std::cout << resPacketRoomList.roomName << "¹æ ÀÎ¿ø : " << resPacketRoomList.curClientNum << " / " << resPacketRoomList.maxClientInRoom << std::endl;
 		}
 		break;
 

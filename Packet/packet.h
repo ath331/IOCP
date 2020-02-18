@@ -83,9 +83,9 @@ struct RES_PacketRoomList
 {
 	PacketHeader header;
 	//TODO : ListBox에 출력하기 위해 필요한 룸의 정보들을 배열로 전송
-	const char* roomName = "DEFAULT";
-	const int maxClientInRoom = 10;
-	const int curClientNum = 1;
+	const char roomName[MAX_ROOM_NAME_LENGTH] = "DEFAULT";
+	int maxClientInRoom = 10;
+	int curClientNum = 1;
 
 	RES_PacketRoomList()
 	{

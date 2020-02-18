@@ -11,7 +11,7 @@ PacketKind ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		PacketRoomList packetRoomList;
 		send(_socket, (const char*)&packetRoomList, packetRoomList.header.headerSize, 0);
 		RES_PacketRoomList resPacketRoomList;
-		recv(_socket, (char*)&resPacketRoomList, sizeof(RES_PacketRoomList), 0);
+		recv(_socket, (char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
 		return resPacketRoomList;
 	}
 

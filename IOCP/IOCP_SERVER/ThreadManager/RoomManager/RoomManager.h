@@ -11,6 +11,7 @@ public:
 	void MakeRoom(const char* roomName, ClientInfo clientInfo, int maxClientCount = 2, bool privateRoom = false);
 	void EnterRoom(int roomNum, ClientInfo clientInfo);
 	int GetRoomVecSize();
+	Room GetRoomInfo();
 private:
 	vector<Room> _roomVec;
 };
