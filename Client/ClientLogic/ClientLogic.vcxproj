@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Packet\packet.h" />
     <ClInclude Include="ClientLogic.h" />
+    <ClInclude Include="ClientLogic.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,5 @@
 #pragma once
 #pragma comment(lib, "ws2_32.lib")
-
 #include <WinSock2.h>
 #include <string>
 
@@ -10,13 +9,14 @@ enum class PacketIndex;
 class ClientLogic
 {
 public:
-	void Init(std::string IP,short portNum);
+	void Init(std::string IP, short portNum);
 	int Connect();
 	void ExitClient();
 
 	void SetName(std::string name);
 	std::string GetName();
-	int SendPacket(PacketIndex type, const char buffer[]);
+	template <typename PacketKind>
+	PacketKind SendPacket(PacketIndex type, const char* buffer);
 private:
 	WSADATA _wsaData;
 	SOCKET _socket;
@@ -25,3 +25,4 @@ private:
 	std::string _name;
 	int _strLen = 0, _readLen = 0;
 };
+#include "ClientLogic.hpp"

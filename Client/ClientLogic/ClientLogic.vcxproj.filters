@@ -29,5 +29,8 @@
     <ClInclude Include="..\..\Packet\packet.h">
       <Filter>Pakcet</Filter>
     </ClInclude>
+    <ClInclude Include="ClientLogic.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,7 +19,8 @@ enum class DialogType : int
 class DialogManager
 {
 public:
-	DialogManager(HINSTANCE hInst, ClientLogic* clientLogic): _hInst(hInst), _clientLogic(clientLogic)
+	DialogManager(HINSTANCE hInst, ClientLogic* clientLogic)
+		: _hInst(hInst), _clientLogic(clientLogic)
 	{
 		_instance = this;
 	}

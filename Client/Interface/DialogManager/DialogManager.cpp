@@ -62,10 +62,9 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 				std::string tempName;
 				tempName = name;
 				_instance->_clientLogic->SetName(tempName);
-				PacketLogin* packetLogin = new PacketLogin();
-				memcpy((void*)packetLogin->name, name, sizeof(name));
-				_instance->_clientLogic->SendPacket(PacketIndex::Login, (const char*)packetLogin);
-				//delete packetLogin;
+				PacketLogin packetLogin;
+				memcpy((void*)packetLogin.name, name, sizeof(name));
+				_instance->_clientLogic->SendPacket<int>(PacketIndex::Login, (const char*)&packetLogin);
 				EndDialog(hwnd, 0);
 				_instance->MakeDialog(DialogType::Main);
 			}
@@ -127,6 +126,12 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		case IDC_MAKE_ROOM:
 		{
 			_instance->MakeDialog(DialogType::MakeRoom);
+		}
+		break;
+		case IDC_RESET_ROOM:
+		{
+			RES_PacketRoomList resPacketRoomList =
+			_instance->_clientLogic->SendPacket<RES_PacketRoomList>(PacketIndex::ROOM_LIST,NULL);
 		}
 		break;
 
@@ -212,7 +217,7 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 				packetMakeRoom.maxClientCount = 10;
 
 			PacketIndex packetIndex = PacketIndex::MAKE_ROOM;
-			int temp = _instance->_clientLogic->SendPacket(packetIndex, (const char*)&packetMakeRoom);
+			int temp = _instance->_clientLogic->SendPacket<int>(packetIndex, (const char*)&packetMakeRoom);
 			if (temp != -1 && packetIndex == PacketIndex::MAKE_ROOM)
 			{
 				//temp = roomNum
