@@ -13,3 +13,8 @@ int Room::GetMaxClientCount()
 {
 	return _maxClientCount;
 }
+
+int Room::GetRoomNum()
+{
+	return _roomNum;
+}

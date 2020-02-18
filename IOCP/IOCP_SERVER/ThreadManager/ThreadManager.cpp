@@ -60,7 +60,6 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 
 		if (ioInfo->rwMode == Overlapped::IO_TYPE::READ)
 		{
-			std::cout << "message received!\n";
 			if (bytesTrans == 0)
 			{
 				_clientManager->PopClientInfo(clientInfo->clientSock);
@@ -141,6 +140,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			case PacketIndex::ROOM_LIST:
 			{
 				RES_PacketRoomList resPacketRoomList;
+				resPacketRoomList.roomNum = _roomManager.GetRoomInfo().GetRoomNum();
 				memcpy((void*)&resPacketRoomList.roomName, _roomManager.GetRoomInfo().GetRoomName(),20);
 				resPacketRoomList.maxClientInRoom = _roomManager.GetRoomInfo().GetMaxClientCount();
 				resPacketRoomList.curClientNum = _roomManager.GetRoomInfo().clientInfoVec.size();
