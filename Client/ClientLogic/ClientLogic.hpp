@@ -40,7 +40,7 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		send(_socket, (const char*)&packetMakeRoom, packetMakeRoom.header.headerSize, 0);
 		RES_PacketMakeRoom resPacketMakeRoom;
 		recv(_socket, (char*)&resPacketMakeRoom, sizeof(RES_PacketMakeRoom), 0);
-		std::cout << resPacketMakeRoom.roomNum << " make " << std::endl;
+		std::cout << resPacketMakeRoom.roomNum - 1 << " make " << std::endl;
 		return resPacketMakeRoom.roomNum;
 	}
 
@@ -49,6 +49,13 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		PacketEnterRoom packetEnterRoom;
 		memcpy(&packetEnterRoom,buffer,sizeof(PacketEnterRoom));
 		send(_socket, (const char*)&packetEnterRoom, packetEnterRoom.header.headerSize, 0);
+		return 0;
+	}
+
+	case PacketIndex::CLOSE_ROOM:
+	{
+		PacketCloseRoom packetCloseRoom;
+		send(_socket, (const char*)&packetCloseRoom, packetCloseRoom.header.headerSize, 0);
 		return 0;
 	}
 

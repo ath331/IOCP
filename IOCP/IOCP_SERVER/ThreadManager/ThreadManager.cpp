@@ -132,7 +132,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				_roomManager.MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
 
 				RES_PacketMakeRoom resPacketMakeRoom;
-				resPacketMakeRoom.roomNum = _roomManager.GetRoomVecSize();
+				resPacketMakeRoom.roomNum = _roomManager.GetRoomCount();
 				send(packetInfo.sock, (const char*)&resPacketMakeRoom, resPacketMakeRoom.header.headerSize, 0);
 			}
 			break;
@@ -158,6 +158,12 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				memcpy(&packetEnterRoom, packetInfo.packetBuffer, sizeof(PacketEnterRoom));
 				ClientInfo clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
 				_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
+			}
+			break;
+
+			case PacketIndex::CLOSE_ROOM:
+			{
+				_roomManager.OutClientInRoom(packetInfo.sock);
 			}
 			break;
 

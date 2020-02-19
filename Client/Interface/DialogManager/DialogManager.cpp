@@ -17,7 +17,7 @@ void DialogManager::MakeDialog(DialogType dialogType, string roomName)
 		DialogBox(_hInst, MAKEINTRESOURCE(IDD_MAKE_ROOM), NULL, (DLGPROC)DlgProcMakeRoom);
 		break;
 	case DialogType::ChatRoom:
-		_instance->_roomName.copy((char*)roomName.c_str(),strlen(roomName.c_str()));
+		_instance->_roomName.copy((char*)roomName.c_str(), strlen(roomName.c_str()));
 		DialogBox(_hInst, MAKEINTRESOURCE(IDD_ChatROom), NULL, (DLGPROC)DlgProcChatRoom);
 		break;
 	default:
@@ -131,16 +131,16 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		break;
 		case IDC_RESET_ROOM:
 		{
+			HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
+			int listCount = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
+			for (int i = 0; i < listCount; i++)
+			{
+				SendMessageA(listBox, LB_DELETESTRING, i, 0);
+			}
 			RES_PacketRoomList resPacketRoomList =
 				_instance->_clientLogic->SendPacket<RES_PacketRoomList>(PacketIndex::ROOM_LIST, NULL);
 			if (resPacketRoomList.maxRoomCount != 0)
 			{
-				HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
-				int listCount = SendMessageA(listBox,LB_GETCOUNT,0,0);
-				for (int i=0 ; i < listCount ; i++) 
-				{
-					SendMessageA(listBox, LB_DELETESTRING, i, 0);
-				}
 				string tempStr = std::to_string(resPacketRoomList.roomNum) + " 번방	" + resPacketRoomList.roomName + "	" + std::to_string(resPacketRoomList.curClientNum) + "/" + std::to_string(resPacketRoomList.maxClientInRoom);
 				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)tempStr.c_str());
 			}
@@ -150,15 +150,15 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		case ID_ENTER:
 		{
 			HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
-			int roomIndex = SendMessage(listBox,LB_GETCURSEL,0,0);
+			int roomIndex = SendMessage(listBox, LB_GETCURSEL, 0, 0);
 			if (roomIndex != -1)
 			{
 				string  roomInfoStr = " "; //초기화안하면 저장이 안되는거 같다
-				SendMessage(listBox,LB_GETTEXT, roomIndex, (LPARAM)roomInfoStr.c_str());
-				string roomNumStr = roomInfoStr.substr(0,2);
+				SendMessage(listBox, LB_GETTEXT, roomIndex, (LPARAM)roomInfoStr.c_str());
+				string roomNumStr = roomInfoStr.substr(0, 2);
 				PacketEnterRoom packetEnterRoom;
 				packetEnterRoom.roomNum = stoi(roomNumStr);
-				_instance->_clientLogic->SendPacket<int>(PacketIndex::ENTER_ROOM,(const char*)&packetEnterRoom);
+				_instance->_clientLogic->SendPacket<int>(PacketIndex::ENTER_ROOM, (const char*)&packetEnterRoom);
 				_instance->MakeDialog(DialogType::ChatRoom, roomInfoStr);
 			}
 		}
@@ -243,7 +243,7 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 			if (temp != -1 && packetIndex == PacketIndex::MAKE_ROOM)
 			{
 				//temp = roomNum
-				_instance->_roomName = to_string(temp);
+				_instance->_roomName = to_string(temp-1);
 				_instance->_roomName += "번방 ";
 				_instance->_roomName += packetMakeRoom.roomName;
 				EndDialog(hwnd, 0);
@@ -282,6 +282,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		SetWindowText(hwnd, (LPCSTR)_instance->_roomName.c_str());
 		break;
 	case WM_CLOSE:
+		_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, NULL);
 		EndDialog(hwnd, 0);
 		break;
 	case WM_CTLCOLORDLG:
@@ -297,23 +298,21 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
-		case IDC_ROOM_PRIVATE:
-		{
-		}
-		break;
-
 		case IDOK:
 		{
+			//TODO : 메시지 전송패킷 만들기
 		}
 		break;
 
 		case IDCANCEL:
+			_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, NULL);
 			EndDialog(hwnd, 0);
 			break;
 		}
 		break;
 
 	case WM_DESTROY:
+		_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, NULL);
 		DeleteObject(g_hbrBackground);
 		break;
 	default:

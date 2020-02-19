@@ -26,3 +26,21 @@ Room RoomManager::GetRoomInfo()
 	//TODO : 지금은 처음 방만 리턴한다
 	return _roomVec[0];
 }
+
+void RoomManager::OutClientInRoom(SOCKET clientSock)
+{
+	for (auto iter = _roomVec.begin() ; iter != _roomVec.end() ; iter++)
+	{
+		int temp = iter->OutClientInRoom(clientSock); //temp = 방의 남은 인원
+		if (temp <= 0)
+		{
+			iter = _roomVec.erase(iter);
+			break;
+		}
+	}
+}
+
+int RoomManager::GetRoomCount()
+{
+	return _roomCount;
+}

@@ -20,6 +20,17 @@ public:
 	const char* GetRoomName();
 	int GetMaxClientCount();
 	int GetRoomNum();
+	int OutClientInRoom(SOCKET clientSock);
+
+	Room& operator=(Room roomInfo)
+	{
+		_roomNum = roomInfo._roomNum;
+		_maxClientCount = roomInfo._maxClientCount;
+		memcpy((void*)_roomName, roomInfo._roomName, sizeof(roomInfo._roomName));
+		_isPublicRoom = roomInfo._isPublicRoom;
+		memcpy((void*)_passWord, (const void*)roomInfo._passWord, sizeof(roomInfo._passWord));
+		return *this;
+	}
 private:
 	int _roomNum = 0;
 	const char* _roomName;
