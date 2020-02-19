@@ -140,10 +140,14 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			case PacketIndex::ROOM_LIST:
 			{
 				RES_PacketRoomList resPacketRoomList;
-				resPacketRoomList.roomNum = _roomManager.GetRoomInfo().GetRoomNum();
-				memcpy((void*)&resPacketRoomList.roomName, _roomManager.GetRoomInfo().GetRoomName(),20);
-				resPacketRoomList.maxClientInRoom = _roomManager.GetRoomInfo().GetMaxClientCount();
-				resPacketRoomList.curClientNum = _roomManager.GetRoomInfo().clientInfoVec.size();
+				resPacketRoomList.maxRoomCount = _roomManager.GetRoomVecSize();
+				if (resPacketRoomList.maxRoomCount != 0) //만든 방이 하나라도 있을때
+				{
+					resPacketRoomList.roomNum = _roomManager.GetRoomInfo().GetRoomNum();
+					memcpy((void*)&resPacketRoomList.roomName, _roomManager.GetRoomInfo().GetRoomName(), 20);
+					resPacketRoomList.maxClientInRoom = _roomManager.GetRoomInfo().GetMaxClientCount();
+					resPacketRoomList.curClientNum = _roomManager.GetRoomInfo().clientInfoVec.size();
+				}
 				send(packetInfo.sock, (const char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
 			}
 			break;
