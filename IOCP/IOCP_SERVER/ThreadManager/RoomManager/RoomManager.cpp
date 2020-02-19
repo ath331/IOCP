@@ -2,10 +2,10 @@
 
 void RoomManager::MakeRoom(const char* roomName, ClientInfo clientInfo, int maxClientCount, bool privateRoom)
 {
-	Room room(roomName,clientInfo, maxClientCount, privateRoom);
+	Room room(_roomCount,roomName,clientInfo, maxClientCount, privateRoom);
 	_roomVec.push_back(room);
-	cout << GetRoomVecSize() << "腰号 " << roomName << "持失" << endl;
-
+	cout << _roomCount << "腰号 " << roomName << "持失" << endl;
+	_roomCount++;
 }
 
 void RoomManager::EnterRoom(int roomNum, ClientInfo clientInfo)

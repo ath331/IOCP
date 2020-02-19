@@ -135,8 +135,13 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				_instance->_clientLogic->SendPacket<RES_PacketRoomList>(PacketIndex::ROOM_LIST, NULL);
 			if (resPacketRoomList.maxRoomCount != 0)
 			{
-				string tempStr = std::to_string(resPacketRoomList.roomNum) + " 번방	" + resPacketRoomList.roomName + "	" + std::to_string(resPacketRoomList.curClientNum) + "/" + std::to_string(resPacketRoomList.maxClientInRoom);
 				HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
+				int listCount = SendMessageA(listBox,LB_GETCOUNT,0,0);
+				for (int i=0 ; i < listCount ; i++) 
+				{
+					SendMessageA(listBox, LB_DELETESTRING, i, 0);
+				}
+				string tempStr = std::to_string(resPacketRoomList.roomNum) + " 번방	" + resPacketRoomList.roomName + "	" + std::to_string(resPacketRoomList.curClientNum) + "/" + std::to_string(resPacketRoomList.maxClientInRoom);
 				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)tempStr.c_str());
 			}
 		}
@@ -151,7 +156,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				string  roomInfoStr = " "; //초기화안하면 저장이 안되는거 같다
 				SendMessage(listBox,LB_GETTEXT, roomIndex, (LPARAM)roomInfoStr.c_str());
 				string roomNumStr = roomInfoStr.substr(0,2);
-	PacketEnterRoom packetEnterRoom;
+				PacketEnterRoom packetEnterRoom;
 				packetEnterRoom.roomNum = stoi(roomNumStr);
 				_instance->_clientLogic->SendPacket<int>(PacketIndex::ENTER_ROOM,(const char*)&packetEnterRoom);
 				_instance->MakeDialog(DialogType::ChatRoom, roomInfoStr);

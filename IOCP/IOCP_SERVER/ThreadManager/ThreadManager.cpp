@@ -152,6 +152,15 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			}
 			break;
 
+			case PacketIndex::ENTER_ROOM:
+			{
+				PacketEnterRoom packetEnterRoom;
+				memcpy(&packetEnterRoom, packetInfo.packetBuffer, sizeof(PacketEnterRoom));
+				ClientInfo clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
+				_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
+			}
+			break;
+
 			default:
 				break;
 			}

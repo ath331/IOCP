@@ -13,5 +13,6 @@ public:
 	int GetRoomVecSize();
 	Room GetRoomInfo();
 private:
+	int _roomCount = 0;
 	vector<Room> _roomVec;
 };

@@ -9,8 +9,8 @@ using namespace std;
 class Room
 {
 public:
-	Room(const char* name, ClientInfo clientInfo, int maxClientCount = 2, bool privateRoom = false)
-		: _roomName(name), _maxClientCount(maxClientCount), _isPublicRoom(privateRoom)
+	Room(int roomNum,const char* name, ClientInfo clientInfo, int maxClientCount = 2, bool privateRoom = false)
+		: _roomNum(roomNum), _roomName(name), _maxClientCount(maxClientCount), _isPublicRoom(privateRoom)
 	{
 		clientInfoVec.push_back(clientInfo);
 	}
@@ -20,7 +20,6 @@ public:
 	const char* GetRoomName();
 	int GetMaxClientCount();
 	int GetRoomNum();
-
 private:
 	int _roomNum = 0;
 	const char* _roomName;
