@@ -13,6 +13,7 @@ enum class PacketIndex : int
 	RES_MAKE_ROOM,
 	ROOM_LIST,
 	RES_ROOM_LIST,
+	ENTER_ROOM,
 };
 
 struct PacketInfo
@@ -93,5 +94,17 @@ struct RES_PacketRoomList
 	{
 		header.index = PacketIndex::RES_ROOM_LIST;
 		header.headerSize = sizeof(RES_PacketRoomList);
+	}
+};
+
+struct PacketEnterRoom
+{
+	PacketHeader header;
+	int roomNum = -1;
+
+	PacketEnterRoom()
+	{
+		header.index = PacketIndex::ENTER_ROOM;
+		header.headerSize = sizeof(PacketEnterRoom);
 	}
 };
