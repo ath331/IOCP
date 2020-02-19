@@ -13,7 +13,13 @@ void RoomManager::EnterRoom(int roomNum, ClientInfo clientInfo)
 	if (_roomVec.empty())
 		return;
 
-	_roomVec[roomNum].clientInfoVec.push_back(clientInfo);
+	for (auto iter = _roomVec.begin(); iter != _roomVec.end(); iter++)
+	{
+		if (iter->GetRoomNum() == roomNum)
+		{
+			iter->clientInfoVec.push_back(clientInfo);
+		}
+	}
 }
 
 int RoomManager::GetRoomVecSize()

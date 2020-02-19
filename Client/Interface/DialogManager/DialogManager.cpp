@@ -17,7 +17,7 @@ void DialogManager::MakeDialog(DialogType dialogType, string roomName)
 		DialogBox(_hInst, MAKEINTRESOURCE(IDD_MAKE_ROOM), NULL, (DLGPROC)DlgProcMakeRoom);
 		break;
 	case DialogType::ChatRoom:
-		_instance->_roomName.copy((char*)roomName.c_str(), strlen(roomName.c_str()));
+		_instance->_roomName = roomName;
 		DialogBox(_hInst, MAKEINTRESOURCE(IDD_ChatROom), NULL, (DLGPROC)DlgProcChatRoom);
 		break;
 	default:
