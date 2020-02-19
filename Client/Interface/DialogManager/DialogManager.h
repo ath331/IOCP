@@ -25,7 +25,7 @@ public:
 		_instance = this;
 	}
 
-	void MakeDialog(DialogType dialogType);
+	void MakeDialog(DialogType dialogType,string roomName = "DEFAULT");
 
 private:
 	static DialogManager* _instance;

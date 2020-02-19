@@ -44,6 +44,14 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		return resPacketMakeRoom.roomNum;
 	}
 
+	case PacketIndex::ENTER_ROOM:
+	{
+		PacketEnterRoom packetEnterRoom;
+		memcpy(&packetEnterRoom,buffer,sizeof(PacketEnterRoom));
+		send(_socket, (const char*)&packetEnterRoom, packetEnterRoom.header.headerSize, 0);
+		return 0;
+	}
+
 	default:
 		break;
 	}
