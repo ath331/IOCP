@@ -19,7 +19,6 @@ public:
 	PacketKind SendPacket(PacketIndex type, const char* buffer);
 	template <>
 	int SendPacket(PacketIndex type, const char* buffer);
-
 private:
 	WSADATA _wsaData;
 	SOCKET _socket;
@@ -27,5 +26,7 @@ private:
 
 	std::string _name;
 	int _strLen = 0, _readLen = 0;
+
+
 };
 #include "ClientLogic.hpp"

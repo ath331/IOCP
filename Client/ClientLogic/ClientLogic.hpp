@@ -47,7 +47,7 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 	case PacketIndex::ENTER_ROOM:
 	{
 		PacketEnterRoom packetEnterRoom;
-		memcpy(&packetEnterRoom,buffer,sizeof(PacketEnterRoom));
+		memcpy(&packetEnterRoom, buffer, sizeof(PacketEnterRoom));
 		send(_socket, (const char*)&packetEnterRoom, packetEnterRoom.header.headerSize, 0);
 		return 0;
 	}
@@ -58,7 +58,12 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		send(_socket, (const char*)&packetCloseRoom, packetCloseRoom.header.headerSize, 0);
 		return 0;
 	}
-
+	case PacketIndex::SEND_MESSAGE:
+	{
+		PacketSendMessage packetSendMessage;
+		memcpy(&packetSendMessage, buffer, sizeof(PacketSendMessage));
+		send(_socket, (const char*)&packetSendMessage, packetSendMessage.header.headerSize, 0);
+	}
 	default:
 		break;
 	}

@@ -30,6 +30,8 @@ private:
 	static queue<PacketInfo> _packetQueue;
 	static void _pushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 
+	static void SendMessageToClient(int roomNum,const char* msg);
+
 	static ClientManager* _clientManager;
 
 	//static이라 스레드 동기화 이슈가 있겠지만 해당 객체는 singleLogicThread만 접근한다

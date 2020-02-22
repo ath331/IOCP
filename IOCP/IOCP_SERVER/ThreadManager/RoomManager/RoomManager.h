@@ -12,7 +12,7 @@ public:
 	void EnterRoom(int roomNum, ClientInfo clientInfo);
 	void OutClientInRoom(SOCKET clientSock);
 	int GetRoomVecSize();
-	Room GetRoomInfo();
+	Room GetRoomInfo(int roomNum);
 	int GetRoomCount();
 private:
 	int _roomCount = 0;

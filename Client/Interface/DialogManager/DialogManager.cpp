@@ -243,7 +243,7 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 			if (temp != -1 && packetIndex == PacketIndex::MAKE_ROOM)
 			{
 				//temp = roomNum
-				_instance->_roomName = to_string(temp-1);
+				_instance->_roomName = to_string(temp - 1);
 				_instance->_roomName += "번방 ";
 				_instance->_roomName += packetMakeRoom.roomName;
 				EndDialog(hwnd, 0);
@@ -300,7 +300,17 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		{
 		case IDOK:
 		{
-			//TODO : 메시지 전송패킷 만들기
+			//TODO : 메시지 송수신을 위헤 IOThread나누기
+			PacketSendMessage packetSendMessage;
+			string tempStr = " ";
+			GetDlgItemText(hwnd, IDC_INPUT_KEY, (LPSTR)tempStr.c_str(), 10);
+			memcpy((void*)&packetSendMessage.buffer, tempStr.c_str(), strlen(tempStr.c_str()));
+			SetDlgItemText(hwnd, IDC_INPUT_KEY, " ");
+
+			string tempRoomNum = " ";
+			GetWindowText(hwnd, (LPSTR)tempRoomNum.c_str(), 2);
+			packetSendMessage.roomNum = atoi(tempRoomNum.c_str());
+			_instance->_clientLogic->SendPacket<int>(PacketIndex::SEND_MESSAGE, (const char*)&packetSendMessage);
 		}
 		break;
 

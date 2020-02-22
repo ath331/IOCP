@@ -9,12 +9,17 @@ const static int MAX_ROOM_NAME_LENGTH = 20;
 enum class PacketIndex : int
 {
 	Login,
+
 	MAKE_ROOM,
 	RES_MAKE_ROOM,
+
 	ROOM_LIST,
 	RES_ROOM_LIST,
+
 	ENTER_ROOM,
 	CLOSE_ROOM,
+
+	SEND_MESSAGE, //Client의 채팅을 담은 패킷
 };
 
 struct PacketInfo
@@ -118,5 +123,18 @@ struct PacketCloseRoom
 	{
 		header.index = PacketIndex::CLOSE_ROOM;
 		header.headerSize = sizeof(PacketCloseRoom);
+	}
+};
+
+struct PacketSendMessage
+{
+	PacketHeader header;
+	const char buffer[500] = " ";
+	int roomNum = -1;
+
+	PacketSendMessage()
+	{
+		header.index = PacketIndex::SEND_MESSAGE;
+		header.headerSize = sizeof(PacketSendMessage);
 	}
 };

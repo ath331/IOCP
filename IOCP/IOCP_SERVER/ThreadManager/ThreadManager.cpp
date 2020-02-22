@@ -143,10 +143,10 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				resPacketRoomList.maxRoomCount = _roomManager.GetRoomVecSize();
 				if (resPacketRoomList.maxRoomCount != 0) //만든 방이 하나라도 있을때
 				{
-					resPacketRoomList.roomNum = _roomManager.GetRoomInfo().GetRoomNum();
-					memcpy((void*)&resPacketRoomList.roomName, _roomManager.GetRoomInfo().GetRoomName(), 20);
-					resPacketRoomList.maxClientInRoom = _roomManager.GetRoomInfo().GetMaxClientCount();
-					resPacketRoomList.curClientNum = _roomManager.GetRoomInfo().clientInfoVec.size();
+					resPacketRoomList.roomNum = _roomManager.GetRoomInfo(0).GetRoomNum();
+					memcpy((void*)&resPacketRoomList.roomName, _roomManager.GetRoomInfo(0).GetRoomName(), 20);
+					resPacketRoomList.maxClientInRoom = _roomManager.GetRoomInfo(0).GetMaxClientCount();
+					resPacketRoomList.curClientNum = _roomManager.GetRoomInfo(0).clientInfoVec.size();
 				}
 				send(packetInfo.sock, (const char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
 			}
@@ -167,10 +167,28 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			}
 			break;
 
+			case PacketIndex::SEND_MESSAGE:
+			{
+				PacketSendMessage packetSendMessage;
+				memcpy(&packetSendMessage, packetInfo.packetBuffer, sizeof(PacketSendMessage));
+				SendMessageToClient(packetSendMessage.roomNum, packetSendMessage.buffer);
+			}
+			break;
+
 			default:
 				break;
 			}
 		}
 	}
 	return 0;
+}
+
+void ThreadManager::SendMessageToClient(int roomNum, const char* msg)
+{
+	int clientCount = _roomManager.GetRoomInfo(roomNum).clientInfoVec.size();
+	for (int i = 0; i < clientCount; i++)
+	{
+		SOCKET sock = _roomManager.GetRoomInfo(roomNum).clientInfoVec[i].clientSock;
+		send(sock, msg, strlen(msg), 0);
+	}
 }
