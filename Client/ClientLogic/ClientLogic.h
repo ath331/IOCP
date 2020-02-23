@@ -2,6 +2,7 @@
 #pragma comment(lib, "ws2_32.lib")
 #include <WinSock2.h>
 #include <string>
+#define MWM_SOCKET (WM_USER+1)
 
 const static int BUF_SIZE = 1024;
 
@@ -19,9 +20,9 @@ public:
 	PacketKind SendPacket(PacketIndex type, const char* buffer);
 	template <>
 	int SendPacket(PacketIndex type, const char* buffer);
+	SOCKET _socket;
 private:
 	WSADATA _wsaData;
-	SOCKET _socket;
 	SOCKADDR_IN _servAdr;
 
 	std::string _name;

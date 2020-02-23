@@ -14,7 +14,8 @@ void ClientLogic::Init(std::string IP, short portNum)
 		ErrorHandling("WSAStartup() error");
 	}
 
-	_socket = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	_socket = socket(PF_INET, SOCK_STREAM, 0);
+
 	if (_socket == INVALID_SOCKET)
 	{
 		ErrorHandling("socket() error");
