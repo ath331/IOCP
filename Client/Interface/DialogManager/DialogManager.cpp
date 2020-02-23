@@ -1,5 +1,4 @@
 #include "DialogManager.h"
-
 #define MWM_SOCKET (WM_USER+1)
 
 DialogManager* DialogManager::_instance = NULL;
@@ -60,7 +59,7 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 		case ID_ENTER:
 			if (_instance->_clientLogic->Connect() == 0)
 			{
-				TCHAR name[20];
+				TCHAR name[10];
 				GetDlgItemText(hwnd, ID_NAME, name, 10);
 				std::string tempName;
 				tempName = name;
@@ -311,6 +310,8 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
 			{
 				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
+				int maxListBoxSize = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
+				SendMessageA(listBox,LB_SETTOPINDEX, maxListBoxSize - 1, 0);
 			}
 		}
 		break;
@@ -325,12 +326,12 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		case IDOK:
 		{
 			PacketSendMessage packetSendMessage;
-			string tempStr = " ";
-			GetDlgItemText(hwnd, IDC_INPUT_KEY, (LPSTR)tempStr.c_str(), 100);
+			char tempStr[101];
+			GetDlgItemText(hwnd, IDC_INPUT_KEY, (LPSTR)tempStr, 100);
 			string tempMessage = "[";
 			tempMessage += _instance->_clientLogic->GetName();
 			tempMessage += "] : ";
-			strcat((char*)tempMessage.c_str(), tempStr.c_str());
+			tempMessage += tempStr;
 			memcpy((void*)&packetSendMessage.buffer, tempMessage.c_str(), strlen(tempMessage.c_str()));
 			SetDlgItemText(hwnd, IDC_INPUT_KEY, " ");
 
