@@ -2,3 +2,4 @@ class 안에서 callback함수 사용과, callback 함수 안에서 class 멤버
 template class 선언과 구현 분리 : https://www.sapphosound.com/archives/389
 winApi ListBox 관련 : https://m.blog.naver.com/PostView.nhn?blogId=tipsware&logNo=221145073971&proxyReferer=https%3A%2F%2Fwww.google.com%2F
 string class 형변환 : https://blockdmask.tistory.com/39
+winApi 에서 Socket Programming : https://m.blog.naver.com/PostView.nhn?blogId=ymy203&logNo=70102169803&proxyReferer=https%3A%2F%2Fwww.google.com%2F
