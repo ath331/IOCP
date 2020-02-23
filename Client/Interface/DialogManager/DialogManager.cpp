@@ -304,7 +304,11 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		{
 		case FD_READ:
 		{
-			std::cout << "recv" << std::endl;
+			PacketSendMessage packetSendMessage;
+			recv((SOCKET)wParam, (char*)packetSendMessage.buffer, 500, 0);
+			HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
+			if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
+				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
 		}
 		break;
 
@@ -317,10 +321,9 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		{
 		case IDOK:
 		{
-			//TODO : 메시지 송수신을 위헤 IOThread나누기
 			PacketSendMessage packetSendMessage;
 			string tempStr = " ";
-			GetDlgItemText(hwnd, IDC_INPUT_KEY, (LPSTR)tempStr.c_str(), 10);
+			GetDlgItemText(hwnd, IDC_INPUT_KEY, (LPSTR)tempStr.c_str(), 100);
 			memcpy((void*)&packetSendMessage.buffer, tempStr.c_str(), strlen(tempStr.c_str()));
 			SetDlgItemText(hwnd, IDC_INPUT_KEY, " ");
 
@@ -331,7 +334,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		}
 		break;
 
-		
+
 		break;
 
 		case IDCANCEL:
