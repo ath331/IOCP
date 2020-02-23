@@ -271,6 +271,7 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	WSAAsyncSelect(_instance->_clientLogic->_socket, hwnd, MWM_SOCKET, FD_READ);
+
 	HBRUSH g_hbrBackground = _instance->g_hbrBackground;
 
 	switch (message)
@@ -308,7 +309,9 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			recv((SOCKET)wParam, (char*)packetSendMessage.buffer, 500, 0);
 			HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
 			if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
+			{
 				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
+			}
 		}
 		break;
 
@@ -324,7 +327,11 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			PacketSendMessage packetSendMessage;
 			string tempStr = " ";
 			GetDlgItemText(hwnd, IDC_INPUT_KEY, (LPSTR)tempStr.c_str(), 100);
-			memcpy((void*)&packetSendMessage.buffer, tempStr.c_str(), strlen(tempStr.c_str()));
+			string tempMessage = "[";
+			tempMessage += _instance->_clientLogic->GetName();
+			tempMessage += "] : ";
+			strcat((char*)tempMessage.c_str(), tempStr.c_str());
+			memcpy((void*)&packetSendMessage.buffer, tempMessage.c_str(), strlen(tempMessage.c_str()));
 			SetDlgItemText(hwnd, IDC_INPUT_KEY, " ");
 
 			string tempRoomNum = " ";
