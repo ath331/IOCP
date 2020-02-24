@@ -142,8 +142,11 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				_instance->_clientLogic->SendPacket<RES_PacketRoomList>(PacketIndex::ROOM_LIST, NULL);
 			if (resPacketRoomList.maxRoomCount != 0)
 			{
-				string tempStr = std::to_string(resPacketRoomList.roomNum) + " 번방	" + resPacketRoomList.roomName + "	" + std::to_string(resPacketRoomList.curClientNum) + "/" + std::to_string(resPacketRoomList.maxClientInRoom);
-				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)tempStr.c_str());
+				for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
+				{
+					string tempStr = std::to_string(resPacketRoomList.roomInfoList[i].roomNum) + " 번방	" + resPacketRoomList.roomInfoList[i].roomName + "	" + std::to_string(resPacketRoomList.roomInfoList[i].curClientNum) + "/" + std::to_string(resPacketRoomList.roomInfoList[i].maxClientInRoom);
+					SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)tempStr.c_str());
+				}
 			}
 		}
 		break;
@@ -311,7 +314,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			{
 				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
 				int maxListBoxSize = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
-				SendMessageA(listBox,LB_SETTOPINDEX, maxListBoxSize - 1, 0);
+				SendMessageA(listBox, LB_SETTOPINDEX, maxListBoxSize - 1, 0);
 			}
 		}
 		break;

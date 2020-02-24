@@ -141,12 +141,15 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			{
 				RES_PacketRoomList resPacketRoomList;
 				resPacketRoomList.maxRoomCount = _roomManager.GetRoomVecSize();
-				if (resPacketRoomList.maxRoomCount != 0) //만든 방이 하나라도 있을때
+				if (resPacketRoomList.maxRoomCount != 0 && resPacketRoomList.maxRoomCount < MAX_ROOM_COUNT) //만든 방이 하나라도 있을때
 				{
-					resPacketRoomList.roomNum = _roomManager.GetRoomInfo(0).GetRoomNum();
-					memcpy((void*)&resPacketRoomList.roomName, _roomManager.GetRoomInfo(0).GetRoomName(), 20);
-					resPacketRoomList.maxClientInRoom = _roomManager.GetRoomInfo(0).GetMaxClientCount();
-					resPacketRoomList.curClientNum = _roomManager.GetRoomInfo(0).clientInfoVec.size();
+					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
+					{
+						resPacketRoomList.roomInfoList[i].roomNum = _roomManager.GetRoomInfo(i).GetRoomNum();
+						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, _roomManager.GetRoomInfo(i).GetRoomName(), MAX_ROOM_NAME_LENGTH);
+						resPacketRoomList.roomInfoList[i].maxClientInRoom = _roomManager.GetRoomInfo(i).GetMaxClientCount();
+						resPacketRoomList.roomInfoList[i].curClientNum = _roomManager.GetRoomInfo(i).clientInfoVec.size();
+					}
 				}
 				send(packetInfo.sock, (const char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
 			}
