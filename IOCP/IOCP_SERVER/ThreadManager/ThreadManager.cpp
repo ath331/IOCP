@@ -141,8 +141,10 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			{
 				RES_PacketRoomList resPacketRoomList;
 				resPacketRoomList.maxRoomCount = _roomManager.GetRoomVecSize();
-				if (resPacketRoomList.maxRoomCount != 0 && resPacketRoomList.maxRoomCount < MAX_ROOM_COUNT) //만든 방이 하나라도 있을때
+				if (resPacketRoomList.maxRoomCount != 0) //만든 방이 하나라도 있을때
 				{
+					if (resPacketRoomList.maxRoomCount >= MAX_ROOM_COUNT)
+						resPacketRoomList.maxRoomCount = MAX_ROOM_COUNT;
 					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
 					{
 						resPacketRoomList.roomInfoList[i].roomNum = _roomManager.GetRoomInfo(i).GetRoomNum();

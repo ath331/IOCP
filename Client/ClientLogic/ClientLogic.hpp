@@ -39,6 +39,9 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		memcpy(&packetMakeRoom, buffer, sizeof(PacketMakeRoom));
 		send(_socket, (const char*)&packetMakeRoom, packetMakeRoom.header.headerSize, 0);
 		RES_PacketMakeRoom resPacketMakeRoom;
+		Sleep(10); 
+		//★TODO : recv가 제대로 안되서 패킷을 다받지 못하므로 size까지 다읽도록 변경
+		//Sleep은 패킷이 다 도착하면 읽도록 임시방편
 		recv(_socket, (char*)&resPacketMakeRoom, sizeof(RES_PacketMakeRoom), 0);
 		std::cout << resPacketMakeRoom.roomNum - 1 << " make " << std::endl;
 		return resPacketMakeRoom.roomNum;
