@@ -2,9 +2,11 @@
 //server <-> client 통신관련 packet 저장
 //RES_ is Server Packet
 #include <WinSock2.h>
-
+#include <vector>
 const static int MAX_NAME_LENGTH = 10;
 const static int MAX_ROOM_NAME_LENGTH = 20;
+
+using namespace std;
 
 enum class PacketIndex : int
 {
@@ -91,10 +93,15 @@ struct RES_PacketRoomList
 	PacketHeader header;
 	//TODO : ListBox에 출력하기 위해 필요한 룸의 정보들을 배열로 전송
 	int maxRoomCount = 0;
-	int roomNum = 0;
-	const char roomName[MAX_ROOM_NAME_LENGTH] = "DEFAULT";
-	int maxClientInRoom = 10;
-	int curClientNum = 1;
+
+	struct RoomInfo
+	{
+		int roomNum = -1;
+		const char roomName[MAX_ROOM_NAME_LENGTH] = "DEFAULT";
+		int maxClientInRoom = 10;
+		int curClientNum = 1;
+	};
+	vector<RoomInfo> roomInfoList;
 
 	RES_PacketRoomList()
 	{

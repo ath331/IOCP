@@ -161,8 +161,6 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				packetEnterRoom.roomNum = stoi(roomNumStr);
 				_instance->_clientLogic->SendPacket<int>(PacketIndex::ENTER_ROOM, (const char*)&packetEnterRoom);
 				_instance->MakeDialog(DialogType::ChatRoom, roomInfoStr);
-				//집에서 컴퓨터 <-> 노트북이랑 하면 잘되는데 다른 집컴퓨터랑하면 해당부분에서
-				//에러남..?
 			}
 		}
 		break;
