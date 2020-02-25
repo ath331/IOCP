@@ -4,3 +4,4 @@ winApi ListBox 관련 : https://m.blog.naver.com/PostView.nhn?blogId=tipsware&lo
 string class 형변환 : https://blockdmask.tistory.com/39
 winApi 에서 Socket Programming : https://m.blog.naver.com/PostView.nhn?blogId=ymy203&logNo=70102169803&proxyReferer=https%3A%2F%2Fwww.google.com%2F
 winApi listBox 자동정렬(sort) 제거 : http://perdupper.blogspot.com/2016/03/mfc-listbox-listbox.html
+wisApi listBox Clear(초기화,삭제) : http://forums.codeguru.com/showthread.php?447176-clear-listbox
