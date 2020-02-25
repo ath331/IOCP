@@ -247,11 +247,11 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 			if (temp != -1 && packetIndex == PacketIndex::MAKE_ROOM)
 			{
 				//temp = roomNum
-				_instance->_roomName = to_string(temp - 1);
-				_instance->_roomName += "번방 ";
-				_instance->_roomName += packetMakeRoom.roomName;
+				string tempRoomName = to_string(temp - 1);
+				tempRoomName += "번방 ";
+				tempRoomName += packetMakeRoom.roomName;
 				EndDialog(hwnd, 0);
-				_instance->MakeDialog(DialogType::ChatRoom, _instance->_roomName);
+				_instance->MakeDialog(DialogType::ChatRoom, tempRoomName);
 			}
 		}
 		break;

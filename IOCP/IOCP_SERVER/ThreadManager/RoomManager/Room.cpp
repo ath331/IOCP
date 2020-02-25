@@ -5,7 +5,7 @@ bool Room::GetAccessInfoThisRoom()
 	return _isPublicRoom;
 }
 
-const char* Room::GetRoomName()
+string Room::GetRoomName()
 {
 	return _roomName;
 }
