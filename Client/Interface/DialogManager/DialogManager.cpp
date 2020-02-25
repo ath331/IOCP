@@ -136,7 +136,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 			int listCount = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
 			for (int i = 0; i < listCount; i++)
 			{
-				SendMessageA(listBox, LB_DELETESTRING, i, 0);
+				SendMessageA(listBox, LB_RESETCONTENT, 0, 0);
 			}
 			RES_PacketRoomList resPacketRoomList =
 				_instance->_clientLogic->SendPacket<RES_PacketRoomList>(PacketIndex::ROOM_LIST, NULL);
