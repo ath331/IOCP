@@ -168,7 +168,9 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 
 			case PacketIndex::CLOSE_ROOM:
 			{
-				_roomManager.OutClientInRoom(packetInfo.sock);
+				PacketCloseRoom packetCloseRoom;
+				memcpy(&packetCloseRoom, packetInfo.packetBuffer, sizeof(PacketCloseRoom));
+				_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum);
 			}
 			break;
 

@@ -19,13 +19,13 @@ int Room::GetRoomNum()
 	return _roomNum;
 }
 
-int Room::OutClientInRoom(SOCKET clientSock)
+int Room::OutClientInRoom(SOCKET clientSock,int roomNum)
 {
 	for (auto iter = clientInfoVec.begin(); iter != clientInfoVec.end(); iter++)
 	{
-		if (iter->clientSock == clientSock)
+		if (iter->clientSock == clientSock && iter->roomNum == roomNum)
 		{
-			//TODO : 방번호까지 조회해서 그 방에서만 나가게 하기
+			//TODO : client가 방에 들어갈떄마다 몇번방에 있는지 정보를 clientInfo에 저장해야함
 			iter = clientInfoVec.erase(iter);
 			return clientInfoVec.size();
 		}

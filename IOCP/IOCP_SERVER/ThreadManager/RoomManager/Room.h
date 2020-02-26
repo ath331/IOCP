@@ -21,7 +21,7 @@ public:
 	string GetRoomName();
 	int GetMaxClientCount();
 	int GetRoomNum();
-	int OutClientInRoom(SOCKET clientSock);
+	int OutClientInRoom(SOCKET clientSock, int roomNum);
 
 	Room& operator=(Room roomInfo)
 	{

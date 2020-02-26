@@ -121,6 +121,7 @@ struct PacketEnterRoom
 struct PacketCloseRoom
 {
 	PacketHeader header;
+	int roomNum = -1;
 
 	PacketCloseRoom()
 	{

@@ -58,6 +58,7 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 	case PacketIndex::CLOSE_ROOM:
 	{
 		PacketCloseRoom packetCloseRoom;
+		memcpy(&packetCloseRoom, buffer, sizeof(PacketCloseRoom));
 		send(_socket, (const char*)&packetCloseRoom, packetCloseRoom.header.headerSize, 0);
 		return 0;
 	}

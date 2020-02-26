@@ -288,9 +288,15 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		SetWindowText(hwnd, (LPCSTR)_instance->_roomName.c_str());
 		break;
 	case WM_CLOSE:
-		_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, NULL);
+	{
+		PacketCloseRoom packetCloseRoom;
+		string tempRoomNum = "";
+		GetWindowText(hwnd, (char*)tempRoomNum.c_str(), 2);
+		packetCloseRoom.roomNum = atoi(tempRoomNum.c_str());
+		_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, (const char*)&packetCloseRoom);
 		EndDialog(hwnd, 0);
 		break;
+	}
 	case WM_CTLCOLORDLG:
 		return (LONG)g_hbrBackground;
 	case WM_CTLCOLORSTATIC:
@@ -349,7 +355,11 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		break;
 
 		case IDCANCEL:
-			_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, NULL);
+			PacketCloseRoom packetCloseRoom;
+			string tempRoomNum = "";
+			GetWindowText(hwnd, (char*)tempRoomNum.c_str(), 2);
+			packetCloseRoom.roomNum = atoi(tempRoomNum.c_str());
+			_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, (const char*)&packetCloseRoom);
 			EndDialog(hwnd, 0);
 			break;
 		}

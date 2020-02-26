@@ -40,11 +40,11 @@ Room RoomManager::GetRoomInfo(int roomNum)
 	std::cout << roomNum << " No Room!" << std::endl;
 }
 
-void RoomManager::OutClientInRoom(SOCKET clientSock)
+void RoomManager::OutClientInRoom(SOCKET clientSock,int roomNum)
 {
 	for (auto iter = _roomVec.begin() ; iter != _roomVec.end() ; iter++)
 	{
-		int temp = iter->OutClientInRoom(clientSock); //temp = 방의 남은 인원
+		int temp = iter->OutClientInRoom(clientSock, roomNum); //temp = 방의 남은 인원
 		if (temp <= 0)
 		{
 			iter = _roomVec.erase(iter);
