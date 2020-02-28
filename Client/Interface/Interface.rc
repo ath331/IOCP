@@ -59,7 +59,8 @@ BEGIN
     PUSHBUTTON      "종료",ID_EXIT,252,154,50,14
     EDITTEXT        ID_NAME,58,14,129,14,ES_AUTOHSCROLL
     LTEXT           "NAME",IDC_NAME,23,14,27,14,SS_CENTERIMAGE,WS_EX_DLGMODALFRAME
-    LTEXT           "20.2.20 여러개 방 들어가지 마세요 버그 있음",IDC_STATIC,23,132,166,36
+    LTEXT           "20.2.20 여러개 방 들어가지 마세요 버그 있음",IDC_STATIC,23,132,166,11
+    LTEXT           "20.2.28 채팅방에서 메인의 갱신 누르면 안됨",IDC_STATIC,23,142,166,11
 END
 
 IDD_ChatMain DIALOGEX 0, 0, 309, 176

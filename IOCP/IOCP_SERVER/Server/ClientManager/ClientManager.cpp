@@ -15,6 +15,7 @@ void ClientManager::PopClientInfo(SOCKET sock)
 		{
 			cout << (*iter)->clientName << " out.." << endl;
 			closesocket(sock);
+			delete* iter;
 			_clientVec.erase(iter);
 			break;
 		}
