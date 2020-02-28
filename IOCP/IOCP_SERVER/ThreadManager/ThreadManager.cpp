@@ -136,7 +136,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				_roomManager.MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
 
 				RES_PacketMakeRoom resPacketMakeRoom;
-				resPacketMakeRoom.roomNum = _roomManager.GetRoomCount()-1;
+				resPacketMakeRoom.roomNum = _roomManager.GetRoomCount() - 1;
 				//clientInfo->roomNum.push_back(resPacketMakeRoom.roomNum);
 				clientInfo->roomNum = resPacketMakeRoom.roomNum;
 				send(packetInfo.sock, (const char*)&resPacketMakeRoom, resPacketMakeRoom.header.headerSize, 0);
@@ -154,7 +154,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
 					{
 						resPacketRoomList.roomInfoList[i].roomNum = _roomManager.GetRoomInfo(i).GetRoomNum();
-						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, _roomManager.GetRoomInfo(i).GetRoomName().c_str(),strlen(_roomManager.GetRoomInfo(i).GetRoomName().c_str()));
+						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, _roomManager.GetRoomInfo(i).GetRoomName().c_str(), strlen(_roomManager.GetRoomInfo(i).GetRoomName().c_str()));
 						resPacketRoomList.roomInfoList[i].maxClientInRoom = _roomManager.GetRoomInfo(i).GetMaxClientCount();
 						resPacketRoomList.roomInfoList[i].curClientNum = _roomManager.GetRoomInfo(i).clientInfoVec.size();
 					}
@@ -171,6 +171,10 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				//clientInfo->roomNum.push_back(packetEnterRoom.roomNum);
 				clientInfo->roomNum = packetEnterRoom.roomNum;
 				_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
+				string enterMessage = "[SYSTEM] ";
+				enterMessage += clientInfo->clientName;
+				enterMessage += "´ÔÀÌ Á¢¼ÓÇß½À´Ï´Ù.";
+				SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str());
 			}
 			break;
 
@@ -181,6 +185,10 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
 				clientInfo->OutRoom(packetCloseRoom.roomNum);
 				_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum);
+				string enterMessage = "[SYSTEM] ";
+				enterMessage += clientInfo->clientName;
+				enterMessage += "´ÔÀÌ ³ª°¬½À´Ï´Ù.";
+				SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str());
 			}
 			break;
 
@@ -200,9 +208,15 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 	return 0;
 }
 
-void ThreadManager::SendMessageToClient(int roomNum, const char* msg)
+void ThreadManager::SendMessageToClient(int roomNum, const char* msg, bool isEnterMessage)
 {
 	int clientCount = _roomManager.GetRoomInfo(roomNum).clientInfoVec.size();
+
+	if (isEnterMessage)
+	{
+
+	}
+
 	for (int i = 0; i < clientCount; i++)
 	{
 		SOCKET sock = _roomManager.GetRoomInfo(roomNum).clientInfoVec[i]->clientSock;
