@@ -23,6 +23,9 @@ PacketKind ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 template<>
 int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 {
+	if (buffer == NULL)
+		return 0;
+
 	switch (type)
 	{
 	case PacketIndex::Login:
@@ -67,6 +70,7 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		PacketSendMessage packetSendMessage;
 		memcpy(&packetSendMessage, buffer, sizeof(PacketSendMessage));
 		send(_socket, (const char*)&packetSendMessage, packetSendMessage.header.headerSize, 0);
+		return 0;
 	}
 	default:
 		break;

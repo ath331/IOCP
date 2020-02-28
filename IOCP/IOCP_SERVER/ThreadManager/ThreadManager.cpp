@@ -6,6 +6,9 @@
 #include <process.h>
 #include <iostream>
 
+#include <vector>
+#include <algorithm>
+
 Lock ThreadManager::_packetQueueLock;
 queue<PacketInfo> ThreadManager::_packetQueue;
 ClientManager* ThreadManager::_clientManager;
@@ -118,9 +121,9 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				PacketLogin packetLogin;
 				memcpy(&packetLogin, packetInfo.packetBuffer, sizeof(PacketLogin));
 
-				ClientInfo clientInfo = { packetInfo.sock };
-				memcpy((void*)clientInfo.clientName, packetLogin.name, sizeof(packetLogin.name));
-				_clientManager->PushClientInfo(&clientInfo);
+				ClientInfo* clientInfo = new ClientInfo(packetInfo.sock);
+				memcpy((void*)clientInfo->clientName, packetLogin.name, sizeof(packetLogin.name));
+				_clientManager->PushClientInfo(clientInfo);
 			}
 			break;
 
@@ -133,8 +136,9 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				_roomManager.MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
 
 				RES_PacketMakeRoom resPacketMakeRoom;
-				resPacketMakeRoom.roomNum = _roomManager.GetRoomCount();
-				clientInfo->roomNum.push_back(resPacketMakeRoom.roomNum);
+				resPacketMakeRoom.roomNum = _roomManager.GetRoomCount()-1;
+				//clientInfo->roomNum.push_back(resPacketMakeRoom.roomNum);
+				clientInfo->roomNum = resPacketMakeRoom.roomNum;
 				send(packetInfo.sock, (const char*)&resPacketMakeRoom, resPacketMakeRoom.header.headerSize, 0);
 			}
 			break;
@@ -164,7 +168,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				PacketEnterRoom packetEnterRoom;
 				memcpy(&packetEnterRoom, packetInfo.packetBuffer, sizeof(PacketEnterRoom));
 				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
-				clientInfo->roomNum.push_back(packetEnterRoom.roomNum);
+				//clientInfo->roomNum.push_back(packetEnterRoom.roomNum);
+				clientInfo->roomNum = packetEnterRoom.roomNum;
 				_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
 			}
 			break;
@@ -174,9 +179,6 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				PacketCloseRoom packetCloseRoom;
 				memcpy(&packetCloseRoom, packetInfo.packetBuffer, sizeof(PacketCloseRoom));
 				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
-				cout << clientInfo->roomNum[0];
-				cout << clientInfo->roomNum[1];
-				cout << *(clientInfo->roomNum.begin());
 				clientInfo->OutRoom(packetCloseRoom.roomNum);
 				_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum);
 			}
