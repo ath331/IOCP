@@ -1,15 +1,14 @@
 #include "RoomManager.h"
 
-void RoomManager::MakeRoom(string roomName, ClientInfo clientInfo, int maxClientCount, bool privateRoom)
+void RoomManager::MakeRoom(string roomName, ClientInfo* clientInfo, int maxClientCount, bool privateRoom)
 {
-	//TODO : 방이름이 다음 방만들기 패킷의 이름으로 전부 바뀐다?
 	Room room(_roomCount,roomName,clientInfo, maxClientCount, privateRoom);
 	_roomVec.push_back(room);
 	cout << _roomCount << "번방 " << roomName << "생성" << endl;
 	_roomCount++;
 }
 
-void RoomManager::EnterRoom(int roomNum, ClientInfo clientInfo)
+void RoomManager::EnterRoom(int roomNum, ClientInfo* clientInfo)
 {
 	if (_roomVec.empty())
 		return;

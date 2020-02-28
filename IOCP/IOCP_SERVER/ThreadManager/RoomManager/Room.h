@@ -10,13 +10,13 @@ using namespace std;
 class Room
 {
 public:
-	Room(int roomNum, string name, ClientInfo clientInfo, int maxClientCount = 2, bool privateRoom = false)
+	Room(int roomNum, string name, ClientInfo* clientInfo, int maxClientCount = 2, bool privateRoom = false)
 		: _roomNum(roomNum), _roomName(name), _maxClientCount(maxClientCount), _isPublicRoom(privateRoom)
 	{
 		clientInfoVec.push_back(clientInfo);
 	}
 
-	vector<ClientInfo> clientInfoVec;
+	vector<ClientInfo*> clientInfoVec;
 	bool GetAccessInfoThisRoom();
 	string GetRoomName();
 	int GetMaxClientCount();

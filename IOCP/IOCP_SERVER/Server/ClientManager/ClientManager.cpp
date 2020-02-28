@@ -1,19 +1,19 @@
 #include "ClientManager.h"
 #include <iostream>
 
-void ClientManager::PushClientInfo(ClientInfo clientInfo)
+void ClientManager::PushClientInfo(ClientInfo* clientInfo)
 {
 	_clientVec.push_back(clientInfo);
-	cout << clientInfo.clientName << " connect!" << endl;
+	cout << clientInfo->clientName << " connect!" << endl;
 }
 
 void ClientManager::PopClientInfo(SOCKET sock)
 {
 	for (auto iter = _clientVec.begin(); iter != _clientVec.end(); iter++)
 	{
-		if (iter->clientSock == sock)
+		if ((*iter)->clientSock == sock)
 		{
-			cout << iter->clientName << " out.." << endl;
+			cout << (*iter)->clientName << " out.." << endl;
 			closesocket(sock);
 			_clientVec.erase(iter);
 			break;
@@ -21,13 +21,13 @@ void ClientManager::PopClientInfo(SOCKET sock)
 	}
 }
 
-ClientInfo ClientManager::GetClientInfo(SOCKET sock)
+ClientInfo* ClientManager::GetClientInfo(SOCKET sock)
 {
 	for (auto iter = _clientVec.begin(); iter != _clientVec.end(); iter++)
 	{
-		if (iter->clientSock == sock)
+		if ((*iter)->clientSock == sock)
 		{
-			return *iter;
+			return  *iter;
 		}
 	}
 }

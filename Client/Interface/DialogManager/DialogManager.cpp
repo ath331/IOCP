@@ -247,7 +247,7 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 			if (temp != -1 && packetIndex == PacketIndex::MAKE_ROOM)
 			{
 				//temp = roomNum
-				string tempRoomName = to_string(temp - 1);
+				string tempRoomName = to_string(temp);
 				tempRoomName += "¹ø¹æ ";
 				tempRoomName += packetMakeRoom.roomName;
 				EndDialog(hwnd, 0);

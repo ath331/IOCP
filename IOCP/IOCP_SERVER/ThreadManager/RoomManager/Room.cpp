@@ -23,9 +23,8 @@ int Room::OutClientInRoom(SOCKET clientSock,int roomNum)
 {
 	for (auto iter = clientInfoVec.begin(); iter != clientInfoVec.end(); iter++)
 	{
-		if (iter->clientSock == clientSock && iter->roomNum == roomNum)
+		if ((*iter)->clientSock == clientSock && (*iter)->IsAcceptingRoomNum(roomNum))
 		{
-			//TODO : client가 방에 들어갈떄마다 몇번방에 있는지 정보를 clientInfo에 저장해야함
 			iter = clientInfoVec.erase(iter);
 			return clientInfoVec.size();
 		}

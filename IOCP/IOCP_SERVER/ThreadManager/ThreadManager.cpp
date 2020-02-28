@@ -120,19 +120,21 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 
 				ClientInfo clientInfo = { packetInfo.sock };
 				memcpy((void*)clientInfo.clientName, packetLogin.name, sizeof(packetLogin.name));
-				_clientManager->PushClientInfo(clientInfo);
+				_clientManager->PushClientInfo(&clientInfo);
 			}
 			break;
 
 			case PacketIndex::MAKE_ROOM:
 			{
+				//TODO : 规父甸扁客 规立加 盒府窍扁
 				PacketMakeRoom packetMakeRoom;
 				memcpy(&packetMakeRoom, packetInfo.packetBuffer, sizeof(PacketMakeRoom));
-				ClientInfo clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
+				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
 				_roomManager.MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
 
 				RES_PacketMakeRoom resPacketMakeRoom;
 				resPacketMakeRoom.roomNum = _roomManager.GetRoomCount();
+				clientInfo->roomNum.push_back(resPacketMakeRoom.roomNum);
 				send(packetInfo.sock, (const char*)&resPacketMakeRoom, resPacketMakeRoom.header.headerSize, 0);
 			}
 			break;
@@ -161,7 +163,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			{
 				PacketEnterRoom packetEnterRoom;
 				memcpy(&packetEnterRoom, packetInfo.packetBuffer, sizeof(PacketEnterRoom));
-				ClientInfo clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
+				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
+				clientInfo->roomNum.push_back(packetEnterRoom.roomNum);
 				_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
 			}
 			break;
@@ -170,6 +173,11 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 			{
 				PacketCloseRoom packetCloseRoom;
 				memcpy(&packetCloseRoom, packetInfo.packetBuffer, sizeof(PacketCloseRoom));
+				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
+				cout << clientInfo->roomNum[0];
+				cout << clientInfo->roomNum[1];
+				cout << *(clientInfo->roomNum.begin());
+				clientInfo->OutRoom(packetCloseRoom.roomNum);
 				_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum);
 			}
 			break;
@@ -195,7 +203,7 @@ void ThreadManager::SendMessageToClient(int roomNum, const char* msg)
 	int clientCount = _roomManager.GetRoomInfo(roomNum).clientInfoVec.size();
 	for (int i = 0; i < clientCount; i++)
 	{
-		SOCKET sock = _roomManager.GetRoomInfo(roomNum).clientInfoVec[i].clientSock;
+		SOCKET sock = _roomManager.GetRoomInfo(roomNum).clientInfoVec[i]->clientSock;
 		send(sock, msg, strlen(msg), 0);
 	}
 }
