@@ -151,12 +151,13 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				{
 					if (resPacketRoomList.maxRoomCount > MAX_ROOM_COUNT)
 						resPacketRoomList.maxRoomCount = MAX_ROOM_COUNT;
-					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
+					for (int i = 0, j=0; i < resPacketRoomList.maxRoomCount;i++,j++)
 					{
-						resPacketRoomList.roomInfoList[i].roomNum = _roomManager.GetRoomInfo(i).GetRoomNum();
-						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, _roomManager.GetRoomInfo(i).GetRoomName().c_str(), strlen(_roomManager.GetRoomInfo(i).GetRoomName().c_str()));
-						resPacketRoomList.roomInfoList[i].maxClientInRoom = _roomManager.GetRoomInfo(i).GetMaxClientCount();
-						resPacketRoomList.roomInfoList[i].curClientNum = _roomManager.GetRoomInfo(i).clientInfoVec.size();
+						Room room = _roomManager.GetRoomInfo(i);
+						resPacketRoomList.roomInfoList[j].roomNum = room.GetRoomNum();
+						memcpy((void*)&resPacketRoomList.roomInfoList[j].roomName, room.GetRoomName().c_str(), strlen(room.GetRoomName().c_str()));
+						resPacketRoomList.roomInfoList[j].maxClientInRoom = room.GetMaxClientCount();
+						resPacketRoomList.roomInfoList[j].curClientNum = room.clientInfoVec.size();
 					}
 				}
 				send(packetInfo.sock, (const char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
@@ -171,6 +172,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				//clientInfo->roomNum.push_back(packetEnterRoom.roomNum);
 				clientInfo->roomNum = packetEnterRoom.roomNum;
 				_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
+				
+				//TODO : Message 관리 class 만들기
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "님이 접속했습니다.";
@@ -185,6 +188,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
 				clientInfo->OutRoom(packetCloseRoom.roomNum);
 				_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum);
+
+				//TODO : Message 관리 class 만들기
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "님이 나갔습니다.";

@@ -33,7 +33,7 @@ public:
 		return *this;
 	}
 private:
-	int _roomNum = 0;
+	int _roomNum = -1;
 	string _roomName;
 	int _maxClientCount;
 	bool _isPublicRoom = true;
