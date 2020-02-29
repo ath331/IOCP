@@ -15,6 +15,9 @@ void ClientLogic::Init(std::string IP, short portNum)
 	}
 
 	_socket = socket(PF_INET, SOCK_STREAM, 0);
+	_recvTimeout = 1000;  // 1√ .
+	setsockopt(_socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&_recvTimeout, sizeof(_recvTimeout));
+
 
 	if (_socket == INVALID_SOCKET)
 	{

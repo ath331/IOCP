@@ -25,6 +25,7 @@ private:
 	WSADATA _wsaData;
 	SOCKADDR_IN _servAdr;
 
+	DWORD _recvTimeout;
 	std::string _name;
 	int _strLen = 0, _readLen = 0;
 

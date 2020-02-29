@@ -151,16 +151,15 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				{
 					if (resPacketRoomList.maxRoomCount > MAX_ROOM_COUNT)
 						resPacketRoomList.maxRoomCount = MAX_ROOM_COUNT;
-					for (int i = 0, j=0; i < resPacketRoomList.maxRoomCount;i++,j++)
+					for (int i = 0, j = 0; i < resPacketRoomList.maxRoomCount; i++, j++)
 					{
-						Room room = _roomManager.GetRoomInfo(i);
-						resPacketRoomList.roomInfoList[j].roomNum = room.GetRoomNum();
-						memcpy((void*)&resPacketRoomList.roomInfoList[j].roomName, room.GetRoomName().c_str(), strlen(room.GetRoomName().c_str()));
-						resPacketRoomList.roomInfoList[j].maxClientInRoom = room.GetMaxClientCount();
-						resPacketRoomList.roomInfoList[j].curClientNum = room.clientInfoVec.size();
+						resPacketRoomList.roomInfoList[j].roomNum = _roomManager.GetRoomInfo(i).GetRoomNum();
+						memcpy((void*)&resPacketRoomList.roomInfoList[j].roomName, _roomManager.GetRoomInfo(i).GetRoomName().c_str(), strlen(_roomManager.GetRoomInfo(i).GetRoomName().c_str()));
+						resPacketRoomList.roomInfoList[j].maxClientInRoom = _roomManager.GetRoomInfo(i).GetMaxClientCount();
+						resPacketRoomList.roomInfoList[j].curClientNum = _roomManager.GetRoomInfo(i).clientInfoVec.size();
 					}
+					send(packetInfo.sock, (const char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
 				}
-				send(packetInfo.sock, (const char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
 			}
 			break;
 
@@ -172,7 +171,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				//clientInfo->roomNum.push_back(packetEnterRoom.roomNum);
 				clientInfo->roomNum = packetEnterRoom.roomNum;
 				_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
-				
+
 				//TODO : Message 관리 class 만들기
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;

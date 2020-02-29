@@ -11,7 +11,11 @@ PacketKind ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		PacketRoomList packetRoomList;
 		send(_socket, (const char*)&packetRoomList, packetRoomList.header.headerSize, 0);
 		RES_PacketRoomList resPacketRoomList;
-		recv(_socket, (char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
+		int recvLen = recv(_socket, (char*)&resPacketRoomList, sizeof(RES_PacketRoomList), 0);
+		while (recvLen < sizeof(RES_PacketRoomList))
+		{
+			recvLen += recv(_socket, (char*)&resPacketRoomList, 1, 0);
+		}
 		return resPacketRoomList;
 	}
 
@@ -42,6 +46,7 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		memcpy(&packetMakeRoom, buffer, sizeof(PacketMakeRoom));
 		send(_socket, (const char*)&packetMakeRoom, packetMakeRoom.header.headerSize, 0);
 		RES_PacketMakeRoom resPacketMakeRoom;
+		Sleep(100);
 		int recvLen = recv(_socket, (char*)&resPacketMakeRoom, sizeof(RES_PacketMakeRoom), 0);
 		while (recvLen < sizeof(RES_PacketMakeRoom))
 		{

@@ -200,6 +200,7 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 		break;
 	case WM_CLOSE:
 		EndDialog(hwnd, 0);
+		_instance->MakeDialog(DialogType::Main);
 		break;
 	case WM_CTLCOLORDLG:
 		return (LONG)g_hbrBackground;
@@ -351,7 +352,6 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		}
 		break;
 
-
 		break;
 
 		case IDCANCEL:
@@ -361,6 +361,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			packetCloseRoom.roomNum = atoi(tempRoomNum.c_str());
 			_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, (const char*)&packetCloseRoom);
 			EndDialog(hwnd, 0);
+
 			break;
 		}
 		break;
