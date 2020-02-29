@@ -30,7 +30,7 @@ private:
 	static queue<PacketInfo> _packetQueue;
 	static void _pushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 
-	static void SendMessageToClient(int roomNum,const char* msg,bool isEnterMessage = FALSE);
+	static void SendMessageToClient(int roomNum,const char* msg);
 
 	static ClientManager* _clientManager;
 

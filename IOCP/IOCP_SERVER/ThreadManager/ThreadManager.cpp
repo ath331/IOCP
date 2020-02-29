@@ -208,14 +208,10 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 	return 0;
 }
 
-void ThreadManager::SendMessageToClient(int roomNum, const char* msg, bool isEnterMessage)
+void ThreadManager::SendMessageToClient(int roomNum, const char* msg)
 {
-	int clientCount = _roomManager.GetRoomInfo(roomNum).clientInfoVec.size();
-
-	if (isEnterMessage)
-	{
-
-	}
+	Room room = _roomManager.GetRoomInfo(roomNum);
+	int clientCount = room.clientInfoVec.size();
 
 	for (int i = 0; i < clientCount; i++)
 	{
