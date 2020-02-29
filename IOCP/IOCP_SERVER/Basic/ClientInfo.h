@@ -46,15 +46,15 @@ struct ClientInfo
 		return FALSE;
 	}
 
-	ClientInfo& operator=(ClientInfo clientInfo)
-	{
-		clientSock = clientInfo.clientSock;
-		memcpy((void*)clientName, clientInfo.clientName, sizeof(clientInfo.clientName));
-		roomNum = clientInfo.roomNum;
-		/*for (int i = 0; i < clientInfo.roomNum.size(); i++)
-		{
-			roomNum[i] = clientInfo.roomNum[i];
-		}*/
-		return *this;
-	}
+	//ClientInfo& operator=(ClientInfo clientInfo)
+	//{
+	//	clientSock = clientInfo.clientSock;
+	//	memcpy((void*)clientName, clientInfo.clientName, sizeof(clientInfo.clientName));
+	//	roomNum = clientInfo.roomNum;
+	//	/*for (int i = 0; i < clientInfo.roomNum.size(); i++)
+	//	{
+	//		roomNum[i] = clientInfo.roomNum[i];
+	//	}*/
+	//	return *this;
+	//}
 };

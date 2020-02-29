@@ -46,7 +46,7 @@ void RoomManager::OutClientInRoom(SOCKET clientSock,int roomNum)
 		int temp = iter->OutClientInRoom(clientSock, roomNum); //temp = 방의 남은 인원
 		if (temp <= 0)
 		{
-			iter = _roomVec.erase(iter);
+			//iter = _roomVec.erase(iter);
 			break;
 		}
 	}
