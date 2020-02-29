@@ -27,7 +27,7 @@ int RoomManager::GetRoomVecSize()
 	return _roomVec.size();
 }
 
-Room RoomManager::GetRoomInfo(int roomNum)
+Room RoomManager::GetRoomInfoByRoomNum(int roomNum)
 {
 	for (auto iter = _roomVec.begin(); iter != _roomVec.end(); iter++)
 	{
@@ -38,6 +38,12 @@ Room RoomManager::GetRoomInfo(int roomNum)
 	}
 	//std::cout << roomNum << " No Room!" << std::endl;
 }
+
+Room RoomManager::GetRoomInfoByCountNum(int count)
+{
+	return _roomVec[count];
+}
+
 
 void RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
 {

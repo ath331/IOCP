@@ -13,7 +13,8 @@ public:
 	void EnterRoom(int roomNum, ClientInfo* clientInfo);
 	void OutClientInRoom(SOCKET clientSock, int roomNum);
 	int GetRoomVecSize();
-	Room GetRoomInfo(int roomNum);
+	Room GetRoomInfoByRoomNum(int roomNum);
+	Room GetRoomInfoByCountNum(int count); //count번쨰 방 객체를 반환
 	int GetRoomCount();
 private:
 	int _roomCount = 0;

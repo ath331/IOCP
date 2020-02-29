@@ -151,12 +151,12 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				{
 					if (resPacketRoomList.maxRoomCount > MAX_ROOM_COUNT)
 						resPacketRoomList.maxRoomCount = MAX_ROOM_COUNT;
-					for (int i = 0, j = 0; i < resPacketRoomList.maxRoomCount; i++, j++)
+					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
 					{
-						resPacketRoomList.roomInfoList[j].roomNum = _roomManager.GetRoomInfo(i).GetRoomNum();
-						memcpy((void*)&resPacketRoomList.roomInfoList[j].roomName, _roomManager.GetRoomInfo(i).GetRoomName().c_str(), strlen(_roomManager.GetRoomInfo(i).GetRoomName().c_str()));
-						resPacketRoomList.roomInfoList[j].maxClientInRoom = _roomManager.GetRoomInfo(i).GetMaxClientCount();
-						resPacketRoomList.roomInfoList[j].curClientNum = _roomManager.GetRoomInfo(i).clientInfoVec.size();
+						resPacketRoomList.roomInfoList[i].roomNum = _roomManager.GetRoomInfoByCountNum(i).GetRoomNum();
+						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, _roomManager.GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(_roomManager.GetRoomInfoByCountNum(i).GetRoomName().c_str()));
+						resPacketRoomList.roomInfoList[i].maxClientInRoom = _roomManager.GetRoomInfoByCountNum(i).GetMaxClientCount();
+						resPacketRoomList.roomInfoList[i].curClientNum = _roomManager.GetRoomInfoByCountNum(i).clientInfoVec.size();
 					}
 					send(packetInfo.sock, (const char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
 				}
@@ -214,12 +214,12 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 
 void ThreadManager::SendMessageToClient(int roomNum, const char* msg)
 {
-	Room room = _roomManager.GetRoomInfo(roomNum);
+	Room room = _roomManager.GetRoomInfoByRoomNum(roomNum);
 	int clientCount = room.clientInfoVec.size();
 
 	for (int i = 0; i < clientCount; i++)
 	{
-		SOCKET sock = _roomManager.GetRoomInfo(roomNum).clientInfoVec[i]->clientSock;
+		SOCKET sock = _roomManager.GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
 		send(sock, msg, strlen(msg), 0);
 	}
 }
