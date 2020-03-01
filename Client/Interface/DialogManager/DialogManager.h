@@ -32,6 +32,8 @@ private:
 	ClientLogic* _clientLogic;
 	string _roomName;
 
+	HANDLE _mainHandle = NULL;
+
 	HINSTANCE _hInst;
 	HBRUSH g_hbrBackground;
 

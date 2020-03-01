@@ -176,7 +176,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "´ÔÀÌ Á¢¼ÓÇß½À´Ï´Ù.";
-				SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str());
+				SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str(),TRUE);
 			}
 			break;
 
@@ -192,7 +192,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "´ÔÀÌ ³ª°¬½À´Ï´Ù.";
-				SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str());
+				SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(),TRUE);
 			}
 			break;
 
@@ -212,7 +212,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 	return 0;
 }
 
-void ThreadManager::SendMessageToClient(int roomNum, const char* msg)
+void ThreadManager::SendMessageToClient(int roomNum, const char* msg, bool isSystemMessage)
 {
 	Room room = _roomManager.GetRoomInfoByRoomNum(roomNum);
 	int clientCount = room.clientInfoVec.size();
