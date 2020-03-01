@@ -6,3 +6,4 @@ winApi 에서 Socket Programming : https://m.blog.naver.com/PostView.nhn?blogId=
 winApi listBox 자동정렬(sort) 제거 : http://perdupper.blogspot.com/2016/03/mfc-listbox-listbox.html
 wisApi listBox Clear(초기화,삭제) : http://forums.codeguru.com/showthread.php?447176-clear-listbox
 algorithm remove remove_if : https://modoocode.com/266
+winApi Message : https://wjdgh283.tistory.com/entry/6-%EB%8C%80%ED%99%94%EC%83%81%EC%9E%90%EC%99%80-%EC%BB%A8%ED%8A%B8%EB%A1%A4
