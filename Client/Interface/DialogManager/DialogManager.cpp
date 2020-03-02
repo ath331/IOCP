@@ -39,6 +39,7 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 			MAKEINTRESOURCE(IDI_APPLICATION)));
 		SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(NULL,
 			MAKEINTRESOURCE(IDI_APPLICATION)));
+
 		break;
 	case WM_CLOSE:
 		EndDialog(hwnd, 0);
