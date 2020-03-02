@@ -3,6 +3,7 @@
 #include <WinSock2.h>
 #include <windows.h>
 
+#include "DB.h"
 #include "ClientManager/ClientManager.h"
 #include "../ThreadManager/ThreadManager.h"
 
@@ -21,6 +22,7 @@ private:
 	SOCKET _servSock;
 	SOCKADDR_IN _servAdr;
 
+	DB db;
 	ClientManager _clientManager;
 	ThreadManager _threadManager;
 
