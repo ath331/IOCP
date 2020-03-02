@@ -1,5 +1,5 @@
 #include "DialogManager.h"
-#define MWM_SOCKET (WM_USER+1)
+//#define MWM_SOCKET (WM_USER+1)
 
 DialogManager* DialogManager::_instance = NULL;
 
@@ -271,8 +271,8 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 }
 BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	//WSAAsyncSelect(_instance->_clientLogic->_socket, hwnd, MWM_SOCKET, FD_READ);
 
+	//WSAAsyncSelect(_instance->_clientLogic->_socket, hwnd, MWM_SOCKET, FD_READ);
 	HBRUSH g_hbrBackground = _instance->g_hbrBackground;
 
 	switch (message)
@@ -306,28 +306,28 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		return (LONG)g_hbrBackground;
 	}
 	break;
-	case MWM_SOCKET:
-	{
-		switch (WORD(lParam))
-		{
-		case FD_READ:
-		{
-			PacketSendMessage packetSendMessage;
-			recv((SOCKET)wParam, (char*)packetSendMessage.buffer, 500, 0);
-			HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
-			if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
-			{
-				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
-				int maxListBoxSize = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
-				SendMessageA(listBox, LB_SETTOPINDEX, maxListBoxSize - 1, 0);
-			}
-		}
-		break;
+	//case MWM_SOCKET:
+	//{
+	//	switch (WORD(lParam))
+	//	{
+	//	case FD_READ:
+	//	{
+	//		PacketSendMessage packetSendMessage;
+	//		recv((SOCKET)wParam, (char*)packetSendMessage.buffer, 500, 0);
+	//		HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
+	//		if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
+	//		{
+	//			SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
+	//			int maxListBoxSize = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
+	//			SendMessageA(listBox, LB_SETTOPINDEX, maxListBoxSize - 1, 0);
+	//		}
+	//	}
+	//	break;
 
-		default:
-			break;
-		}
-	}
+	//	default:
+	//		break;
+	//	}
+	//}
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
@@ -348,8 +348,6 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			packetSendMessage.roomNum = atoi(tempRoomNum.c_str());
 			_instance->_clientLogic->SendPacket<int>(PacketIndex::SEND_MESSAGE, (const char*)&packetSendMessage);
 		}
-		break;
-
 		break;
 
 		case IDCANCEL:
