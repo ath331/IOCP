@@ -18,9 +18,12 @@
 #define IDC_ROOM_PRIVATE                1015
 #define IDC_ROOM_MAX_CLIENT_NUM         1021
 #define IDC_CHECK1                      1022
+#define IDC_CHANGE_NAME                 1022
 #define IDC_INPUT_KEY                   1023
 #define IDC_LIST2                       1027
 #define IDC_CLIENTINFO                  1029
+#define IDC_BUTTON1                     1031
+#define IDC_NAME_INPUT                  1032
 
 // Next default values for new objects
 // 
@@ -28,7 +31,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1030
+#define _APS_NEXT_CONTROL_VALUE         1033
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
