@@ -1,5 +1,5 @@
 #include "DialogManager.h"
-//#define MWM_SOCKET (WM_USER+1)
+#define MWM_SOCKET (WM_USER+1)
 
 DialogManager* DialogManager::_instance = NULL;
 
@@ -97,6 +97,8 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 }
 BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	WSAAsyncSelect(_instance->_clientLogic->_socket, hwnd, MWM_SOCKET, FD_READ | FD_CLOSE);
+
 	int msgboxID = 0;
 	HBRUSH g_hbrBackground = _instance->g_hbrBackground;
 
@@ -123,6 +125,64 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		return (LONG)g_hbrBackground;
 	}
 	break;
+	case MWM_SOCKET:
+	{
+		switch (WORD(lParam))
+		{
+		case FD_CLOSE:
+		{
+			cout << "Server Out.." << endl;
+			//TODO : Server종료라는 메시지박스 띄우기
+			exit(1);
+		}
+		break;
+
+		case FD_READ:
+		{
+			//TODO : recv를 clientLogic으로 빼기
+			PacketHeader packetHeader;
+			char buf[1024];
+			int recvLen = recv(wParam, (char*)&packetHeader, sizeof(PacketHeader), 0);
+			switch (packetHeader.index)
+			{
+			case PacketIndex::RES_ROOM_LIST:
+			{
+				memcpy(&buf, (const void*)&packetHeader, recvLen);
+				while (recvLen < sizeof(RES_PacketRoomList))
+					recvLen += recv(wParam, &buf[recvLen], 1, 0);
+				RES_PacketRoomList resPacketRoomList;
+				memcpy(&resPacketRoomList, &buf, sizeof(RES_PacketRoomList));
+
+				HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
+				SendMessageA(listBox, LB_RESETCONTENT, 0, 0);
+
+				if (resPacketRoomList.maxRoomCount != 0)
+				{
+					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
+					{
+						string tempStr = std::to_string(resPacketRoomList.roomInfoList[i].roomNum) + " 번방	" + resPacketRoomList.roomInfoList[i].roomName + "	" + std::to_string(resPacketRoomList.roomInfoList[i].curClientNum) + "/" + std::to_string(resPacketRoomList.roomInfoList[i].maxClientInRoom);
+						SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)tempStr.c_str());
+					}
+				}
+			}
+			break;
+			default:
+				break;
+			}
+			//HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
+			//if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
+			//{
+			//	SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
+			//	int maxListBoxSize = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
+			//	SendMessageA(listBox, LB_SETTOPINDEX, maxListBoxSize - 1, 0);
+			//}
+		}
+		break;
+
+		default:
+			break;
+		}
+	}
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
@@ -133,19 +193,19 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		break;
 		case IDC_RESET_ROOM:
 		{
-			HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
-			SendMessageA(listBox, LB_RESETCONTENT, 0, 0);
+			/*HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
+			SendMessageA(listBox, LB_RESETCONTENT, 0, 0);*/
 
-			RES_PacketRoomList resPacketRoomList =
-				_instance->_clientLogic->SendPacket<RES_PacketRoomList>(PacketIndex::ROOM_LIST, NULL);
-			if (resPacketRoomList.maxRoomCount != 0)
+			RES_PacketRoomList resPacketRoomList;
+			_instance->_clientLogic->SendPacket<int>(PacketIndex::ROOM_LIST, (const char*)&resPacketRoomList);
+			/*if (resPacketRoomList.maxRoomCount != 0)
 			{
 				for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
 				{
 					string tempStr = std::to_string(resPacketRoomList.roomInfoList[i].roomNum) + " 번방	" + resPacketRoomList.roomInfoList[i].roomName + "	" + std::to_string(resPacketRoomList.roomInfoList[i].curClientNum) + "/" + std::to_string(resPacketRoomList.roomInfoList[i].maxClientInRoom);
 					SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)tempStr.c_str());
 				}
-			}
+			}*/
 		}
 		break;
 

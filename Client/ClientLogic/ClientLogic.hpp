@@ -32,6 +32,12 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 
 	switch (type)
 	{
+	case PacketIndex::ROOM_LIST:
+	{
+		PacketRoomList packetRoomList;
+		send(_socket, (const char*)&packetRoomList, packetRoomList.header.headerSize, 0);
+		return 0;
+	}
 	case PacketIndex::Login:
 	{
 		PacketLogin packetLogin;
