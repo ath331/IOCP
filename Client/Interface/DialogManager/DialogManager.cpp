@@ -191,6 +191,21 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				_instance->MakeDialog(DialogType::MakeRoom);
 		}
 		break;
+		case IDC_CHANGE_NAME:
+		{
+			if (_instance->_clientLogic->GetIsEnteredRoom() == FALSE)
+			{
+				char tempName[21];
+				GetDlgItemText(hwnd, IDC_NAME_INPUT, tempName, 20);
+				string tempNameStr = tempName;
+				_instance->_clientLogic->SetName(tempNameStr);
+				msgboxID = MessageBox(hwnd, "닉네임이 변경됬습니다!", "닉네임변경", MB_OK);
+				if (msgboxID == 6) //확인버튼 누름
+					EndDialog(hwnd, 0);
+			}
+		}
+		break;
+
 		case IDC_RESET_ROOM:
 		{
 			RES_PacketRoomList resPacketRoomList;
@@ -288,7 +303,7 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 		case IDOK:
 		{
 			PacketMakeRoom packetMakeRoom;
-			GetDlgItemText(hwnd, IDC_ROOM_NAME, packetMakeRoom.roomName, 10);
+			GetDlgItemText(hwnd, IDC_ROOM_NAME, packetMakeRoom.roomName, 20);
 			packetMakeRoom.maxClientCount = GetDlgItemInt(hwnd, IDC_ROOM_MAX_CLIENT_NUM, NULL, FALSE);
 			if (packetMakeRoom.maxClientCount < 2)
 				packetMakeRoom.maxClientCount = 2;
