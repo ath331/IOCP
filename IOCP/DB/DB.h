@@ -1,6 +1,6 @@
 #pragma once
-//#pragma comment (lib,"libmySQL.lib")
-//#include <mysql.h>
+#pragma comment (lib,"libmySQL.lib")
+#include <mysql.h>
 
 class DB
 {
@@ -10,4 +10,5 @@ public:
 	void UpdateData();
 	void CloseDB();
 private:
+	MYSQL _mysql;
 };
