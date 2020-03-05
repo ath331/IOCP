@@ -21,6 +21,15 @@ public:
 	template <>
 	int SendPacket(PacketIndex type, const char* buffer);
 	SOCKET _socket;
+
+	bool GetIsEnteredRoom()
+	{
+		return _isEnteredRoom;
+	}
+	void SetIsEnteredRoom(bool type)
+	{
+		_isEnteredRoom = type;
+	}
 private:
 	WSADATA _wsaData;
 	SOCKADDR_IN _servAdr;
@@ -29,6 +38,6 @@ private:
 	std::string _name;
 	int _strLen = 0, _readLen = 0;
 
-
+	bool _isEnteredRoom = FALSE;
 };
 #include "ClientLogic.hpp"
