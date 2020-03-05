@@ -166,6 +166,18 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				}
 			}
 			break;
+
+			case PacketIndex::SEND_MESSAGE:
+			{
+				memcpy(&buf, (const void*)&packetHeader, recvLen);
+				while (recvLen < sizeof(PacketSendMessage))
+					recvLen += recv(wParam, &buf[recvLen], 1, 0);
+				PacketSendMessage packetSendMessage;
+				memcpy(&packetSendMessage, &buf, sizeof(PacketSendMessage));
+				
+			}
+			break;
+
 			default:
 				break;
 			}
@@ -198,6 +210,8 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 
 			RES_PacketRoomList resPacketRoomList;
 			_instance->_clientLogic->SendPacket<int>(PacketIndex::ROOM_LIST, (const char*)&resPacketRoomList);
+			HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
+			SendMessageA(listBox, LB_RESETCONTENT, 0, 0);
 			/*if (resPacketRoomList.maxRoomCount != 0)
 			{
 				for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
@@ -366,28 +380,28 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		return (LONG)g_hbrBackground;
 	}
 	break;
-	//case MWM_SOCKET:
-	//{
-	//	switch (WORD(lParam))
-	//	{
-	//	case FD_READ:
-	//	{
-	//		PacketSendMessage packetSendMessage;
-	//		recv((SOCKET)wParam, (char*)packetSendMessage.buffer, 500, 0);
-	//		HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
-	//		if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
-	//		{
-	//			SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
-	//			int maxListBoxSize = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
-	//			SendMessageA(listBox, LB_SETTOPINDEX, maxListBoxSize - 1, 0);
-	//		}
-	//	}
-	//	break;
+	case MWM_SOCKET:
+	{
+		switch (WORD(lParam))
+		{
+		case FD_READ:
+		{
+			PacketSendMessage packetSendMessage;
+			recv((SOCKET)wParam, (char*)packetSendMessage.buffer, 500, 0);
+			HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
+			if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
+			{
+				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
+				int maxListBoxSize = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
+				SendMessageA(listBox, LB_SETTOPINDEX, maxListBoxSize - 1, 0);
+			}
+		}
+		break;
 
-	//	default:
-	//		break;
-	//	}
-	//}
+		default:
+			break;
+		}
+	}
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
