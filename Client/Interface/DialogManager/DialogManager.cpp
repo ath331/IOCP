@@ -36,6 +36,12 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		if (_instance->_clientLogic->Connect() != 0)
+		{
+			msgboxID = MessageBox(hwnd, "서버와 연결실패", "연결실패", MB_OK);
+			if (msgboxID == 6)
+				EndDialog(hwnd, 0);
+		}
 		g_hbrBackground = CreateSolidBrush(RGB(128, 128, 128));
 
 		SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(NULL,
@@ -61,26 +67,20 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 		switch (LOWORD(wParam))
 		{
 		case ID_ENTER:
-			if (_instance->_clientLogic->Connect() == 0)
-			{
-				TCHAR name[10];
-				GetDlgItemText(hwnd, ID_NAME, name, 10);
-				std::string tempName;
-				tempName = name;
-				_instance->_clientLogic->SetName(tempName);
-				PacketLogin packetLogin;
-				memcpy((void*)packetLogin.name, name, sizeof(name));
-				_instance->_clientLogic->SendPacket<int>(PacketIndex::Login, (const char*)&packetLogin);
-				EndDialog(hwnd, 0);
-				_instance->MakeDialog(DialogType::Main);
-			}
-			else
-			{
-				msgboxID = MessageBox(hwnd, "서버와 연결실패", "연결실패", MB_OK);
-				if (msgboxID == 6)
-					EndDialog(hwnd, 0);
-			}
-			break;
+		{
+			TCHAR name[10];
+			GetDlgItemText(hwnd, ID_NAME, name, 10);
+			std::string tempName;
+			tempName = name;
+			_instance->_clientLogic->SetName(tempName);
+			PacketLogin packetLogin;
+			memcpy((void*)packetLogin.name, name, sizeof(name));
+			_instance->_clientLogic->SendPacket<int>(PacketIndex::Login, (const char*)&packetLogin);
+			EndDialog(hwnd, 0);
+			_instance->MakeDialog(DialogType::Main);
+		}
+
+		break;
 		case ID_ENTER2:
 		{
 			_instance->MakeDialog(DialogType::MakeID);
@@ -164,7 +164,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				while (recvLen < sizeof(RES_PacketRoomList))
 					recvLen += recv(wParam, &buf[recvLen], 1, 0);
 				RES_PacketRoomList resPacketRoomList;
-				memcpy(&resPacketRoomList, &buf, sizeof(buf));
+				memcpy(&resPacketRoomList, &buf, sizeof(RES_PacketRoomList));
 
 				if (resPacketRoomList.maxRoomCount != 0)
 				{
