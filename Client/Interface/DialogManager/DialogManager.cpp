@@ -151,7 +151,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				while (recvLen < sizeof(RES_PacketRoomList))
 					recvLen += recv(wParam, &buf[recvLen], 1, 0);
 				RES_PacketRoomList resPacketRoomList;
-				memcpy(&resPacketRoomList, &buf, sizeof(RES_PacketRoomList));
+				memcpy(&resPacketRoomList, &buf, sizeof(buf));
 
 				if (resPacketRoomList.maxRoomCount != 0)
 				{
