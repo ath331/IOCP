@@ -20,6 +20,9 @@ enum class PacketIndex : int
 	CLOSE_ROOM,
 
 	SEND_MESSAGE, //Client의 채팅을 담은 패킷
+
+	DB_INDEX, //패킷인덱스가 DB관련인지 소스에서 쉽게 접근하기위한 접근 INDEX
+	MAKE_CLIENT_ID_INFO,
 };
 
 struct PacketInfo
@@ -140,5 +143,20 @@ struct PacketSendMessage
 	{
 		header.index = PacketIndex::SEND_MESSAGE;
 		header.headerSize = sizeof(PacketSendMessage);
+	}
+};
+
+struct PacketClientIdInfo
+{
+	PacketHeader header;
+	const char id[20] = "";
+	const char pw[20] = "";
+	const char name[MAX_NAME_LENGTH] = "";
+	bool isMakeId = FALSE;
+
+	PacketClientIdInfo()
+	{
+		header.index = PacketIndex::MAKE_CLIENT_ID_INFO;
+		header.headerSize = sizeof(PacketClientIdInfo);
 	}
 };

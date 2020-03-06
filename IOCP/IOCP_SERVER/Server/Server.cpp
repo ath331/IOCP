@@ -21,7 +21,7 @@ void Server::InitServer()
 	}
 
 	_comPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-	_threadManager.InitThreadManager(_sysInfo.dwNumberOfProcessors, _comPort,&_clientManager);
+	_threadManager.InitThreadManager(_sysInfo.dwNumberOfProcessors, _comPort,&_clientManager,&db);
 
 	_servSock = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	memset(&_servAdr, 0, sizeof(_servAdr));

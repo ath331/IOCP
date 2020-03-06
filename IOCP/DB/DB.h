@@ -7,7 +7,7 @@ using namespace std;
 class DB
 {
 public:
-	void InsertData();
+	void InsertData(string id, string pw, string name);
 	void UpdateData();
 	void CloseDB();
 

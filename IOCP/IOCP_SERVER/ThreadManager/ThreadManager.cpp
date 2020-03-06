@@ -2,6 +2,7 @@
 #include "ClientInfo.h"
 #include "OverlappedCustom.h"
 #include "../Server/ClientManager/ClientManager.h"
+#include "DB.h"
 
 #include <process.h>
 #include <iostream>
@@ -11,25 +12,30 @@
 
 Lock ThreadManager::_packetQueueLock;
 queue<PacketInfo> ThreadManager::_packetQueue;
+Lock ThreadManager::_packetDBQueueLock;
+queue<PacketInfo> ThreadManager::_packetDBQueue;
 ClientManager* ThreadManager::_clientManager;
+DB* ThreadManager::_db;
 RoomManager ThreadManager::_roomManager;
 
-void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager)
+void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db)
 {
 	_maxThreadNum = maxThreadNum;
 	_comPort = comPort;
 	_clientManager = clientManager;
+	_db = db;
 }
 
 void ThreadManager::MakeThread()
 {
 	_MakeIOThreads();
 	_MakeLogicThread();
+	_MakeDBThread();
 }
 
 void ThreadManager::_MakeIOThreads()
 {
-	for (int i = 0; i < _maxThreadNum - 1; i++) //한개의 쓰레드는 SingleLogicThread로 사용
+	for (int i = 0; i < _maxThreadNum - 2; i++)
 	{
 		_beginthreadex(NULL, 0, _RunIOThreadMain, _comPort, 0, NULL);
 	}
@@ -40,11 +46,25 @@ void ThreadManager::_MakeLogicThread()
 	_beginthreadex(NULL, 0, _RunLogicThreadMain, NULL, 0, NULL);
 }
 
-void ThreadManager::_pushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[])
+void ThreadManager::_MakeDBThread()
 {
-	LockGuard pushQueueLockGuard(_packetQueueLock);
-	PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
-	_packetQueue.push(tempPacketInfo);
+	_beginthreadex(NULL, 0, _RunDBThreadMain, NULL, 0, NULL);
+}
+
+void ThreadManager::_pushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[])
+{
+	if (queueIndex == QueueIndex::NORMAL_QUEUE)
+	{
+		LockGuard pushQueueLockGuard(_packetQueueLock);
+		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
+		_packetQueue.push(tempPacketInfo);
+	}
+	else if (queueIndex == QueueIndex::DB)
+	{
+		LockGuard pushDBQueueLockGuard(_packetDBQueueLock);
+		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
+		_packetDBQueue.push(tempPacketInfo);
+	}
 }
 
 
@@ -84,7 +104,13 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 			memcpy(&packetHeader, &(ioInfo->buffer), sizeof(packetHeader.headerSize));
 			//TODO : packetHeader.headerSize가 패킷의 총 길이이므로 추가로 읽어야한다면 recv 구현
 
-			_pushPacketQueue(clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
+			if (packetHeader.index > PacketIndex::DB_INDEX)
+			{
+				_pushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
+			}
+			else
+				_pushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
+
 		}
 		else if (ioInfo->rwMode == Overlapped::IO_TYPE::WRITE)
 		{
@@ -176,7 +202,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "님이 접속했습니다.";
-				SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str(),TRUE);
+				SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str(), TRUE);
 			}
 			break;
 
@@ -192,7 +218,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "님이 나갔습니다.";
-				SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(),TRUE);
+				SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(), TRUE);
 			}
 			break;
 
@@ -211,6 +237,36 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 	}
 	return 0;
 }
+
+unsigned int WINAPI ThreadManager::_RunDBThreadMain(HANDLE completionPortIO)
+{
+	while (true)
+	{
+		Sleep(1);
+		LockGuard pushDBQueueLockGuard(_packetDBQueueLock);
+		if (!_packetDBQueue.empty())
+		{
+			PacketInfo packetInfo;
+			packetInfo = _packetDBQueue.front();
+			_packetDBQueue.pop();
+
+			switch (packetInfo.packetIndex)
+			{
+			case PacketIndex::MAKE_CLIENT_ID_INFO:
+			{
+				PacketClientIdInfo packetClientIdInfo;
+				memcpy(&packetClientIdInfo, packetInfo.packetBuffer, sizeof(PacketClientIdInfo));
+				_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name);
+				break;
+			}
+
+			default:
+				break;
+			}
+		}
+	}
+}
+
 
 void ThreadManager::SendMessageToClient(int roomNum, const char* msg, bool isSystemMessage)
 {
