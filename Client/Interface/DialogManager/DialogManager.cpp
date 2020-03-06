@@ -21,6 +21,9 @@ void DialogManager::MakeDialog(DialogType dialogType, string roomName)
 		_instance->_roomName = roomName;
 		DialogBox(_hInst, MAKEINTRESOURCE(IDD_ChatROom), NULL, (DLGPROC)DlgProcChatRoom);
 		break;
+	case DialogType::MakeID:
+		DialogBox(_hInst, MAKEINTRESOURCE(IDD_MAKE_ID), NULL, (DLGPROC)DlgProcMakeID);
+		break;
 	default:
 		break;
 	}
@@ -78,6 +81,12 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 					EndDialog(hwnd, 0);
 			}
 			break;
+		case ID_ENTER2:
+		{
+			_instance->MakeDialog(DialogType::MakeID);
+		}
+		break;
+
 		case ID_EXIT:
 			msgboxID = MessageBox(hwnd, "프로그램을 종료할까요?", "종료확인", MB_YESNO);
 
@@ -132,8 +141,12 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		case FD_CLOSE:
 		{
 			cout << "Server Out.." << endl;
-			//TODO : Server종료라는 메시지박스 띄우기
-			exit(1);
+			msgboxID = MessageBox(hwnd, "ServerOut", "ServerOut", MB_OK);
+			if (msgboxID == 6) //확인버튼 누름
+			{
+				EndDialog(hwnd, 0);
+				exit(1);
+			}
 		}
 		break;
 
@@ -440,5 +453,60 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		return FALSE;
 	}
 
+	return TRUE;
+}
+BOOL CALLBACK DialogManager::DlgProcMakeID(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	int msgboxID = 0;
+	HBRUSH g_hbrBackground = _instance->g_hbrBackground;
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		g_hbrBackground = CreateSolidBrush(RGB(128, 128, 128));
+
+		SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(NULL,
+			MAKEINTRESOURCE(IDI_APPLICATION)));
+		SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(NULL,
+			MAKEINTRESOURCE(IDI_APPLICATION)));
+
+		break;
+	case WM_CLOSE:
+		EndDialog(hwnd, 0);
+		break;
+	case WM_CTLCOLORDLG:
+		return (LONG)g_hbrBackground;
+	case WM_CTLCOLORSTATIC:
+	{
+		HDC hdcStatic = (HDC)wParam;
+		SetTextColor(hdcStatic, RGB(255, 255, 255));
+		SetBkMode(hdcStatic, TRANSPARENT);
+		return (LONG)g_hbrBackground;
+	}
+	break;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+		{
+			char tempID[21], tempPW[20], tempName[MAX_NAME_LENGTH];
+			GetDlgItemText(hwnd, ID_INPUT_ID, tempID, 20);
+			GetDlgItemText(hwnd, ID_INPUT_PW, tempPW, 20);
+			GetDlgItemText(hwnd, ID_INPUT_NAME, tempName, MAX_NAME_LENGTH);
+			PacketClientIdInfo packetClientIdInfo;
+			memcpy((void*)&packetClientIdInfo.id, tempID, sizeof(tempID));
+			memcpy((void*)&packetClientIdInfo.pw, tempPW, sizeof(tempPW));
+			memcpy((void*)&packetClientIdInfo.name, tempName, sizeof(tempName));
+			_instance->_clientLogic->SendPacket<int>(PacketIndex::MAKE_CLIENT_ID_INFO, (const char*)&packetClientIdInfo);
+		}
+		break;
+		}
+		break;
+
+	case WM_DESTROY:
+		DeleteObject(g_hbrBackground);
+		break;
+	default:
+		return FALSE;
+	}
 	return TRUE;
 }

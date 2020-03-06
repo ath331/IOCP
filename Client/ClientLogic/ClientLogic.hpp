@@ -84,6 +84,14 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 		send(_socket, (const char*)&packetSendMessage, packetSendMessage.header.headerSize, 0);
 		return 0;
 	}
+
+	case PacketIndex::MAKE_CLIENT_ID_INFO:
+	{
+		PacketClientIdInfo packetClientIdInfo;
+		memcpy(&packetClientIdInfo, buffer, sizeof(PacketClientIdInfo));
+		send(_socket, (const char*)&packetClientIdInfo, packetClientIdInfo.header.headerSize, 0);
+		return 0;
+	}
 	default:
 		break;
 	}

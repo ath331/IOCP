@@ -14,6 +14,7 @@ enum class DialogType : int
 	Main,
 	MakeRoom,
 	ChatRoom,
+	MakeID
 };
 
 class DialogManager
@@ -41,4 +42,6 @@ private:
 	static BOOL CALLBACK DlgProcMain(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	static BOOL CALLBACK DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	static BOOL CALLBACK DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	static BOOL CALLBACK DlgProcMakeID(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
 };
