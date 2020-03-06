@@ -10,3 +10,4 @@ winApi Message : https://wjdgh283.tistory.com/entry/6-%EB%8C%80%ED%99%94%EC%83%8
 recv TimeOut : https://heestoryme.tistory.com/417
 프로젝트 경로 설정 : http://blog.naver.com/PostView.nhn?blogId=dgsw102&logNo=221040768712
 MySql visualStudio : https://m.blog.naver.com/dd1587/221157117516
+c++ 캡슐화 pimpl idiom 패턴 : https://grayt.tistory.com/66
