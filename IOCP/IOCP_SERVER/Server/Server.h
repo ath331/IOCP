@@ -22,7 +22,7 @@ private:
 	SOCKET _servSock;
 	SOCKADDR_IN _servAdr;
 
-	//DB db;
+	DB db;
 	ClientManager _clientManager;
 	ThreadManager _threadManager;
 

@@ -1,14 +1,20 @@
 #pragma once
 #pragma comment (lib,"libmySQL.lib")
-#include <mysql.h>
+#include <iostream>
+
+using namespace std;
 
 class DB
 {
 public:
-	void Init();
 	void InsertData();
 	void UpdateData();
 	void CloseDB();
+
+	DB();
+	~DB();
+
 private:
-	MYSQL _mysql;
+	struct _MysqlStruct;
+	unique_ptr<_MysqlStruct> _mysqlInstance;
 };
