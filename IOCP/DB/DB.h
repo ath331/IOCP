@@ -7,7 +7,9 @@ using namespace std;
 class DB
 {
 public:
-	void InsertData(string id, string pw, string name);
+	bool InsertData(string id, string pw, string name);
+	bool CheckIdPw(string id, string pw);
+	string GetName(string id);
 	void UpdateData();
 	void CloseDB();
 

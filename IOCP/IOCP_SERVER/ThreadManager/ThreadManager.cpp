@@ -142,16 +142,16 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 
 			switch (packetInfo.packetIndex)
 			{
-			case PacketIndex::Login:
-			{
-				PacketLogin packetLogin;
-				memcpy(&packetLogin, packetInfo.packetBuffer, sizeof(PacketLogin));
+				/*case PacketIndex::Login:
+				{
+					PacketLogin packetLogin;
+					memcpy(&packetLogin, packetInfo.packetBuffer, sizeof(PacketLogin));
 
-				ClientInfo* clientInfo = new ClientInfo(packetInfo.sock);
-				memcpy((void*)clientInfo->clientName, packetLogin.name, sizeof(packetLogin.name));
-				_clientManager->PushClientInfo(clientInfo);
-			}
-			break;
+					ClientInfo* clientInfo = new ClientInfo(packetInfo.sock);
+					memcpy((void*)clientInfo->clientName, packetLogin.name, sizeof(packetLogin.name));
+					_clientManager->PushClientInfo(clientInfo);
+				}
+				break;*/
 
 			case PacketIndex::MAKE_ROOM:
 			{
@@ -252,11 +252,36 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(HANDLE completionPortIO)
 
 			switch (packetInfo.packetIndex)
 			{
+			case PacketIndex::Login:
+			{
+				PacketLogin packetLogin;
+				memcpy(&packetLogin, packetInfo.packetBuffer, sizeof(PacketLogin));
+				if (_db->CheckIdPw(packetLogin.id, packetLogin.pw))
+				{
+					string name = _db->GetName(packetLogin.id);
+
+					ClientInfo* clientInfo = new ClientInfo(packetInfo.sock);
+					memcpy((void*)clientInfo->clientName, (const void*)name.c_str(), sizeof(name.c_str()));
+					_clientManager->PushClientInfo(clientInfo);
+
+					memcpy((void*)&packetLogin.name, (const void*)name.c_str(), sizeof(name.c_str()));
+					packetLogin.isSuccessIdCheck = TRUE;
+					send(packetInfo.sock, (const char*)&packetLogin, packetLogin.header.headerSize, 0);
+				}
+			}
+			break;
+
 			case PacketIndex::MAKE_CLIENT_ID_INFO:
 			{
 				PacketClientIdInfo packetClientIdInfo;
 				memcpy(&packetClientIdInfo, packetInfo.packetBuffer, sizeof(PacketClientIdInfo));
-				_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name);
+				PacketDBInsertData packetDbInsertData;
+				if (_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name))
+				{
+					//DB에 데이터등록이 성공할 경우
+					packetDbInsertData.isSuccessInsertData = TRUE;
+				}
+				send(packetInfo.sock, (const char*)&packetDbInsertData, packetDbInsertData.header.headerSize, 0);
 				break;
 			}
 

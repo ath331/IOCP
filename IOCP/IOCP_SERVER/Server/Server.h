@@ -1,5 +1,5 @@
 #pragma once
-
+//TODO : IOCP send ´Ùµë±â
 #include <WinSock2.h>
 #include <windows.h>
 

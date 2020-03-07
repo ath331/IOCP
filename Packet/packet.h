@@ -8,7 +8,6 @@ const static int MAX_ROOM_COUNT = 20;
 
 enum class PacketIndex : int
 {
-	Login,
 
 	MAKE_ROOM,
 	RES_MAKE_ROOM,
@@ -22,7 +21,10 @@ enum class PacketIndex : int
 	SEND_MESSAGE, //Client의 채팅을 담은 패킷
 
 	DB_INDEX, //패킷인덱스가 DB관련인지 소스에서 쉽게 접근하기위한 접근 INDEX
+	Login,
 	MAKE_CLIENT_ID_INFO,
+	DB_INSERT_DATA,
+	DB_UPDATE_NAME,
 };
 
 struct PacketInfo
@@ -41,8 +43,10 @@ struct PacketHeader
 struct PacketLogin
 {
 	PacketHeader header;
-	const char name[MAX_NAME_LENGTH] = {};
-	//const char* password[]; //TOCO : DB추가시 아이디생성 로직 만들때 구현하기
+	const char id[20] = "DEFUALT_ID";
+	const char pw[20] = "DEFUALT_PW";
+	const char name[MAX_NAME_LENGTH] = "DEFUALT";
+	bool isSuccessIdCheck = FALSE;
 
 	PacketLogin()
 	{
@@ -160,3 +164,27 @@ struct PacketClientIdInfo
 		header.headerSize = sizeof(PacketClientIdInfo);
 	}
 };
+
+struct PacketDBInsertData
+{
+	PacketHeader header;
+	bool isSuccessInsertData = FALSE;
+
+	PacketDBInsertData()
+	{
+		header.index = PacketIndex::DB_INSERT_DATA;
+		header.headerSize = sizeof(PacketDBInsertData);
+	}
+};
+
+//struct PacketDBUpdateName
+//{
+//	PacketHeader header;
+//	const char name[MAX_NAME_LENGTH] = "";
+//
+//	PacketDBUpdateName()
+//	{
+//		header.index = PacketIndex::DB_UPDATE_NAME;
+//		header.headerSize = sizeof(PacketDBUpdateName);
+//	}
+//};
