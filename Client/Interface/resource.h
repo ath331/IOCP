@@ -32,7 +32,6 @@
 #define IDC_NAME_INPUT                  1032
 #define ID_INPUT_ID                     1034
 #define ID_INPUT_PW                     1035
-#define IDC_ID_CHECK                    1036
 
 // Next default values for new objects
 // 

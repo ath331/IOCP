@@ -1,4 +1,6 @@
 #include "DialogManager.h"
+#include <iostream>
+using namespace std;
 #define MWM_SOCKET (WM_USER+1)
 
 DialogManager* DialogManager::_instance = NULL;
@@ -68,16 +70,29 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 		{
 		case ID_ENTER:
 		{
-			TCHAR name[10];
-			GetDlgItemText(hwnd, ID_NAME, name, 10);
-			std::string tempName;
-			tempName = name;
-			_instance->_clientLogic->SetName(tempName);
+			char id[20], pw[20];
+			GetDlgItemText(hwnd, ID_ID, id, 20);
+			GetDlgItemText(hwnd, ID_PW, pw, 20);
+
 			PacketLogin packetLogin;
-			memcpy((void*)packetLogin.name, name, sizeof(name));
-			_instance->_clientLogic->SendPacket<int>(PacketIndex::Login, (const char*)&packetLogin);
-			EndDialog(hwnd, 0);
-			_instance->MakeDialog(DialogType::Main);
+			memcpy((void*)&packetLogin.id, &id, sizeof(id));
+			memcpy((void*)&packetLogin.pw, &pw, sizeof(pw));
+
+			_instance->_clientLogic->SendPacket(PacketIndex::Login, (const char*)&packetLogin);
+			PacketLogin* tempPacketLogin =
+			(PacketLogin*)(_instance->_clientLogic->RecvPacket(PacketIndex::Login));
+			_instance->_clientLogic->SetName(tempPacketLogin->name);
+			if (tempPacketLogin->isSuccessIdCheck)
+			{
+				EndDialog(hwnd, 0);
+				_instance->MakeDialog(DialogType::Main);
+			}
+			else
+			{
+				msgboxID = MessageBox(hwnd, "Fail Login", "Login", MB_OK);
+				if (msgboxID == 6)
+					EndDialog(hwnd, 0);
+			}
 		}
 
 		break;
@@ -222,7 +237,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		case IDC_RESET_ROOM:
 		{
 			RES_PacketRoomList resPacketRoomList;
-			_instance->_clientLogic->SendPacket<int>(PacketIndex::ROOM_LIST, (const char*)&resPacketRoomList);
+			_instance->_clientLogic->SendPacket(PacketIndex::ROOM_LIST, (const char*)&resPacketRoomList);
 			HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
 			SendMessageA(listBox, LB_RESETCONTENT, 0, 0);
 		}
@@ -241,7 +256,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 					string roomNumStr = roomInfoStr.substr(0, 2);
 					PacketEnterRoom packetEnterRoom;
 					packetEnterRoom.roomNum = stoi(roomNumStr);
-					_instance->_clientLogic->SendPacket<int>(PacketIndex::ENTER_ROOM, (const char*)&packetEnterRoom);
+					_instance->_clientLogic->SendPacket(PacketIndex::ENTER_ROOM, (const char*)&packetEnterRoom);
 					_instance->_clientLogic->SetIsEnteredRoom(TRUE);
 					_instance->MakeDialog(DialogType::ChatRoom, roomInfoStr);
 				}
@@ -324,7 +339,7 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 				packetMakeRoom.maxClientCount = 10;
 
 			PacketIndex packetIndex = PacketIndex::MAKE_ROOM;
-			int temp = _instance->_clientLogic->SendPacket<int>(packetIndex, (const char*)&packetMakeRoom);
+			int temp = _instance->_clientLogic->SendPacket(packetIndex, (const char*)&packetMakeRoom);
 			if (temp != -1 && packetIndex == PacketIndex::MAKE_ROOM)
 			{
 				//temp = roomNum
@@ -354,7 +369,6 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 }
 BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-
 	WSAAsyncSelect(_instance->_clientLogic->_socket, hwnd, MWM_SOCKET, FD_READ);
 	HBRUSH g_hbrBackground = _instance->g_hbrBackground;
 
@@ -375,7 +389,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		string tempRoomNum = "";
 		GetWindowText(hwnd, (char*)tempRoomNum.c_str(), 2);
 		packetCloseRoom.roomNum = atoi(tempRoomNum.c_str());
-		_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, (const char*)&packetCloseRoom);
+		_instance->_clientLogic->SendPacket(PacketIndex::CLOSE_ROOM, (const char*)&packetCloseRoom);
 		EndDialog(hwnd, 0);
 		break;
 	}
@@ -429,7 +443,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			string tempRoomNum = " ";
 			GetWindowText(hwnd, (LPSTR)tempRoomNum.c_str(), 2);
 			packetSendMessage.roomNum = atoi(tempRoomNum.c_str());
-			_instance->_clientLogic->SendPacket<int>(PacketIndex::SEND_MESSAGE, (const char*)&packetSendMessage);
+			_instance->_clientLogic->SendPacket(PacketIndex::SEND_MESSAGE, (const char*)&packetSendMessage);
 		}
 		break;
 
@@ -438,7 +452,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			string tempRoomNum = "";
 			GetWindowText(hwnd, (char*)tempRoomNum.c_str(), 2);
 			packetCloseRoom.roomNum = atoi(tempRoomNum.c_str());
-			_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, (const char*)&packetCloseRoom);
+			_instance->_clientLogic->SendPacket(PacketIndex::CLOSE_ROOM, (const char*)&packetCloseRoom);
 			EndDialog(hwnd, 0);
 			_instance->_clientLogic->SetIsEnteredRoom(FALSE);
 			break;
@@ -446,7 +460,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		break;
 
 	case WM_DESTROY:
-		_instance->_clientLogic->SendPacket<int>(PacketIndex::CLOSE_ROOM, NULL);
+		_instance->_clientLogic->SendPacket(PacketIndex::CLOSE_ROOM, NULL);
 		DeleteObject(g_hbrBackground);
 		break;
 	default:
@@ -496,7 +510,25 @@ BOOL CALLBACK DialogManager::DlgProcMakeID(HWND hwnd, UINT message, WPARAM wPara
 			memcpy((void*)&packetClientIdInfo.id, tempID, sizeof(tempID));
 			memcpy((void*)&packetClientIdInfo.pw, tempPW, sizeof(tempPW));
 			memcpy((void*)&packetClientIdInfo.name, tempName, sizeof(tempName));
-			_instance->_clientLogic->SendPacket<int>(PacketIndex::MAKE_CLIENT_ID_INFO, (const char*)&packetClientIdInfo);
+			_instance->_clientLogic->SendPacket(PacketIndex::MAKE_CLIENT_ID_INFO, (const char*)&packetClientIdInfo);
+			PacketDBInsertData* packetDbInsertData = (PacketDBInsertData*)(_instance->_clientLogic->RecvPacket(PacketIndex::DB_INSERT_DATA));
+			if (packetDbInsertData->isSuccessInsertData)
+			{
+				msgboxID = MessageBox(hwnd, "ID생성", "MAKE_ID", MB_OK);
+				if (msgboxID == 6) //확인버튼 누름
+				{
+					EndDialog(hwnd, 0);
+				}
+				EndDialog(hwnd, 0);
+			}
+			else
+			{
+				msgboxID = MessageBox(hwnd, "ID생성 실패", "MAKE_ID", MB_OK);
+				if (msgboxID == 6) //확인버튼 누름
+				{
+					EndDialog(hwnd, 0);
+				}
+			}
 		}
 		break;
 		}

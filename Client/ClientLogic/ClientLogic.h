@@ -16,10 +16,14 @@ public:
 
 	void SetName(std::string name);
 	std::string GetName();
-	template <typename PacketKind>
-	PacketKind SendPacket(PacketIndex type, const char* buffer);
-	template <>
+	//template <typename PacketKind>
+	//PacketKind SendPacket(PacketIndex type, const char* buffer);
+	//template <>
 	int SendPacket(PacketIndex type, const char* buffer);
+	//template <typename PacketKind>
+	char* RecvPacket(PacketIndex type);
+	char buf[1024] = { 0, };
+
 	SOCKET _socket;
 
 	bool GetIsEnteredRoom()
@@ -40,4 +44,4 @@ private:
 
 	bool _isEnteredRoom = FALSE;
 };
-#include "ClientLogic.hpp"
+//#include "ClientLogic.hpp"
