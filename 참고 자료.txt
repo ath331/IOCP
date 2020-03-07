@@ -11,3 +11,4 @@ recv TimeOut : https://heestoryme.tistory.com/417
 프로젝트 경로 설정 : http://blog.naver.com/PostView.nhn?blogId=dgsw102&logNo=221040768712
 MySql visualStudio : https://m.blog.naver.com/dd1587/221157117516
 c++ 캡슐화 pimpl idiom 패턴 : https://grayt.tistory.com/66
+db sql 명령어 : https://m.blog.naver.com/PostView.nhn?blogId=hj_veronica&logNo=220541888848&proxyReferer=https%3A%2F%2Fwww.google.com%2F
