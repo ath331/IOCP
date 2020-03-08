@@ -502,17 +502,27 @@ BOOL CALLBACK DialogManager::DlgProcMakeID(HWND hwnd, UINT message, WPARAM wPara
 		{
 		case IDOK:
 		{
-			char tempID[21], tempPW[20], tempName[MAX_NAME_LENGTH];
-			GetDlgItemText(hwnd, ID_INPUT_ID, tempID, 20);
-			GetDlgItemText(hwnd, ID_INPUT_PW, tempPW, 20);
-			GetDlgItemText(hwnd, ID_INPUT_NAME, tempName, MAX_NAME_LENGTH);
+			char tempID[20] = "", tempPW[20] = "", tempName[MAX_NAME_LENGTH] = "";
+			if (GetDlgItemText(hwnd, ID_INPUT_ID, tempID, sizeof(tempID)) == 0)
+				cout << "aa" << endl;
+			GetDlgItemText(hwnd, ID_INPUT_PW, tempPW, sizeof(tempPW));
+			GetDlgItemText(hwnd, ID_INPUT_NAME, tempName, sizeof(tempName));
+			if (tempID[0] == NULL || tempPW[0] == NULL)
+			{
+				msgboxID = MessageBox(hwnd, "ºóÄ­¤¤¤¤", "MAKE_ID", MB_OK);
+				if (msgboxID == 6) //È®ÀÎ¹öÆ° ´©¸§
+				{
+					EndDialog(hwnd, 0);
+				}
+				break;
+			}
 			PacketClientIdInfo packetClientIdInfo;
 			memcpy((void*)&packetClientIdInfo.id, tempID, sizeof(tempID));
 			memcpy((void*)&packetClientIdInfo.pw, tempPW, sizeof(tempPW));
 			memcpy((void*)&packetClientIdInfo.name, tempName, sizeof(tempName));
 			_instance->_clientLogic->SendPacket(PacketIndex::MAKE_CLIENT_ID_INFO, (const char*)&packetClientIdInfo);
 			PacketDBInsertData* packetDbInsertData = NULL;
-				packetDbInsertData = (PacketDBInsertData*)(_instance->_clientLogic->RecvPacket(PacketIndex::DB_INSERT_DATA));
+			packetDbInsertData = (PacketDBInsertData*)(_instance->_clientLogic->RecvPacket(PacketIndex::DB_INSERT_DATA));
 			if (packetDbInsertData->isSuccessInsertData)
 			{
 				msgboxID = MessageBox(hwnd, "ID»ý¼º", "MAKE_ID", MB_OK);
