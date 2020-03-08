@@ -17,6 +17,8 @@ DB::DB() : _mysqlInstance(make_unique<_MysqlStruct>())
 		mysql_real_connect(&(_mysqlInstance->_conn), "localhost", "root", "xoghks105", "iocp_chat_db", 3306, NULL, 0);
 	if (_mysqlInstance->_connPtr == NULL)
 		cout << "DB::DB() Error" << endl;
+
+	UpdateData(UpdataType::SOCK,NULL,NULL);
 }
 
 DB::~DB() {}
@@ -24,17 +26,13 @@ DB::~DB() {}
 bool DB::InsertData(string id, string pw, string name)
 {
 	int rowCount = 0;
-	//TODO : 테이블 정보 조회 함수화
-	string selectQuery = "SELECT* FROM clientInfo";
-	int result = mysql_query(_mysqlInstance->_connPtr, selectQuery.c_str());
-	if (result != 0)
-		cout << "mysql_query(_mysqlInstance->_connPtr, selectQuery.c_str()) error <<endl;" << endl;
-	_mysqlInstance->_result = mysql_store_result(_mysqlInstance->_connPtr);
+	SelectDBTable(TRUE);
+	SelectDBTable();
 	while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
 	{
 		rowCount++;
 	}
-	mysql_free_result(_mysqlInstance->_result);
+	SelectDBTable(TRUE);
 
 	string insertQuery = "INSERT INTO clientinfo values('";
 	insertQuery += to_string(rowCount);
@@ -46,7 +44,7 @@ bool DB::InsertData(string id, string pw, string name)
 	insertQuery += name;
 	insertQuery += "')";
 
-	result = mysql_query(_mysqlInstance->_connPtr, insertQuery.c_str());
+	int result = mysql_query(_mysqlInstance->_connPtr, insertQuery.c_str());
 	if (result != 0)
 	{
 		cout << "mysql_query(_mysqlInstance->_connPtr,insertQuery.c_str()) error" << endl;
@@ -58,18 +56,14 @@ bool DB::InsertData(string id, string pw, string name)
 
 bool DB::CheckIdPw(string id, string pw)
 {
-	//TODO : 테이블 정보 조회 함수화
-	string selectQuery = "SELECT* FROM clientInfo";
-	int result = mysql_query(_mysqlInstance->_connPtr, selectQuery.c_str());
-	if (result != 0)
-		cout << "mysql_query(_mysqlInstance->_connPtr, selectQuery.c_str()) error <<endl;" << endl;
-	_mysqlInstance->_result = mysql_store_result(_mysqlInstance->_connPtr);
+	SelectDBTable(TRUE);
+	SelectDBTable();
 	while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
 	{
 		if (_mysqlInstance->_row[1] == id)
 			if (_mysqlInstance->_row[2] == pw)
 			{
-				mysql_free_result(_mysqlInstance->_result);
+				SelectDBTable(TRUE);
 				return TRUE;
 			}
 	}
@@ -78,12 +72,8 @@ bool DB::CheckIdPw(string id, string pw)
 
 string DB::GetName(string id)
 {
-	//TODO : 테이블 정보 조회 함수화
-	string selectQuery = "SELECT* FROM clientInfo";
-	int result = mysql_query(_mysqlInstance->_connPtr, selectQuery.c_str());
-	if (result != 0)
-		cout << "mysql_query(_mysqlInstance->_connPtr, selectQuery.c_str()) error <<endl;" << endl;
-	_mysqlInstance->_result = mysql_store_result(_mysqlInstance->_connPtr);
+	SelectDBTable(TRUE);
+	SelectDBTable();
 	while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
 	{
 		if (_mysqlInstance->_row[1] == id)
@@ -91,9 +81,26 @@ string DB::GetName(string id)
 	}
 }
 
-void DB::UpdateData()
+void DB::UpdateData(UpdataType type, string id, string name, int sock = -1)
 {
 
+}
+
+void DB::SelectDBTable(bool isResetResult = false)
+{
+	if (isResetResult)
+	{
+		mysql_free_result(_mysqlInstance->_result);
+	}
+
+	else
+	{
+		string selectQuery = "SELECT* FROM clientInfo";
+		int result = mysql_query(_mysqlInstance->_connPtr, selectQuery.c_str());
+		if (result != 0)
+			cout << "mysql_query(_mysqlInstance->_connPtr, selectQuery.c_str()) error <<endl;" << endl;
+		_mysqlInstance->_result = mysql_store_result(_mysqlInstance->_connPtr);
+	}
 }
 
 void DB::CloseDB()
