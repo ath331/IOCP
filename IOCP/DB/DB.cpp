@@ -2,6 +2,7 @@
 #include <mysql.h>
 #include <string>
 #include <stdio.h>
+
 struct DB::_MysqlStruct
 {
 	MYSQL _conn;
@@ -18,7 +19,7 @@ DB::DB() : _mysqlInstance(make_unique<_MysqlStruct>())
 	if (_mysqlInstance->_connPtr == NULL)
 		cout << "DB::DB() Error" << endl;
 
-	UpdateData(UpdataType::SOCK,NULL,NULL,NULL);
+	UpdateData(UpdataType::SOCK);
 }
 
 DB::~DB() {}
@@ -56,7 +57,6 @@ bool DB::InsertData(string id, string pw, string name)
 
 bool DB::CheckIdPw(string id, string pw)
 {
-	SelectDBTable(TRUE);
 	SelectDBTable();
 	while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
 	{
@@ -72,34 +72,67 @@ bool DB::CheckIdPw(string id, string pw)
 
 string DB::GetName(string id)
 {
-	SelectDBTable(TRUE);
 	SelectDBTable();
 	while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
 	{
 		if (_mysqlInstance->_row[0] == id)
+		{
+			SelectDBTable(TRUE);
 			return (string)_mysqlInstance->_row[2];
+		}
 	}
 }
 
 void DB::UpdateData(UpdataType type, string id, string name, int sock)
 {
+	SelectDBTable();
 	switch (type)
 	{
 	case UpdataType::NAME:
-		break;
-	case UpdataType::SOCK:
 	{
-		SelectDBTable(TRUE);
-		SelectDBTable();
 		while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
 		{
-			_mysqlInstance->_row[3] = (char*)-1;
+			if (_mysqlInstance->_row[0] == id)
+			{
+				string updateName = "UPDATE clientInfo set clientName = '";
+				updateName += name;
+				updateName += "'";
+				int result = mysql_query(_mysqlInstance->_connPtr, updateName.c_str());
+				if (result != 0)
+					cout << "mysql_query(_mysqlInstance->_connPtr, updateName.c_str() error" << endl;
+			}
 		}
 	}
-		break;
+	break;
+
+	case UpdataType::SOCK:
+	{
+		string updateSock = "UPDATE clientInfo set clientSock = '";
+		updateSock += to_string(sock);
+		updateSock += "'";
+
+		if (id == "tempId")
+		{
+			int result = mysql_query(_mysqlInstance->_connPtr, updateSock.c_str());
+			if (result != 0)
+				cout << "mysql_query(_mysqlInstance->_connPtr, updateSock.c_str()  sock = -1 error" << endl;
+		}
+
+		else if (id != "tempId")
+		{
+			updateSock += "where clientID = '";
+			updateSock += id;
+			updateSock += "'";
+			int result = mysql_query(_mysqlInstance->_connPtr, updateSock.c_str());
+			if (result != 0)
+				cout << "mysql_query(_mysqlInstance->_connPtr, updateSock.c_str() error" << endl;
+		}
+	}
+	break;
 	default:
 		break;
 	}
+	SelectDBTable(TRUE);
 }
 
 void DB::SelectDBTable(bool isResetResult)

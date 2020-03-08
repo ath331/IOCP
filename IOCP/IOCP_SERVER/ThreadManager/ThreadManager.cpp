@@ -264,6 +264,8 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(HANDLE completionPortIO)
 					memcpy((void*)clientInfo->clientName, (const void*)name.c_str(), sizeof(name.c_str()));
 					_clientManager->PushClientInfo(clientInfo);
 
+					_db->UpdateData(UpdataType::SOCK, packetLogin.id, packetLogin.name, packetInfo.sock);
+
 					memcpy((void*)&packetLogin.name, (const void*)name.c_str(), sizeof(name.c_str()));
 					packetLogin.isSuccessIdCheck = TRUE;
 					send(packetInfo.sock, (const char*)&packetLogin, packetLogin.header.headerSize, 0);
