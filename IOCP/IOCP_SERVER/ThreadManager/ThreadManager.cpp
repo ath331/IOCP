@@ -277,14 +277,23 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(HANDLE completionPortIO)
 			{
 				PacketClientIdInfo packetClientIdInfo;
 				memcpy(&packetClientIdInfo, packetInfo.packetBuffer, sizeof(PacketClientIdInfo));
-				PacketDBInsertData packetDbInsertData;
-				if (_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name))
+
+				if (packetClientIdInfo.isChangeName == FALSE)
 				{
-					//DB에 데이터등록이 성공할 경우
-					packetDbInsertData.isSuccessInsertData = TRUE;
+					PacketDBInsertData packetDbInsertData;
+					if (_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name))
+					{
+						//DB에 데이터등록이 성공할 경우
+						packetDbInsertData.isSuccessInsertData = TRUE;
+					}
+					send(packetInfo.sock, (const char*)&packetDbInsertData, packetDbInsertData.header.headerSize, 0);
+					break;
 				}
-				send(packetInfo.sock, (const char*)&packetDbInsertData, packetDbInsertData.header.headerSize, 0);
-				break;
+				else if (packetClientIdInfo.isChangeName == TRUE)
+				{
+					_db->UpdateData(UpdataType::NAME, "tempId", packetClientIdInfo.name, packetInfo.sock);
+					break;
+				}
 			}
 
 			default:

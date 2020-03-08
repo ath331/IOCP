@@ -157,6 +157,7 @@ struct PacketClientIdInfo
 	const char pw[20] = "";
 	const char name[MAX_NAME_LENGTH] = "";
 	bool isMakeId = FALSE;
+	bool isChangeName = FALSE;
 
 	PacketClientIdInfo()
 	{

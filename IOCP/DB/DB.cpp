@@ -90,18 +90,16 @@ void DB::UpdateData(UpdataType type, string id, string name, int sock)
 	{
 	case UpdataType::NAME:
 	{
-		while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
-		{
-			if (_mysqlInstance->_row[0] == id)
-			{
-				string updateName = "UPDATE clientInfo set clientName = '";
-				updateName += name;
-				updateName += "'";
-				int result = mysql_query(_mysqlInstance->_connPtr, updateName.c_str());
-				if (result != 0)
-					cout << "mysql_query(_mysqlInstance->_connPtr, updateName.c_str() error" << endl;
-			}
-		}
+		string updateName = "UPDATE clientInfo set clientName = '";
+		updateName += name;
+		updateName += "' WHERE clientSock ='";
+		updateName += to_string(sock);
+		updateName += "'";
+
+		int result = mysql_query(_mysqlInstance->_connPtr, updateName.c_str());
+		if (result != 0)
+			cout << "mysql_query(_mysqlInstance->_connPtr, updateName.c_str() error" << endl;
+
 	}
 	break;
 
