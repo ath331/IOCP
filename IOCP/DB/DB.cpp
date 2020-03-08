@@ -18,7 +18,7 @@ DB::DB() : _mysqlInstance(make_unique<_MysqlStruct>())
 	if (_mysqlInstance->_connPtr == NULL)
 		cout << "DB::DB() Error" << endl;
 
-	UpdateData(UpdataType::SOCK,NULL,NULL);
+	UpdateData(UpdataType::SOCK,NULL,NULL,NULL);
 }
 
 DB::~DB() {}
@@ -60,8 +60,8 @@ bool DB::CheckIdPw(string id, string pw)
 	SelectDBTable();
 	while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
 	{
-		if (_mysqlInstance->_row[1] == id)
-			if (_mysqlInstance->_row[2] == pw)
+		if (_mysqlInstance->_row[0] == id)
+			if (_mysqlInstance->_row[1] == pw)
 			{
 				SelectDBTable(TRUE);
 				return TRUE;
@@ -76,17 +76,33 @@ string DB::GetName(string id)
 	SelectDBTable();
 	while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
 	{
-		if (_mysqlInstance->_row[1] == id)
-			return (string)_mysqlInstance->_row[3];
+		if (_mysqlInstance->_row[0] == id)
+			return (string)_mysqlInstance->_row[2];
 	}
 }
 
-void DB::UpdateData(UpdataType type, string id, string name, int sock = -1)
+void DB::UpdateData(UpdataType type, string id, string name, int sock)
 {
-
+	switch (type)
+	{
+	case UpdataType::NAME:
+		break;
+	case UpdataType::SOCK:
+	{
+		SelectDBTable(TRUE);
+		SelectDBTable();
+		while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
+		{
+			_mysqlInstance->_row[3] = (char*)-1;
+		}
+	}
+		break;
+	default:
+		break;
+	}
 }
 
-void DB::SelectDBTable(bool isResetResult = false)
+void DB::SelectDBTable(bool isResetResult)
 {
 	if (isResetResult)
 	{

@@ -1,0 +1,7 @@
+Table : clientInfo
+클라이언트의 아이디정보를 저장하는 테이블
+
+clientID(PK)
+clientPW
+cientName
+clientSock //클라가 처음에 들어오면 sockNum을 저장해서 이후에 sockNum으로 무슨 데이터에 접근하는지 알 수있다.
