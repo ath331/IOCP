@@ -223,10 +223,17 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		{
 			if (_instance->_clientLogic->GetIsEnteredRoom() == FALSE)
 			{
-				char tempName[21];
-				GetDlgItemText(hwnd, IDC_NAME_INPUT, tempName, 20);
+				char tempName[MAX_NAME_LENGTH];
+				GetDlgItemText(hwnd, IDC_NAME_INPUT, tempName, MAX_NAME_LENGTH);
+				if (tempName[0] == NULL)
+					break;
 				string tempNameStr = tempName;
 				_instance->_clientLogic->SetName(tempNameStr);
+
+				PacketClientIdInfo packetClientIdInfo;
+				memcpy((void*)&packetClientIdInfo.name, tempNameStr.c_str(),sizeof(tempNameStr.c_str()));
+				packetClientIdInfo.isChangeName = TRUE;
+				_instance->_clientLogic->SendPacket(PacketIndex::MAKE_CLIENT_ID_INFO, (const char*)&packetClientIdInfo);
 				msgboxID = MessageBox(hwnd, "닉네임이 변경됬습니다!", "닉네임변경", MB_OK);
 				if (msgboxID == 6) //확인버튼 누름
 					EndDialog(hwnd, 0);
