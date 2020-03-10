@@ -26,24 +26,14 @@ DB::~DB() {}
 
 bool DB::InsertData(string id, string pw, string name)
 {
-	int rowCount = 0;
-	SelectDBTable(TRUE);
-	SelectDBTable();
-	while ((_mysqlInstance->_row = mysql_fetch_row(_mysqlInstance->_result)) != NULL)
-	{
-		rowCount++;
-	}
-	SelectDBTable(TRUE);
 
 	string insertQuery = "INSERT INTO clientinfo values('";
-	insertQuery += to_string(rowCount);
-	insertQuery += "','";
 	insertQuery += id;
 	insertQuery += "','";
 	insertQuery += pw;
 	insertQuery += "','";
 	insertQuery += name;
-	insertQuery += "')";
+	insertQuery += "','-1')";
 
 	int result = mysql_query(_mysqlInstance->_connPtr, insertQuery.c_str());
 	if (result != 0)
