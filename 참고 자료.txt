@@ -12,3 +12,4 @@ recv TimeOut : https://heestoryme.tistory.com/417
 MySql visualStudio : https://m.blog.naver.com/dd1587/221157117516
 c++ 캡슐화 pimpl idiom 패턴 : https://grayt.tistory.com/66
 db sql 명령어 : https://m.blog.naver.com/PostView.nhn?blogId=hj_veronica&logNo=220541888848&proxyReferer=https%3A%2F%2Fwww.google.com%2F
+class 전방선언  https://ju3un.github.io/c++-forward-declaration/
