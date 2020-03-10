@@ -51,6 +51,9 @@
     <ClCompile Include="ThreadManager\RoomManager\RoomManager.cpp">
       <Filter>ThreadMamager\RoomManager</Filter>
     </ClCompile>
+    <ClCompile Include="Basic\ClientInfo.cpp">
+      <Filter>Basic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server\Server.h">
