@@ -234,7 +234,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				memcpy((void*)&packetClientIdInfo.name, tempNameStr.c_str(),sizeof(tempNameStr.c_str()));
 				packetClientIdInfo.isChangeName = TRUE;
 				_instance->_clientLogic->SendPacket(PacketIndex::MAKE_CLIENT_ID_INFO, (const char*)&packetClientIdInfo);
-				msgboxID = MessageBox(hwnd, "닉네임이 변경됬습니다!", "닉네임변경", MB_OK);
+				msgboxID = MessageBox(hwnd, "닉네임이 변경되었습니다!", "닉네임변경", MB_OK);
 				if (msgboxID == 6) //확인버튼 누름
 					EndDialog(hwnd, 0);
 			}
