@@ -51,13 +51,11 @@ void ThreadManager::_PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketI
 {
 	if (queueIndex == QueueIndex::NORMAL_QUEUE)
 	{
-		LockGuard pushQueueLockGuard(_packetQueueLock);
 		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
 		_packetQueue.push(tempPacketInfo);
 	}
 	else if (queueIndex == QueueIndex::DB)
 	{
-		LockGuard pushDBQueueLockGuard(_packetDBQueueLock);
 		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
 		_packetDBQueue.push(tempPacketInfo);
 	}
@@ -131,12 +129,10 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 	while (true)
 	{
 		Sleep(1);
-		LockGuard pushQueueLockGuard(thisObject->_packetQueueLock); //queue에 패킷을 넣을때와 같은 lock객체를 이용
 		if (!(thisObject->_packetQueue.empty()))
 		{
 			PacketInfo packetInfo;
-			packetInfo = thisObject->_packetQueue.front();
-			thisObject->_packetQueue.pop();
+			thisObject->_packetQueue.try_pop(packetInfo);
 
 			switch (packetInfo.packetIndex)
 			{
@@ -242,12 +238,10 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 	while (true)
 	{
 		Sleep(1);
-		LockGuard pushDBQueueLockGuard(thisObject->_packetDBQueueLock);
 		if (!(thisObject->_packetDBQueue.empty()))
 		{
 			PacketInfo packetInfo;
-			packetInfo = thisObject->_packetDBQueue.front();
-			thisObject->_packetDBQueue.pop();
+			thisObject->_packetDBQueue.try_pop(packetInfo);
 
 			switch (packetInfo.packetIndex)
 			{

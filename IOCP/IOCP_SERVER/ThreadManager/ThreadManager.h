@@ -4,9 +4,8 @@
 #include <queue>
 
 #include "packet.h"
-#include "Lock.h"
 #include "RoomManager/RoomManager.h"
-
+#include <concurrent_queue.h>
 
 using namespace std;
 
@@ -37,10 +36,8 @@ private:
 	static unsigned int WINAPI _RunLogicThreadMain(void* thisObject);
 	static unsigned int WINAPI _RunDBThreadMain(void* thisObject);
 
-	Lock _packetQueueLock;
-	queue<PacketInfo> _packetQueue;
-	Lock _packetDBQueueLock;
-	queue<PacketInfo> _packetDBQueue;
+	concurrency::concurrent_queue<PacketInfo> _packetDBQueue;
+	concurrency::concurrent_queue<PacketInfo> _packetQueue;
 
 	void _PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 	void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
