@@ -16,3 +16,4 @@ class 전방선언  https://ju3un.github.io/c++-forward-declaration/
 Thread 고찰 : https://doitnow-man.tistory.com/16
 Thread 인자 파라미터에 객체 넘기기 : http://egloos.zum.com/seraph4021/v/4742102
 Thread safe queue = concurrent_queue : https://docs.microsoft.com/ko-kr/cpp/parallel/concrt/reference/concurrent-queue-class?view=vs-2019#try_pop
+algorithm vector find_if : https://riptutorial.com/ko/cplusplus/example/2326/std----vector%EC%97%90%EC%84%9C-%EC%9A%94%EC%86%8C-%EC%B0%BE%EA%B8%B0
