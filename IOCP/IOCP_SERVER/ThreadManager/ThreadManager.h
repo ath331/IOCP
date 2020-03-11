@@ -6,7 +6,6 @@
 #include "packet.h"
 #include "Lock.h"
 
-#include "RoomManager/RoomManager.h"
 
 using namespace std;
 
@@ -30,6 +29,7 @@ struct DBStructData
 
 class DB;
 class ClientManager;
+class RoomManager;
 class ThreadManager
 {
 public:

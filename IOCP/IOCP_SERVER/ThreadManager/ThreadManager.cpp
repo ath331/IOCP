@@ -2,6 +2,7 @@
 #include "ClientInfo.h"
 #include "OverlappedCustom.h"
 #include "../Server/ClientManager/ClientManager.h"
+#include "RoomManager/RoomManager.h"
 #include "DB.h"
 
 #include <process.h>
