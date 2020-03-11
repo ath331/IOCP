@@ -10,10 +10,6 @@
 #include <vector>
 #include <algorithm>
 
-Lock ThreadManager::_packetQueueLock;
-queue<PacketInfo> ThreadManager::_packetQueue;
-Lock ThreadManager::_packetDBQueueLock;
-queue<PacketInfo> ThreadManager::_packetDBQueue;
 ClientManager* ThreadManager::_clientManager;
 DB* ThreadManager::_db;
 RoomManager ThreadManager::_roomManager;
@@ -37,39 +33,40 @@ void ThreadManager::_MakeIOThreads()
 {
 	for (int i = 0; i < _maxThreadNum - 2; i++)
 	{
-		_beginthreadex(NULL, 0, _RunIOThreadMain, _comPort, 0, NULL);
+		_beginthreadex(NULL, 0, _RunIOThreadMain, this, 0, NULL);
 	}
 }
 
 void ThreadManager::_MakeLogicThread()
 {
-	_beginthreadex(NULL, 0, _RunLogicThreadMain, NULL, 0, NULL);
+	_beginthreadex(NULL, 0, _RunLogicThreadMain, &logicData, 0, NULL);
 }
 
 void ThreadManager::_MakeDBThread()
 {
-	_beginthreadex(NULL, 0, _RunDBThreadMain, NULL, 0, NULL);
+	_beginthreadex(NULL, 0, _RunDBThreadMain, &dbData, 0, NULL);
 }
 
 void ThreadManager::_pushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[])
 {
 	if (queueIndex == QueueIndex::NORMAL_QUEUE)
 	{
-		LockGuard pushQueueLockGuard(_packetQueueLock);
+		LockGuard pushQueueLockGuard(logicData._packetQueueLock);
 		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
-		_packetQueue.push(tempPacketInfo);
+		logicData._packetQueue.push(tempPacketInfo);
 	}
 	else if (queueIndex == QueueIndex::DB)
 	{
-		LockGuard pushDBQueueLockGuard(_packetDBQueueLock);
+		LockGuard pushDBQueueLockGuard(dbData._packetDBQueueLock);
 		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
-		_packetDBQueue.push(tempPacketInfo);
+		dbData._packetDBQueue.push(tempPacketInfo);
 	}
 }
 
 
-unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
+unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _dataInIOThreadMain)
 {
+	ThreadManager* dataInIOThreadMain = (ThreadManager*)_dataInIOThreadMain;
 	SOCKET sock;
 	DWORD bytesTrans;
 	ClientInfo* clientInfo;
@@ -78,7 +75,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 
 	while (1)
 	{
-		GetQueuedCompletionStatus(completionPort, &bytesTrans, (PULONG_PTR)&clientInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
+		GetQueuedCompletionStatus(dataInIOThreadMain->_comPort, &bytesTrans, (PULONG_PTR)&clientInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
 		sock = clientInfo->clientSock;
 
 		if (ioInfo->rwMode == Overlapped::IO_TYPE::READ)
@@ -106,10 +103,10 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 
 			if (packetHeader.index > PacketIndex::DB_INDEX)
 			{
-				_pushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
+				dataInIOThreadMain->_pushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 			}
 			else
-				_pushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
+				dataInIOThreadMain->_pushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 
 		}
 		else if (ioInfo->rwMode == Overlapped::IO_TYPE::WRITE)
@@ -128,17 +125,18 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(HANDLE completionPort)
 	return 0;
 }
 
-unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
+unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* logicStructData)
 {
+	LogicStructData* logicData = (LogicStructData*)logicStructData;
 	while (true)
 	{
 		Sleep(1);
-		LockGuard pushQueueLockGuard(_packetQueueLock); //queue에 패킷을 넣을때와 같은 lock객체를 이용
-		if (!_packetQueue.empty())
+		LockGuard pushQueueLockGuard(logicData->_packetQueueLock); //queue에 패킷을 넣을때와 같은 lock객체를 이용
+		if (!(logicData->_packetQueue.empty()))
 		{
 			PacketInfo packetInfo;
-			packetInfo = _packetQueue.front();
-			_packetQueue.pop();
+			packetInfo = logicData->_packetQueue.front();
+			logicData->_packetQueue.pop();
 
 			switch (packetInfo.packetIndex)
 			{
@@ -238,17 +236,19 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(HANDLE completionPortIO)
 	return 0;
 }
 
-unsigned int WINAPI ThreadManager::_RunDBThreadMain(HANDLE completionPortIO)
+unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _dbStructDaba)
 {
+	DBStructData* dbStructData = (DBStructData*)_dbStructDaba;
+
 	while (true)
 	{
 		Sleep(1);
-		LockGuard pushDBQueueLockGuard(_packetDBQueueLock);
-		if (!_packetDBQueue.empty())
+		LockGuard pushDBQueueLockGuard(dbStructData->_packetDBQueueLock);
+		if (!(dbStructData->_packetDBQueue.empty()))
 		{
 			PacketInfo packetInfo;
-			packetInfo = _packetDBQueue.front();
-			_packetDBQueue.pop();
+			packetInfo = dbStructData->_packetDBQueue.front();
+			dbStructData->_packetDBQueue.pop();
 
 			switch (packetInfo.packetIndex)
 			{
