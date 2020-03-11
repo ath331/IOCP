@@ -40,34 +40,34 @@ void ThreadManager::_MakeIOThreads()
 
 void ThreadManager::_MakeLogicThread()
 {
-	_beginthreadex(NULL, 0, _RunLogicThreadMain, &logicData, 0, NULL);
+	_beginthreadex(NULL, 0, _RunLogicThreadMain, this, 0, NULL);
 }
 
 void ThreadManager::_MakeDBThread()
 {
-	_beginthreadex(NULL, 0, _RunDBThreadMain, &dbData, 0, NULL);
+	_beginthreadex(NULL, 0, _RunDBThreadMain, this, 0, NULL);
 }
 
 void ThreadManager::_pushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[])
 {
 	if (queueIndex == QueueIndex::NORMAL_QUEUE)
 	{
-		LockGuard pushQueueLockGuard(logicData._packetQueueLock);
+		LockGuard pushQueueLockGuard(_packetQueueLock);
 		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
-		logicData._packetQueue.push(tempPacketInfo);
+		_packetQueue.push(tempPacketInfo);
 	}
 	else if (queueIndex == QueueIndex::DB)
 	{
-		LockGuard pushDBQueueLockGuard(dbData._packetDBQueueLock);
+		LockGuard pushDBQueueLockGuard(_packetDBQueueLock);
 		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
-		dbData._packetDBQueue.push(tempPacketInfo);
+		_packetDBQueue.push(tempPacketInfo);
 	}
 }
 
 
-unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _dataInIOThreadMain)
+unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* thisObject)
 {
-	ThreadManager* dataInIOThreadMain = (ThreadManager*)_dataInIOThreadMain;
+	ThreadManager* dataInIOThreadMain = (ThreadManager*)thisObject;
 	SOCKET sock;
 	DWORD bytesTrans;
 	ClientInfo* clientInfo;
@@ -126,18 +126,18 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _dataInIOThreadMain)
 	return 0;
 }
 
-unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* logicStructData)
+unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 {
-	LogicStructData* logicData = (LogicStructData*)logicStructData;
+	ThreadManager* thisObject = (ThreadManager*)_thisObject;
 	while (true)
 	{
 		Sleep(1);
-		LockGuard pushQueueLockGuard(logicData->_packetQueueLock); //queue에 패킷을 넣을때와 같은 lock객체를 이용
-		if (!(logicData->_packetQueue.empty()))
+		LockGuard pushQueueLockGuard(thisObject->_packetQueueLock); //queue에 패킷을 넣을때와 같은 lock객체를 이용
+		if (!(thisObject->_packetQueue.empty()))
 		{
 			PacketInfo packetInfo;
-			packetInfo = logicData->_packetQueue.front();
-			logicData->_packetQueue.pop();
+			packetInfo = thisObject->_packetQueue.front();
+			thisObject->_packetQueue.pop();
 
 			switch (packetInfo.packetIndex)
 			{
@@ -201,7 +201,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* logicStructData)
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "님이 접속했습니다.";
-				_SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str(), TRUE);
+				thisObject->_SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str(), TRUE);
 			}
 			break;
 
@@ -217,7 +217,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* logicStructData)
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "님이 나갔습니다.";
-				_SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(), TRUE);
+				thisObject->_SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(), TRUE);
 			}
 			break;
 
@@ -225,7 +225,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* logicStructData)
 			{
 				PacketSendMessage packetSendMessage;
 				memcpy(&packetSendMessage, packetInfo.packetBuffer, sizeof(PacketSendMessage));
-				_SendMessageToClient(packetSendMessage.roomNum, packetSendMessage.buffer);
+				thisObject->_SendMessageToClient(packetSendMessage.roomNum, packetSendMessage.buffer);
 			}
 			break;
 
@@ -237,19 +237,18 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* logicStructData)
 	return 0;
 }
 
-unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _dbStructDaba)
+unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 {
-	DBStructData* dbStructData = (DBStructData*)_dbStructDaba;
-
+	ThreadManager* thisObject = (ThreadManager*)_thisObject;
 	while (true)
 	{
 		Sleep(1);
-		LockGuard pushDBQueueLockGuard(dbStructData->_packetDBQueueLock);
-		if (!(dbStructData->_packetDBQueue.empty()))
+		LockGuard pushDBQueueLockGuard(thisObject->_packetDBQueueLock);
+		if (!(thisObject->_packetDBQueue.empty()))
 		{
 			PacketInfo packetInfo;
-			packetInfo = dbStructData->_packetDBQueue.front();
-			dbStructData->_packetDBQueue.pop();
+			packetInfo = thisObject->_packetDBQueue.front();
+			thisObject->_packetDBQueue.pop();
 
 			switch (packetInfo.packetIndex)
 			{

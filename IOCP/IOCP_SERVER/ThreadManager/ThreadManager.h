@@ -15,18 +15,6 @@ enum class QueueIndex : int
 	NORMAL_QUEUE, //DB관련 패킷이 아닌 패킷들
 };
 
-struct LogicStructData
-{
-	Lock _packetQueueLock;
-	queue<PacketInfo> _packetQueue;
-};
-
-struct DBStructData
-{
-	Lock _packetDBQueueLock;
-	queue<PacketInfo> _packetDBQueue;
-};
-
 class DB;
 class ClientManager;
 class RoomManager;
@@ -44,16 +32,18 @@ private:
 	void _MakeLogicThread();
 	void _MakeDBThread();
 
-	static unsigned int WINAPI _RunIOThreadMain(void* dataInIOThreadMain);
-	static unsigned int WINAPI _RunLogicThreadMain(void* logicStructData);
-	static unsigned int WINAPI _RunDBThreadMain(void* dbStructDaba);
+	static unsigned int WINAPI _RunIOThreadMain(void* thisObject);
+	static unsigned int WINAPI _RunLogicThreadMain(void* thisObject);
+	static unsigned int WINAPI _RunDBThreadMain(void* thisObject);
 
-	LogicStructData logicData;
-	DBStructData dbData;
+	Lock _packetQueueLock;
+	queue<PacketInfo> _packetQueue;
+	Lock _packetDBQueueLock;
+	queue<PacketInfo> _packetDBQueue;
 
 	void _pushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 
-	static void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
+	void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
 
 	static ClientManager* _clientManager;
 	static DB* _db;
