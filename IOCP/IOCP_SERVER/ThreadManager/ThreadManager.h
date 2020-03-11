@@ -53,7 +53,7 @@ private:
 
 	void _pushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 
-	static void SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
+	static void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
 
 	static ClientManager* _clientManager;
 	static DB* _db;

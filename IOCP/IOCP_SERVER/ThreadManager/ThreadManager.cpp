@@ -201,7 +201,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* logicStructData)
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "´ÔÀÌ Á¢¼ÓÇß½À´Ï´Ù.";
-				SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str(), TRUE);
+				_SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str(), TRUE);
 			}
 			break;
 
@@ -217,7 +217,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* logicStructData)
 				string enterMessage = "[SYSTEM] ";
 				enterMessage += clientInfo->clientName;
 				enterMessage += "´ÔÀÌ ³ª°¬½À´Ï´Ù.";
-				SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(), TRUE);
+				_SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(), TRUE);
 			}
 			break;
 
@@ -225,7 +225,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* logicStructData)
 			{
 				PacketSendMessage packetSendMessage;
 				memcpy(&packetSendMessage, packetInfo.packetBuffer, sizeof(PacketSendMessage));
-				SendMessageToClient(packetSendMessage.roomNum, packetSendMessage.buffer);
+				_SendMessageToClient(packetSendMessage.roomNum, packetSendMessage.buffer);
 			}
 			break;
 
@@ -305,7 +305,7 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _dbStructDaba)
 }
 
 
-void ThreadManager::SendMessageToClient(int roomNum, const char* msg, bool isSystemMessage)
+void ThreadManager::_SendMessageToClient(int roomNum, const char* msg, bool isSystemMessage)
 {
 	Room room = _roomManager.GetRoomInfoByRoomNum(roomNum);
 	int clientCount = room.clientInfoVec.size();
