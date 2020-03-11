@@ -48,7 +48,7 @@ void ThreadManager::_MakeDBThread()
 	_beginthreadex(NULL, 0, _RunDBThreadMain, this, 0, NULL);
 }
 
-void ThreadManager::_pushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[])
+void ThreadManager::_PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[])
 {
 	if (queueIndex == QueueIndex::NORMAL_QUEUE)
 	{
@@ -104,10 +104,10 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* thisObject)
 
 			if (packetHeader.index > PacketIndex::DB_INDEX)
 			{
-				dataInIOThreadMain->_pushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
+				dataInIOThreadMain->_PushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 			}
 			else
-				dataInIOThreadMain->_pushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
+				dataInIOThreadMain->_PushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 
 		}
 		else if (ioInfo->rwMode == Overlapped::IO_TYPE::WRITE)

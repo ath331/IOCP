@@ -41,7 +41,7 @@ private:
 	Lock _packetDBQueueLock;
 	queue<PacketInfo> _packetDBQueue;
 
-	void _pushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[]);
+	void _PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 
 	void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
 
