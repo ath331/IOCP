@@ -5,6 +5,7 @@
 
 #include "packet.h"
 #include "Lock.h"
+#include "RoomManager/RoomManager.h"
 
 
 using namespace std;
@@ -42,13 +43,11 @@ private:
 	queue<PacketInfo> _packetDBQueue;
 
 	void _PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[]);
-
 	void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
 
-	static ClientManager* _clientManager;
-	static DB* _db;
+	ClientManager* _clientManager;
+	DB* _db;
 
-	//static이라 스레드 동기화 이슈가 있겠지만 해당 객체는 singleLogicThread만 접근한다
-	static RoomManager _roomManager;
+	RoomManager _roomManager;
 };
 

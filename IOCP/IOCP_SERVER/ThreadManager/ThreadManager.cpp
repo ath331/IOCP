@@ -2,7 +2,6 @@
 #include "ClientInfo.h"
 #include "OverlappedCustom.h"
 #include "../Server/ClientManager/ClientManager.h"
-#include "RoomManager/RoomManager.h"
 #include "DB.h"
 
 #include <process.h>
@@ -11,9 +10,9 @@
 #include <vector>
 #include <algorithm>
 
-ClientManager* ThreadManager::_clientManager;
-DB* ThreadManager::_db;
-RoomManager ThreadManager::_roomManager;
+//ClientManager* ThreadManager::_clientManager;
+//DB* ThreadManager::_db;
+//RoomManager ThreadManager::_roomManager;
 
 void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db)
 {
@@ -65,9 +64,9 @@ void ThreadManager::_PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketI
 }
 
 
-unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* thisObject)
+unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 {
-	ThreadManager* dataInIOThreadMain = (ThreadManager*)thisObject;
+	ThreadManager* thisObject = (ThreadManager*)_thisObject;
 	SOCKET sock;
 	DWORD bytesTrans;
 	ClientInfo* clientInfo;
@@ -76,14 +75,14 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* thisObject)
 
 	while (1)
 	{
-		GetQueuedCompletionStatus(dataInIOThreadMain->_comPort, &bytesTrans, (PULONG_PTR)&clientInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
+		GetQueuedCompletionStatus(thisObject->_comPort, &bytesTrans, (PULONG_PTR)&clientInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
 		sock = clientInfo->clientSock;
 
 		if (ioInfo->rwMode == Overlapped::IO_TYPE::READ)
 		{
 			if (bytesTrans == 0)
 			{
-				_clientManager->PopClientInfo(clientInfo->clientSock);
+				thisObject->_clientManager->PopClientInfo(clientInfo->clientSock);
 				continue;
 			}
 			else if (bytesTrans < sizeof(PacketHeader)) //PacketHeader size만큼 수신하지 못했으면 추가로 읽기
@@ -104,10 +103,10 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* thisObject)
 
 			if (packetHeader.index > PacketIndex::DB_INDEX)
 			{
-				dataInIOThreadMain->_PushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
+				thisObject->_PushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 			}
 			else
-				dataInIOThreadMain->_PushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
+				thisObject->_PushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 
 		}
 		else if (ioInfo->rwMode == Overlapped::IO_TYPE::WRITE)
@@ -157,11 +156,11 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				//TODO : 방만들기와 방접속 분리하기
 				PacketMakeRoom packetMakeRoom;
 				memcpy(&packetMakeRoom, packetInfo.packetBuffer, sizeof(PacketMakeRoom));
-				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
-				_roomManager.MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
+				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
+				thisObject->_roomManager.MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
 
 				RES_PacketMakeRoom resPacketMakeRoom;
-				resPacketMakeRoom.roomNum = _roomManager.GetRoomCount() - 1;
+				resPacketMakeRoom.roomNum = thisObject->_roomManager.GetRoomCount() - 1;
 				//clientInfo->roomNum.push_back(resPacketMakeRoom.roomNum);
 				clientInfo->roomNum = resPacketMakeRoom.roomNum;
 				send(packetInfo.sock, (const char*)&resPacketMakeRoom, resPacketMakeRoom.header.headerSize, 0);
@@ -171,17 +170,17 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 			case PacketIndex::ROOM_LIST:
 			{
 				RES_PacketRoomList resPacketRoomList;
-				resPacketRoomList.maxRoomCount = _roomManager.GetRoomVecSize();
+				resPacketRoomList.maxRoomCount = thisObject->_roomManager.GetRoomVecSize();
 				if (resPacketRoomList.maxRoomCount != 0) //만든 방이 하나라도 있을때
 				{
 					if (resPacketRoomList.maxRoomCount > MAX_ROOM_COUNT)
 						resPacketRoomList.maxRoomCount = MAX_ROOM_COUNT;
 					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
 					{
-						resPacketRoomList.roomInfoList[i].roomNum = _roomManager.GetRoomInfoByCountNum(i).GetRoomNum();
-						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, _roomManager.GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(_roomManager.GetRoomInfoByCountNum(i).GetRoomName().c_str()));
-						resPacketRoomList.roomInfoList[i].maxClientInRoom = _roomManager.GetRoomInfoByCountNum(i).GetMaxClientCount();
-						resPacketRoomList.roomInfoList[i].curClientNum = _roomManager.GetRoomInfoByCountNum(i).clientInfoVec.size();
+						resPacketRoomList.roomInfoList[i].roomNum = thisObject->_roomManager.GetRoomInfoByCountNum(i).GetRoomNum();
+						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, thisObject->_roomManager.GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(thisObject->_roomManager.GetRoomInfoByCountNum(i).GetRoomName().c_str()));
+						resPacketRoomList.roomInfoList[i].maxClientInRoom = thisObject->_roomManager.GetRoomInfoByCountNum(i).GetMaxClientCount();
+						resPacketRoomList.roomInfoList[i].curClientNum = thisObject->_roomManager.GetRoomInfoByCountNum(i).clientInfoVec.size();
 					}
 					send(packetInfo.sock, (const char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
 				}
@@ -192,10 +191,10 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 			{
 				PacketEnterRoom packetEnterRoom;
 				memcpy(&packetEnterRoom, packetInfo.packetBuffer, sizeof(PacketEnterRoom));
-				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
+				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
 				//clientInfo->roomNum.push_back(packetEnterRoom.roomNum);
 				clientInfo->roomNum = packetEnterRoom.roomNum;
-				_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
+				thisObject->_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
 
 				//TODO : Message 관리 class 만들기
 				string enterMessage = "[SYSTEM] ";
@@ -209,9 +208,9 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 			{
 				PacketCloseRoom packetCloseRoom;
 				memcpy(&packetCloseRoom, packetInfo.packetBuffer, sizeof(PacketCloseRoom));
-				ClientInfo* clientInfo = _clientManager->GetClientInfo(packetInfo.sock);
+				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
 				clientInfo->OutRoom(packetCloseRoom.roomNum);
-				_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum);
+				thisObject->_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum);
 
 				//TODO : Message 관리 class 만들기
 				string enterMessage = "[SYSTEM] ";
@@ -256,15 +255,15 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 			{
 				PacketLogin packetLogin;
 				memcpy(&packetLogin, packetInfo.packetBuffer, sizeof(PacketLogin));
-				if (_db->CheckIdPw(packetLogin.id, packetLogin.pw))
+				if (thisObject->_db->CheckIdPw(packetLogin.id, packetLogin.pw))
 				{
-					string name = _db->GetName(packetLogin.id);
+					string name = thisObject->_db->GetName(packetLogin.id);
 
 					ClientInfo* clientInfo = new ClientInfo(packetInfo.sock);
 					memcpy((void*)clientInfo->clientName, (const void*)name.c_str(), sizeof(name.c_str()));
-					_clientManager->PushClientInfo(clientInfo);
+					thisObject->_clientManager->PushClientInfo(clientInfo);
 
-					_db->UpdateData(UpdataType::SOCK, packetLogin.id, packetLogin.name, packetInfo.sock);
+					thisObject->_db->UpdateData(UpdataType::SOCK, packetLogin.id, packetLogin.name, packetInfo.sock);
 
 					memcpy((void*)&packetLogin.name, (const void*)name.c_str(), sizeof(name.c_str()));
 					packetLogin.isSuccessIdCheck = TRUE;
@@ -281,7 +280,7 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 				if (packetClientIdInfo.isChangeName == FALSE)
 				{
 					PacketDBInsertData packetDbInsertData;
-					if (_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name))
+					if (thisObject->_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name))
 					{
 						//DB에 데이터등록이 성공할 경우
 						packetDbInsertData.isSuccessInsertData = TRUE;
@@ -291,7 +290,7 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 				}
 				else if (packetClientIdInfo.isChangeName == TRUE)
 				{
-					_db->UpdateData(UpdataType::NAME, "tempId", packetClientIdInfo.name, packetInfo.sock);
+					thisObject->_db->UpdateData(UpdataType::NAME, "tempId", packetClientIdInfo.name, packetInfo.sock);
 					break;
 				}
 			}
