@@ -82,20 +82,13 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 	}
 	case PacketIndex::Login:
 	{
-		//TODO : case별로 memcpy지우기
-
-		//PacketLogin packetLogin;
-		//memcpy(&packetLogin, buffer, sizeof(PacketLogin));
-		//send(_socket, (const char*)&packetLogin, packetLogin.header.headerSize, 0);
 		send(_socket, buffer, sizeof(PacketLogin), 0);
 		break;
 	}
 
 	case PacketIndex::MAKE_ROOM:
 	{
-		PacketMakeRoom packetMakeRoom;
-		memcpy(&packetMakeRoom, buffer, sizeof(PacketMakeRoom));
-		send(_socket, (const char*)&packetMakeRoom, packetMakeRoom.header.headerSize, 0);
+		send(_socket, buffer, sizeof(PacketMakeRoom), 0);
 		RES_PacketMakeRoom resPacketMakeRoom;
 		Sleep(100);
 		int recvLen = recv(_socket, (char*)&resPacketMakeRoom, sizeof(RES_PacketMakeRoom), 0);
@@ -109,32 +102,24 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 
 	case PacketIndex::ENTER_ROOM:
 	{
-		PacketEnterRoom packetEnterRoom;
-		memcpy(&packetEnterRoom, buffer, sizeof(PacketEnterRoom));
-		send(_socket, (const char*)&packetEnterRoom, packetEnterRoom.header.headerSize, 0);
+		send(_socket, buffer, sizeof(PacketEnterRoom), 0);
 		return 0;
 	}
 
 	case PacketIndex::CLOSE_ROOM:
 	{
-		PacketCloseRoom packetCloseRoom;
-		memcpy(&packetCloseRoom, buffer, sizeof(PacketCloseRoom));
-		send(_socket, (const char*)&packetCloseRoom, packetCloseRoom.header.headerSize, 0);
+		send(_socket, buffer, sizeof(PacketCloseRoom), 0);
 		return 0;
 	}
 	case PacketIndex::SEND_MESSAGE:
 	{
-		PacketSendMessage packetSendMessage;
-		memcpy(&packetSendMessage, buffer, sizeof(PacketSendMessage));
-		send(_socket, (const char*)&packetSendMessage, packetSendMessage.header.headerSize, 0);
+		send(_socket, buffer, sizeof(PacketSendMessage), 0);
 		return 0;
 	}
 
 	case PacketIndex::MAKE_CLIENT_ID_INFO:
 	{
-		PacketClientIdInfo packetClientIdInfo;
-		memcpy(&packetClientIdInfo, buffer, sizeof(PacketClientIdInfo));
-		send(_socket, (const char*)&packetClientIdInfo, packetClientIdInfo.header.headerSize, 0);
+		send(_socket, buffer, sizeof(PacketClientIdInfo), 0);
 		return 0;
 	}
 	default:
