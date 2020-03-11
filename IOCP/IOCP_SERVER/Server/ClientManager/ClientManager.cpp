@@ -1,4 +1,5 @@
 #include "ClientManager.h"
+#include <algorithm>
 #include <iostream>
 
 void ClientManager::PushClientInfo(ClientInfo* clientInfo)
@@ -9,26 +10,15 @@ void ClientManager::PushClientInfo(ClientInfo* clientInfo)
 
 void ClientManager::PopClientInfo(SOCKET sock)
 {
-	for (auto iter = _clientVec.begin(); iter != _clientVec.end(); iter++)
-	{
-		if ((*iter)->clientSock == sock)
-		{
-			cout << (*iter)->clientName << " out.." << endl;
-			closesocket(sock);
-			delete (*iter);
-			_clientVec.erase(iter);
-			break;
-		}
-	}
+	auto iter = find_if(_clientVec.begin(), _clientVec.end(), SearchClient(sock));
+
+	cout << (*iter)->clientName << " out.." << endl;
+	closesocket(sock);
+	delete (*iter);
+	_clientVec.erase(iter);
 }
 
 ClientInfo* ClientManager::GetClientInfo(SOCKET sock)
 {
-	for (auto iter = _clientVec.begin(); iter != _clientVec.end(); iter++)
-	{
-		if ((*iter)->clientSock == sock)
-		{
-			return  *iter;
-		}
-	}
+	return *find_if(_clientVec.begin(), _clientVec.end(), SearchClient(sock));
 }

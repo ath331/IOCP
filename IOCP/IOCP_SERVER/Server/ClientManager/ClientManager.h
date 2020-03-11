@@ -11,7 +11,20 @@ public:
 	void PopClientInfo(SOCKET sock);
 
 	ClientInfo* GetClientInfo(SOCKET sock);
+
 private:
 	vector<ClientInfo*> _clientVec;
-};
 
+	struct SearchClient
+	{
+		SearchClient(SOCKET sock) : _sock(sock) {}
+
+		bool operator()(ClientInfo* clientInfo)
+		{
+			return _sock == clientInfo->clientSock;
+		}
+
+	private:
+		SOCKET _sock = NULL;
+	}; 
+};
