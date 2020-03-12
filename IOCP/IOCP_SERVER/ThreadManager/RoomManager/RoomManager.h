@@ -19,4 +19,16 @@ public:
 private:
 	int _roomCount = 0;
 	vector<Room> _roomVec;
+
+	struct _SearchRoom
+	{
+		_SearchRoom(int roomNum) : _roomNum(roomNum) {}
+
+		bool operator()(Room room)
+		{
+			return room.GetRoomNum() == _roomNum;
+		}
+	private:
+		int _roomNum = -1;
+	};
 };

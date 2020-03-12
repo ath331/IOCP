@@ -22,7 +22,7 @@ public:
 	int GetRoomNum();
 	int OutClientInRoom(SOCKET clientSock, int roomNum);
 
-	Room& operator=(Room roomInfo)
+	const Room& operator=(Room roomInfo)
 	{
 		_roomNum = roomInfo._roomNum;
 		_maxClientCount = roomInfo._maxClientCount;

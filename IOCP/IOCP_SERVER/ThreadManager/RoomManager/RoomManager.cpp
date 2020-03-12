@@ -1,4 +1,5 @@
 #include "RoomManager.h"
+#include <algorithm>
 
 void RoomManager::MakeRoom(string roomName, ClientInfo* clientInfo, int maxClientCount, bool privateRoom)
 {
@@ -29,14 +30,7 @@ int RoomManager::GetRoomVecSize()
 
 Room RoomManager::GetRoomInfoByRoomNum(int roomNum)
 {
-	for (auto iter = _roomVec.begin(); iter != _roomVec.end(); iter++)
-	{
-		if (roomNum == iter->GetRoomNum())
-		{
-			return *iter;
-		}
-	}
-	//std::cout << roomNum << " No Room!" << std::endl;
+	return *(find_if(_roomVec.begin(), _roomVec.end(), _SearchRoom(roomNum)));
 }
 
 Room RoomManager::GetRoomInfoByCountNum(int count)
@@ -47,17 +41,11 @@ Room RoomManager::GetRoomInfoByCountNum(int count)
 
 void RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
 {
-	for (auto iter = _roomVec.begin(); iter != _roomVec.end(); iter++)
+	auto iter = find_if(_roomVec.begin(), _roomVec.end(), _SearchRoom(roomNum));
+	int temp = iter->OutClientInRoom(clientSock, roomNum); //temp = 방의 남은 인원
+	if (temp <= 0)
 	{
-		if (iter->GetRoomNum() == roomNum)
-		{
-			int temp = iter->OutClientInRoom(clientSock, roomNum); //temp = 방의 남은 인원
-			if (temp <= 0)
-			{
-				_roomVec.erase(iter);
-				break;
-			}
-		}
+		_roomVec.erase(iter);
 	}
 }
 
