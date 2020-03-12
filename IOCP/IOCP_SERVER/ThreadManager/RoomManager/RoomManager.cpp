@@ -39,14 +39,16 @@ Room RoomManager::GetRoomInfoByCountNum(int count)
 }
 
 
-void RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
+bool RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
 {
 	auto iter = find_if(_roomVec.begin(), _roomVec.end(), _SearchRoom(roomNum));
 	int temp = iter->OutClientInRoom(clientSock, roomNum); //temp = 방의 남은 인원
 	if (temp <= 0)
 	{
 		_roomVec.erase(iter);
+		return FALSE;
 	}
+	return TRUE;
 }
 
 int RoomManager::GetRoomCount()

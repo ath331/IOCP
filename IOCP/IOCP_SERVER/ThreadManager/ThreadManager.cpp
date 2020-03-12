@@ -206,13 +206,14 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				memcpy(&packetCloseRoom, packetInfo.packetBuffer, sizeof(PacketCloseRoom));
 				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
 				clientInfo->OutRoom(packetCloseRoom.roomNum);
-				thisObject->_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum);
-
-				//TODO : Message 관리 class 만들기
-				string enterMessage = "[SYSTEM] ";
-				enterMessage += clientInfo->clientName;
-				enterMessage += "님이 나갔습니다.";
-				thisObject->_SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(), TRUE);
+				if ((thisObject->_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum)))
+				{
+					//TODO : Message 관리 class 만들기
+					string enterMessage = "[SYSTEM] ";
+					enterMessage += clientInfo->clientName;
+					enterMessage += "님이 나갔습니다.";
+					thisObject->_SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(), TRUE);
+				}
 			}
 			break;
 
