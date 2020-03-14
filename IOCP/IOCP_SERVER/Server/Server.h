@@ -3,10 +3,10 @@
 #include <WinSock2.h>
 #include <windows.h>
 
-#include "DB.h"
-#include "ClientManager/ClientManager.h"
-#include "../ThreadManager/ThreadManager.h"
-
+class DB;
+class ClientManager;
+class ThreadManager;
+class Acceptor;
 class Server
 {
 public:
@@ -22,9 +22,11 @@ private:
 	SOCKET _servSock;
 	SOCKADDR_IN _servAdr;
 
-	DB db;
-	ClientManager _clientManager;
-	ThreadManager _threadManager;
+	DB* _db;
+	ClientManager* _clientManager;
+	ThreadManager* _threadManager;
+
+	Acceptor* _acceptor;
 
 	int _portNum = 9999;
 	int _recvBytes = 0, _flags = 0;

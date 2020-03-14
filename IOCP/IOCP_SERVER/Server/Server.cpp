@@ -2,6 +2,11 @@
 #include "OverlappedCustom.h"
 #include "ClientInfo.h"
 
+#include "DB.h"
+#include "ClientManager/ClientManager.h"
+#include "../ThreadManager/ThreadManager.h"
+#include "Acceptor/Acceptor.h"
+
 #include <iostream>
 
 void Server::InputPortNum()
@@ -20,8 +25,13 @@ void Server::InitServer()
 		exit(1);
 	}
 
+	_threadManager = new ThreadManager;
+	_clientManager = new ClientManager;
+	_db = new DB;
+	_acceptor = new Acceptor(_servSock);
+
 	_comPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-	_threadManager.InitThreadManager(_sysInfo.dwNumberOfProcessors * 2 , _comPort,&_clientManager,&db);
+	_threadManager->InitThreadManager(_sysInfo.dwNumberOfProcessors * 2, _comPort, _clientManager, _db);
 
 	_servSock = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	memset(&_servAdr, 0, sizeof(_servAdr));
@@ -44,8 +54,8 @@ void Server::InitServer()
 
 void Server::RunServer()
 {
-	_threadManager.MakeThread();
-	while (1)
+	_threadManager->MakeThread();
+	/*while (1)
 	{
 		ClientSocketInfo* clientSocketInfo;
 		Overlapped* ioInfo;
@@ -56,9 +66,10 @@ void Server::RunServer()
 
 		CreateIoCompletionPort((HANDLE)clientSocketInfo->clientSock, _comPort, (ULONG_PTR)clientSocketInfo, 0);
 
-		ioInfo = new Overlapped();
+		ioInfo = new Overlapped(Overlapped::IO_TYPE::RECV);
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
-		ioInfo->rwMode = Overlapped::IO_TYPE::READ;
 		WSARecv(clientSocketInfo->clientSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
-	}
+	}*/
+
+	_acceptor->AcceptClient();
 }
