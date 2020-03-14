@@ -7,16 +7,22 @@ struct Overlapped
 {
 	enum class IO_TYPE : int
 	{
-		READ,
-		WRITE,
+		ACCEPT,
+		RECV,
+		SEND,
 	};
 
 	OVERLAPPED overlapped;
 	WSABUF wsaBuf;
 	char buffer[BUF_SIZE];
-	IO_TYPE rwMode;
+	IO_TYPE ioType;
 
-	Overlapped()
+	Overlapped(IO_TYPE _ioType) : ioType(_ioType)
+	{
+		Init();
+	}
+
+	void Init()
 	{
 		memset(&overlapped, 0, sizeof(OVERLAPPED));
 		wsaBuf.len = BUF_SIZE;

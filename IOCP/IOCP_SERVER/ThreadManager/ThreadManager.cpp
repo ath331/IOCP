@@ -10,10 +10,6 @@
 #include <vector>
 #include <algorithm>
 
-//ClientManager* ThreadManager::_clientManager;
-//DB* ThreadManager::_db;
-//RoomManager ThreadManager::_roomManager;
-
 void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db)
 {
 	_maxThreadNum = maxThreadNum;
@@ -76,7 +72,12 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		GetQueuedCompletionStatus(thisObject->_comPort, &bytesTrans, (PULONG_PTR)&clientInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
 		sock = clientInfo->clientSock;
 
-		if (ioInfo->rwMode == Overlapped::IO_TYPE::READ)
+		if (ioInfo->ioType == Overlapped::IO_TYPE::ACCEPT)
+		{
+			CreateIoCompletionPort((HANDLE)sock, thisObject->_comPort, (ULONG_PTR)clientInfo, 0);
+		}
+
+		if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)
 		{
 			if (bytesTrans == 0)
 			{
@@ -107,7 +108,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 				thisObject->_PushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 
 		}
-		else if (ioInfo->rwMode == Overlapped::IO_TYPE::WRITE)
+		else if (ioInfo->ioType == Overlapped::IO_TYPE::SEND)
 		{
 			std::cout << "message sent!\n";
 		}
@@ -117,7 +118,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		}
 
 		ioInfo->wsaBuf.len = BUF_SIZE;
-		ioInfo->rwMode = Overlapped::IO_TYPE::READ;
+		ioInfo->ioType = Overlapped::IO_TYPE::RECV;
 		WSARecv(sock, &(ioInfo->wsaBuf), 1, NULL, &flags, &(ioInfo->overlapped), NULL);
 	}
 	return 0;

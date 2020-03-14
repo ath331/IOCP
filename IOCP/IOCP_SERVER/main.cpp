@@ -6,6 +6,7 @@ int main()
 	//server.InputPortNum();
 	server.InitServer();
 	server.RunServer();
+	server.CloseServer();
 
 	return 0;
 }

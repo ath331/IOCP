@@ -31,6 +31,9 @@
     <Filter Include="ThreadMamager\RoomManager">
       <UniqueIdentifier>{d6d27152-28fd-48e7-98ad-4a19c84e238d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server\Acceptor">
+      <UniqueIdentifier>{47c54913-5dd5-43c3-8ef9-f61f54d9a5bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -53,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="Basic\ClientInfo.cpp">
       <Filter>Basic</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\Acceptor\Acceptor.cpp">
+      <Filter>Server\Acceptor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="ThreadManager\RoomManager\RoomManager.h">
       <Filter>ThreadMamager\RoomManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\Acceptor\Acceptor.h">
+      <Filter>Server\Acceptor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

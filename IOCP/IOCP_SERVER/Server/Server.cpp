@@ -28,7 +28,6 @@ void Server::InitServer()
 	_threadManager = new ThreadManager;
 	_clientManager = new ClientManager;
 	_db = new DB;
-	_acceptor = new Acceptor(_servSock);
 
 	_comPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 	_threadManager->InitThreadManager(_sysInfo.dwNumberOfProcessors * 2, _comPort, _clientManager, _db);
@@ -49,13 +48,15 @@ void Server::InitServer()
 		std::cout << "listen() error";
 		exit(1);
 	}
+
+	_acceptor = new Acceptor(_servSock);
 }
 
 
 void Server::RunServer()
 {
 	_threadManager->MakeThread();
-	/*while (1)
+	while (1)
 	{
 		ClientSocketInfo* clientSocketInfo;
 		Overlapped* ioInfo;
@@ -69,7 +70,13 @@ void Server::RunServer()
 		ioInfo = new Overlapped(Overlapped::IO_TYPE::RECV);
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
 		WSARecv(clientSocketInfo->clientSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
-	}*/
+	}
 
-	_acceptor->AcceptClient();
+	//_acceptor->AcceptClient();
 }
+
+void Server::CloseServer()
+{
+
+}
+
