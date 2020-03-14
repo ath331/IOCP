@@ -1,11 +1,11 @@
 #pragma once
 #include <WinSock2.h>
 #include <windows.h>
-#include <queue>
+#include <vector>
+#include <concurrent_queue.h>
 
 #include "packet.h"
 #include "RoomManager/RoomManager.h"
-#include <concurrent_queue.h>
 
 using namespace std;
 
@@ -17,15 +17,16 @@ enum class QueueIndex : int
 
 class DB;
 class ClientManager;
-class RoomManager;
 class ThreadManager
 {
 public:
 	void InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db);
 	void MakeThread();
+	void WaitThread();
 private:
 
 	HANDLE _comPort;
+	vector<HANDLE> _threadHandleVec;
 	int _maxThreadNum = 0;
 
 	void _MakeIOThreads();
@@ -42,6 +43,8 @@ private:
 	void _PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 	void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
 
+
+	//TODO : class °ü¸® ´Ùµë±â
 	ClientManager* _clientManager;
 	DB* _db;
 

@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+const static int MAX_CLIENT_ACCEPT_NUM = 10;
+
 void Server::InputPortNum()
 {
 	std::cout << "Input PortNum : ";
@@ -56,7 +58,7 @@ void Server::InitServer()
 void Server::RunServer()
 {
 	_threadManager->MakeThread();
-	while (1)
+	/*while (1)
 	{
 		ClientSocketInfo* clientSocketInfo;
 		Overlapped* ioInfo;
@@ -70,13 +72,10 @@ void Server::RunServer()
 		ioInfo = new Overlapped(Overlapped::IO_TYPE::RECV);
 		ioInfo->wsaBuf.buf = ioInfo->buffer;
 		WSARecv(clientSocketInfo->clientSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
-	}
+	}*/
+	for (int i = 0; i < MAX_CLIENT_ACCEPT_NUM; i++)
+		_acceptor->AcceptClient();
 
-	//_acceptor->AcceptClient();
-}
-
-void Server::CloseServer()
-{
-
+	_threadManager->WaitThread();
 }
 

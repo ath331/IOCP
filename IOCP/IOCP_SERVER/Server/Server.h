@@ -13,7 +13,6 @@ public:
 	void InputPortNum();
 	void InitServer();
 	void RunServer();
-	void CloseServer();
 private:
 	SYSTEM_INFO _sysInfo;
 	WSADATA _wsaData;

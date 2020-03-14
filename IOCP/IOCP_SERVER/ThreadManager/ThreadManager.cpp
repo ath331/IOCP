@@ -7,7 +7,6 @@
 #include <process.h>
 #include <iostream>
 
-#include <vector>
 #include <algorithm>
 
 void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db)
@@ -29,19 +28,29 @@ void ThreadManager::_MakeIOThreads()
 {
 	for (int i = 0; i < _maxThreadNum - 2; i++)
 	{
-		_beginthreadex(NULL, 0, _RunIOThreadMain, this, 0, NULL);
+		HANDLE threadHandle = (HANDLE)_beginthreadex(NULL, 0, _RunIOThreadMain, this, 0, NULL);
+		_threadHandleVec.push_back(threadHandle);
 	}
 }
 
 void ThreadManager::_MakeLogicThread()
 {
-	_beginthreadex(NULL, 0, _RunLogicThreadMain, this, 0, NULL);
+	HANDLE threadHandle = (HANDLE)_beginthreadex(NULL, 0, _RunLogicThreadMain, this, 0, NULL);
+	_threadHandleVec.push_back(threadHandle);
 }
 
 void ThreadManager::_MakeDBThread()
 {
-	_beginthreadex(NULL, 0, _RunDBThreadMain, this, 0, NULL);
+	HANDLE threadHandle = (HANDLE)_beginthreadex(NULL, 0, _RunDBThreadMain, this, 0, NULL);
+	_threadHandleVec.push_back(threadHandle);
 }
+
+void ThreadManager::WaitThread()
+{
+	if (_threadHandleVec.empty() == false)
+		WaitForMultipleObjects(_threadHandleVec.size(),&_threadHandleVec[0],true,INFINITE);
+}
+
 
 void ThreadManager::_PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[])
 {

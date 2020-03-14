@@ -4,7 +4,7 @@
 class Acceptor
 {
 public:
-	Acceptor(SOCKET servSock) : _servSock(servSock),_overlapped(Overlapped::IO_TYPE::ACCEPT) {}
+	Acceptor(SOCKET servSock) : _servSock(servSock), _overlapped(Overlapped::IO_TYPE::ACCEPT) {}
 	~Acceptor() {}
 
 	void AcceptClient();
