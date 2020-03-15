@@ -8,6 +8,8 @@ public:
 	~Acceptor() {}
 
 	void AcceptClient();
+	void GetClientSockAddr(SOCKADDR_IN* local);
+	SOCKET GetClientSock() { return _clientSock; };
 private:
 	SOCKET _servSock;
 	SOCKET _clientSock;
@@ -15,7 +17,5 @@ private:
 	Overlapped _overlapped;
 	char _buff[1024];
 	DWORD _recvLen;
-
-	void _GetClientSockAddr();
 };
 

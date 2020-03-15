@@ -17,10 +17,12 @@ enum class QueueIndex : int
 
 class DB;
 class ClientManager;
+class Acceptor;
+class Recver;
 class ThreadManager
 {
 public:
-	void InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db);
+	void InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db, Acceptor* accept);
 	void MakeThread();
 	void WaitThread();
 private:
@@ -47,7 +49,9 @@ private:
 	//TODO : class °ü¸® ´Ùµë±â
 	ClientManager* _clientManager;
 	DB* _db;
+	Acceptor* _acceptor;
 
+	Recver _recver;
 	RoomManager _roomManager;
 };
 

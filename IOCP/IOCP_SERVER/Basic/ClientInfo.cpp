@@ -1,10 +1,5 @@
 #include "ClientInfo.h"
 
-ClientInfo::ClientInfo(SOCKET sock)
-{
-	clientSock = sock;
-}
-
 void ClientInfo::OutRoom(int _roomNum)
 {
 	roomNum = -1;

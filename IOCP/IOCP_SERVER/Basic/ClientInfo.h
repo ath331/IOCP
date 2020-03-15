@@ -12,9 +12,11 @@ struct ClientSocketInfo
 struct ClientInfo
 {
 	SOCKET clientSock;
+	SOCKADDR_IN clientAdr;
 	const char clientName[MAX_CLIENT_NAME_LENGTH] = "DEFAULT";
 	int roomNum = -1;
-	ClientInfo(SOCKET sock);
+	ClientInfo() {};
+	ClientInfo(SOCKET sock) : clientSock(sock) {};
 	void OutRoom(int _roomNum);
 
 	bool IsAcceptingRoomNum(int _roomNum);

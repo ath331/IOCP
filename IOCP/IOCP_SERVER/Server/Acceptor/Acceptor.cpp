@@ -24,7 +24,8 @@ void Acceptor::AcceptClient()
 	}
 }
 
-void Acceptor::_GetClientSockAddr()
+
+void Acceptor::GetClientSockAddr(SOCKADDR_IN* local)
 {
 	SOCKADDR_IN* localAddr = nullptr;
 	int localSockLen = 0;
@@ -35,4 +36,7 @@ void Acceptor::_GetClientSockAddr()
 		(SOCKADDR**)&localAddr, &localSockLen,
 		(SOCKADDR**)&remoteAddr, &remoteSockLen
 	);
+
+	local->sin_addr = localAddr->sin_addr;
+	local->sin_port = localAddr->sin_port;
 }
