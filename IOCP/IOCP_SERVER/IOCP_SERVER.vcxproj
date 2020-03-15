@@ -150,10 +150,10 @@
   <ItemGroup>
     <ClCompile Include="Basic\ClientInfo.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Server\Acceptor\Acceptor.cpp" />
     <ClCompile Include="Server\ClientManager\ClientManager.cpp" />
-    <ClCompile Include="Server\Recver\Recver.cpp" />
     <ClCompile Include="Server\Server.cpp" />
+    <ClCompile Include="Server\Session\Acceptor\Acceptor.cpp" />
+    <ClCompile Include="Server\Session\Recver\Recver.cpp" />
     <ClCompile Include="ThreadManager\RoomManager\Room.cpp" />
     <ClCompile Include="ThreadManager\RoomManager\RoomManager.cpp" />
     <ClCompile Include="ThreadManager\ThreadManager.cpp" />
@@ -163,10 +163,10 @@
     <ClInclude Include="Basic\ClientInfo.h" />
     <ClInclude Include="Basic\Lock.h" />
     <ClInclude Include="Basic\OverlappedCustom.h" />
-    <ClInclude Include="Server\Acceptor\Acceptor.h" />
     <ClInclude Include="Server\ClientManager\ClientManager.h" />
-    <ClInclude Include="Server\Recver\Recver.h" />
     <ClInclude Include="Server\Server.h" />
+    <ClInclude Include="Server\Session\Acceptor\Acceptor.h" />
+    <ClInclude Include="Server\Session\Recver\Recver.h" />
     <ClInclude Include="ThreadManager\RoomManager\Room.h" />
     <ClInclude Include="ThreadManager\RoomManager\RoomManager.h" />
     <ClInclude Include="ThreadManager\ThreadManager.h" />

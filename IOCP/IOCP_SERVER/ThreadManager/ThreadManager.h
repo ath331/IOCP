@@ -6,7 +6,6 @@
 
 #include "packet.h"
 #include "RoomManager/RoomManager.h"
-#include "../Server/Recver/Recver.h"
 
 using namespace std;
 
@@ -52,7 +51,6 @@ private:
 	DB* _db;
 	Acceptor* _acceptor;
 
-	Recver _recver;
 	RoomManager _roomManager;
 };
 

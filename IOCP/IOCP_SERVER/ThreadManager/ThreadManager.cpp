@@ -2,8 +2,6 @@
 #include "ClientInfo.h"
 #include "OverlappedCustom.h"
 #include "../Server/ClientManager/ClientManager.h"
-#include "../Server/Acceptor/Acceptor.h"
-#include "../Server/Recver/Recver.h"
 #include "DB.h"
 
 #include <process.h>
