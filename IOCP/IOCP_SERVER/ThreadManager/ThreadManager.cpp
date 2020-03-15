@@ -51,7 +51,7 @@ void ThreadManager::_MakeDBThread()
 void ThreadManager::WaitThread()
 {
 	if (_threadHandleVec.empty() == false)
-		WaitForMultipleObjects(_threadHandleVec.size(),&_threadHandleVec[0],true,INFINITE);
+		WaitForMultipleObjects(_threadHandleVec.size(), &_threadHandleVec[0], true, INFINITE);
 }
 
 
@@ -87,10 +87,10 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		if (ioInfo->ioType == Overlapped::IO_TYPE::ACCEPT)
 		{
 			cout << "accept" << endl;
-
 			ClientInfo* clientinfo = new ClientInfo;
 			thisObject->_acceptor->GetClientSockAddr(&(clientinfo->clientAdr));
 			clientinfo->clientSock = thisObject->_acceptor->GetClientSock();
+			thisObject->_clientManager->PushClientInfo(clientinfo);
 			CreateIoCompletionPort((HANDLE)clientinfo->clientSock, thisObject->_comPort, (ULONG_PTR)&clientinfo, 0);
 
 			thisObject->_acceptor->AcceptClient();
@@ -99,7 +99,11 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)
 		{
 			cout << "recv" << endl;
-
+			if (bytesTrans == 0)
+			{
+				thisObject->_clientManager->PopClientInfo(clientInfo->clientSock);
+				continue;
+			}
 		}
 
 		//if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)

@@ -6,6 +6,7 @@
 
 #include "packet.h"
 #include "RoomManager/RoomManager.h"
+#include "../Server/Recver/Recver.h"
 
 using namespace std;
 

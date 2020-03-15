@@ -34,6 +34,9 @@
     <Filter Include="Server\Acceptor">
       <UniqueIdentifier>{47c54913-5dd5-43c3-8ef9-f61f54d9a5bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server\Recver">
+      <UniqueIdentifier>{f2267e0f-224a-4da6-993f-8ebb3d4803cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -59,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="Server\Acceptor\Acceptor.cpp">
       <Filter>Server\Acceptor</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\Recver\Recver.cpp">
+      <Filter>Server\Recver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="Server\Acceptor\Acceptor.h">
       <Filter>Server\Acceptor</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\Recver\Recver.h">
+      <Filter>Server\Recver</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
