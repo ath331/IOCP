@@ -76,29 +76,38 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 	ThreadManager* thisObject = (ThreadManager*)_thisObject;
 	DWORD bytesTrans = 0;
 	Overlapped* ioInfo = nullptr;
-	SOCKET sock = 0;
+	SOCKET sock = 0; // CompletionKey
 
 	/*SOCKET sock;
 	DWORD flags = 0;*/
 
 	while (1)
 	{
-		GetQueuedCompletionStatus(thisObject->_comPort, &bytesTrans, &sock, (LPOVERLAPPED*)&ioInfo, INFINITE);
+		GetQueuedCompletionStatus(thisObject->_comPort, &bytesTrans, (PULONG_PTR)&sock, (LPOVERLAPPED*)&ioInfo, INFINITE);
 		//sock = clientInfo->clientSock;
 
 		if (ioInfo->ioType == Overlapped::IO_TYPE::ACCEPT)
 		{
-			cout << "accept" << endl;
 			SOCKET sock = ioInfo->sock; //Á¢¼ÓÇÑ clientSock
-			CreateIoCompletionPort((HANDLE)sock, thisObject->_comPort, NULL, 0);
-			TcpSession* session = new TcpSession(thisObject->_comPort,sock);
+			cout << sock << " accept" << endl;
+			TcpSession* session = new TcpSession(thisObject->_comPort, sock);
+			thisObject->_clientManager->clientSessionMap.insert(make_pair(sock, session));
 			session->PostRecv();
+
 			thisObject->_acceptor->AcceptClient();
 		}
 
 		if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)
 		{
-			cout << "recv" << endl;
+			cout << sock << " socket recv" << endl;
+			if (bytesTrans == 0)
+			{
+				cout << "client out" << endl;
+				thisObject->_clientManager->clientSessionMap.erase(sock);
+				continue;
+			}
+			thisObject->_clientManager->clientSessionMap.find(sock)->second->CheckPcketSize();
+
 		}
 
 		//if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)

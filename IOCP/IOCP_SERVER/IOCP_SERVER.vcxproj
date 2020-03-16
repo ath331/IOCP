@@ -153,7 +153,6 @@
     <ClCompile Include="Server\ClientManager\ClientManager.cpp" />
     <ClCompile Include="Server\Server.cpp" />
     <ClCompile Include="Server\Session\Acceptor\Acceptor.cpp" />
-    <ClCompile Include="Server\Session\Recver\Recver.cpp" />
     <ClCompile Include="Server\Session\TcpSession.cpp" />
     <ClCompile Include="ThreadManager\RoomManager\Room.cpp" />
     <ClCompile Include="ThreadManager\RoomManager\RoomManager.cpp" />
@@ -167,7 +166,6 @@
     <ClInclude Include="Server\ClientManager\ClientManager.h" />
     <ClInclude Include="Server\Server.h" />
     <ClInclude Include="Server\Session\Acceptor\Acceptor.h" />
-    <ClInclude Include="Server\Session\Recver\Recver.h" />
     <ClInclude Include="Server\Session\TcpSession.h" />
     <ClInclude Include="ThreadManager\RoomManager\Room.h" />
     <ClInclude Include="ThreadManager\RoomManager\RoomManager.h" />

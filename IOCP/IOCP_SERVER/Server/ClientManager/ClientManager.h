@@ -1,9 +1,11 @@
 #pragma once
 #include "ClientInfo.h"
 #include <vector>
+#include <map>
 
 using namespace std;
 
+class TcpSession;
 class ClientManager
 {
 public:
@@ -11,6 +13,7 @@ public:
 	void PopClientInfo(SOCKET sock);
 
 	ClientInfo* GetClientInfo(SOCKET sock);
+	map<SOCKET, TcpSession*> clientSessionMap;
 
 private:
 	vector<ClientInfo*> _clientVec;

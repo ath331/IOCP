@@ -1,22 +1,25 @@
 #pragma once
-#include "Recver/Recver.h"
+#include "OverlappedCustom.h"
 
 class TcpSession
 {
 public:
-	TcpSession(HANDLE cpHandle, SOCKET sock) : _cpHandle(cpHandle),_sock(sock)
-	, _recvOverlapped(Overlapped::IO_TYPE::RECV) {};
+	TcpSession(HANDLE cpHandle, SOCKET sock) : _cpHandle(cpHandle), _sock(sock)
+		, _recvOverlapped(Overlapped::IO_TYPE::RECV) 
+	{
+		memset(&_recvBuff, 0, sizeof(WSABUF));
+		CreateIoCompletionPort((HANDLE)sock, _cpHandle, sock, 0);
+	};
 	void PostRecv();
+	void CheckPcketSize();
 private:
-	HANDLE _cpHandle;
 	SOCKET _sock;
-	SOCKADDR_IN _local;
-	SOCKADDR_IN _remote;
+	HANDLE _cpHandle;
 
 	Overlapped _recvOverlapped;
 	WSABUF _recvBuff;
-	unsigned long _recvFlag;
-	unsigned int _recvBuffSize;
-	unsigned int _recvBuffOffSet;
-	unsigned int _recvLen;
+	unsigned long _recvFlag = 0;
+	unsigned int _recvBuffSize = 0;
+	unsigned int _recvBuffOffSet = 0;
+	unsigned int _recvLen = 0;
 };

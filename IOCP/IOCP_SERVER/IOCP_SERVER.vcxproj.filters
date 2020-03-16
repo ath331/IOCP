@@ -37,9 +37,6 @@
     <Filter Include="Server\Session\Acceptor">
       <UniqueIdentifier>{47c54913-5dd5-43c3-8ef9-f61f54d9a5bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\Session\Recver">
-      <UniqueIdentifier>{f2267e0f-224a-4da6-993f-8ebb3d4803cf}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -62,9 +59,6 @@
     </ClCompile>
     <ClCompile Include="Basic\ClientInfo.cpp">
       <Filter>Basic</Filter>
-    </ClCompile>
-    <ClCompile Include="Server\Session\Recver\Recver.cpp">
-      <Filter>Server\Session\Recver</Filter>
     </ClCompile>
     <ClCompile Include="Server\Session\Acceptor\Acceptor.cpp">
       <Filter>Server\Session\Acceptor</Filter>
@@ -100,9 +94,6 @@
     </ClInclude>
     <ClInclude Include="ThreadManager\RoomManager\RoomManager.h">
       <Filter>ThreadMamager\RoomManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Server\Session\Recver\Recver.h">
-      <Filter>Server\Session\Recver</Filter>
     </ClInclude>
     <ClInclude Include="Server\Session\Acceptor\Acceptor.h">
       <Filter>Server\Session\Acceptor</Filter>
