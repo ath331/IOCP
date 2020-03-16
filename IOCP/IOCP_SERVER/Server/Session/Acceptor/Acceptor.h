@@ -4,12 +4,14 @@
 class Acceptor
 {
 public:
-	Acceptor(SOCKET servSock) : _servSock(servSock), _overlapped(Overlapped::IO_TYPE::ACCEPT) {}
-	~Acceptor() {}
+	Acceptor() {};
+	Acceptor(SOCKET servSock) :_servSock(servSock) 
+	{
+		_overlapped.ioType = Overlapped::IO_TYPE::ACCEPT;
+	};
 
 	void AcceptClient();
 	void GetClientSockAddr(SOCKADDR_IN* local);
-	SOCKET GetClientSock() { return _clientSock; };
 private:
 	SOCKET _servSock;
 	SOCKET _clientSock;

@@ -16,7 +16,8 @@ struct Overlapped
 	WSABUF wsaBuf;
 	char buffer[BUF_SIZE];
 	IO_TYPE ioType;
-
+	SOCKET sock;
+	Overlapped() {}
 	Overlapped(IO_TYPE _ioType) : ioType(_ioType)
 	{
 		Init();

@@ -9,6 +9,9 @@
 
 #include <algorithm>
 
+#include "../Server/Session/TcpSession.h"
+#include "../Server/Session/Acceptor/Acceptor.h"
+
 void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db, Acceptor* acceptor)
 {
 	_maxThreadNum = maxThreadNum;
@@ -73,35 +76,29 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 	ThreadManager* thisObject = (ThreadManager*)_thisObject;
 	DWORD bytesTrans = 0;
 	Overlapped* ioInfo = nullptr;
-	ClientInfo* clientInfo = nullptr;
+	SOCKET sock = 0;
+
 	/*SOCKET sock;
 	DWORD flags = 0;*/
 
 	while (1)
 	{
-		GetQueuedCompletionStatus(thisObject->_comPort, &bytesTrans, (PULONG_PTR)&clientInfo, (LPOVERLAPPED*)&ioInfo, INFINITE);
+		GetQueuedCompletionStatus(thisObject->_comPort, &bytesTrans, &sock, (LPOVERLAPPED*)&ioInfo, INFINITE);
 		//sock = clientInfo->clientSock;
 
 		if (ioInfo->ioType == Overlapped::IO_TYPE::ACCEPT)
 		{
 			cout << "accept" << endl;
-			ClientInfo* clientinfo = new ClientInfo;
-			thisObject->_acceptor->GetClientSockAddr(&(clientinfo->clientAdr));
-			clientinfo->clientSock = thisObject->_acceptor->GetClientSock();
-			thisObject->_clientManager->PushClientInfo(clientinfo);
-			CreateIoCompletionPort((HANDLE)clientinfo->clientSock, thisObject->_comPort, (ULONG_PTR)&clientinfo, 0);
-
+			SOCKET sock = ioInfo->sock; //Á¢¼ÓÇÑ clientSock
+			CreateIoCompletionPort((HANDLE)sock, thisObject->_comPort, NULL, 0);
+			TcpSession* session = new TcpSession(thisObject->_comPort,sock);
+			session->PostRecv();
 			thisObject->_acceptor->AcceptClient();
 		}
 
 		if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)
 		{
 			cout << "recv" << endl;
-			if (bytesTrans == 0)
-			{
-				thisObject->_clientManager->PopClientInfo(clientInfo->clientSock);
-				continue;
-			}
 		}
 
 		//if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)

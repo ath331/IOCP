@@ -6,12 +6,12 @@
 
 void Acceptor::AcceptClient()
 {
-	_clientSock = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	_overlapped.Init();
+	_overlapped.sock = WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	memset(_buff, 0, sizeof(_buff));
 	_recvLen = 0;
 
-	if (AcceptEx(_servSock, _clientSock, _buff, 0,
+	if (AcceptEx(_servSock, _overlapped.sock, _buff, 0,
 		sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &_recvLen,
 		(LPOVERLAPPED)&_overlapped) == false)
 	{
