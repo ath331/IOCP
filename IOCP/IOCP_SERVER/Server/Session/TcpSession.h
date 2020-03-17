@@ -19,7 +19,5 @@ private:
 	Overlapped _recvOverlapped;
 	WSABUF _recvBuff;
 	unsigned long _recvFlag = 0;
-	unsigned int _recvBuffSize = 0;
-	unsigned int _recvBuffOffSet = 0;
 	unsigned int _recvLen = 0;
 };
