@@ -78,13 +78,9 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 	Overlapped* ioInfo = nullptr;
 	SOCKET sock = 0; //CompletionKey
 
-	/*SOCKET sock;
-	DWORD flags = 0;*/
-
 	while (1)
 	{
 		GetQueuedCompletionStatus(thisObject->_comPort, &bytesTrans, (PULONG_PTR)&sock, (LPOVERLAPPED*)&ioInfo, INFINITE);
-		//sock = clientInfo->clientSock;
 
 		if (ioInfo->ioType == Overlapped::IO_TYPE::ACCEPT)
 		{
