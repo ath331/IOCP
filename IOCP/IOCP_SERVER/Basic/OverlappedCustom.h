@@ -13,8 +13,6 @@ struct Overlapped
 	};
 
 	OVERLAPPED overlapped;
-	//WSABUF wsaBuf;
-	//char buffer[BUF_SIZE];
 	IO_TYPE ioType;
 	SOCKET sock;
 	Overlapped() {}
@@ -26,6 +24,5 @@ struct Overlapped
 	void Init()
 	{
 		memset(&overlapped, 0, sizeof(OVERLAPPED));
-		//wsaBuf.len = BUF_SIZE;
 	}
 };

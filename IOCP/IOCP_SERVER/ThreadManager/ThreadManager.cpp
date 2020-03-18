@@ -106,30 +106,6 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 			thisObject->_clientManager->clientSessionMap.find(sock)->second->CheckPcketSize(bytesTrans);
 
 		}
-
-		//if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)
-		//{
-		//	if (bytesTrans == 0)
-		//	{
-		//		thisObject->_clientManager->PopClientInfo(clientInfo->clientSock);
-		//		continue;
-		//	}
-		//	else if (bytesTrans < sizeof(PacketHeader)) //PacketHeader size만큼 수신하지 못했으면 추가로 읽기
-		//	{
-		//		int readDataLen = bytesTrans;
-		//		while (1)
-		//		{
-		//			readDataLen += recv(clientInfo->clientSock, &ioInfo->wsaBuf.buf[readDataLen], sizeof(PacketHeader), 0);
-		//			if (readDataLen >= sizeof(PacketHeader))
-		//			{
-		//				break;
-		//			}
-		//		}
-		//	}
-		//	PacketHeader packetHeader;
-		//	memcpy(&packetHeader, &(ioInfo->buffer), sizeof(packetHeader.headerSize));
-		//	//TODO : packetHeader.headerSize가 패킷의 총 길이이므로 추가로 읽어야한다면 recv 구현
-
 		//	if (packetHeader.index > PacketIndex::DB_INDEX)
 		//	{
 		//		thisObject->_PushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
@@ -137,19 +113,6 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		//	else
 		//		thisObject->_PushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 
-		//}
-		//else if (ioInfo->ioType == Overlapped::IO_TYPE::SEND)
-		//{
-		//	std::cout << "message sent!\n";
-		//}
-		//else
-		//{
-		//	std::cout << "IO_TYPE is NULL\n";
-		//}
-
-		//ioInfo->wsaBuf.len = BUF_SIZE;
-		//ioInfo->ioType = Overlapped::IO_TYPE::RECV;
-		//WSARecv(sock, &(ioInfo->wsaBuf), 1, NULL, &flags, &(ioInfo->overlapped), NULL);
 	}
 	return 0;
 }
@@ -167,17 +130,6 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 
 			switch (packetInfo.packetIndex)
 			{
-				/*case PacketIndex::Login:
-				{
-					PacketLogin packetLogin;
-					memcpy(&packetLogin, packetInfo.packetBuffer, sizeof(PacketLogin));
-
-					ClientInfo* clientInfo = new ClientInfo(packetInfo.sock);
-					memcpy((void*)clientInfo->clientName, packetLogin.name, sizeof(packetLogin.name));
-					_clientManager->PushClientInfo(clientInfo);
-				}
-				break;*/
-
 			case PacketIndex::MAKE_ROOM:
 			{
 				//TODO : 방만들기와 방접속 분리하기
@@ -188,7 +140,6 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 
 				RES_PacketMakeRoom resPacketMakeRoom;
 				resPacketMakeRoom.roomNum = thisObject->_roomManager.GetRoomCount() - 1;
-				//clientInfo->roomNum.push_back(resPacketMakeRoom.roomNum);
 				clientInfo->roomNum = resPacketMakeRoom.roomNum;
 				send(packetInfo.sock, (const char*)&resPacketMakeRoom, resPacketMakeRoom.header.headerSize, 0);
 			}
@@ -219,7 +170,6 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				PacketEnterRoom packetEnterRoom;
 				memcpy(&packetEnterRoom, packetInfo.packetBuffer, sizeof(PacketEnterRoom));
 				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
-				//clientInfo->roomNum.push_back(packetEnterRoom.roomNum);
 				clientInfo->roomNum = packetEnterRoom.roomNum;
 				thisObject->_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
 

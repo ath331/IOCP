@@ -28,7 +28,6 @@ public:
 		_maxClientCount = roomInfo._maxClientCount;
 		_roomName = roomInfo._roomName;
 		_isPublicRoom = roomInfo._isPublicRoom;
-		//memcpy((void*)_passWord, (const void*)roomInfo._passWord, sizeof(roomInfo._passWord));
 		return *this;
 	}
 
