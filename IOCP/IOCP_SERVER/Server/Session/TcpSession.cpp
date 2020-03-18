@@ -3,6 +3,10 @@
 #include <iostream>
 
 using namespace std;
+TcpSession::~TcpSession()
+{
+	delete _recvBuff.buf;
+}
 
 void TcpSession::PostRecv()
 {
@@ -16,8 +20,10 @@ void TcpSession::PostRecv()
 	}
 }
 
-void TcpSession::CheckPcketSize()
+void TcpSession::CheckPcketSize(int recvTransLen)
 {
+	//TODO : 데이터길이가 패킷의 길이보다 많이오면?
+	_recvLenOffSet += recvTransLen;
 	if (sizeof(_recvBuff.buf) < sizeof(PacketHeader))
 	{
 		PostRecv();
@@ -25,6 +31,13 @@ void TcpSession::CheckPcketSize()
 	}
 
 	PacketHeader* packetHeader = reinterpret_cast<PacketHeader*>(_recvBuff.buf);
+	_recvTotalLen = packetHeader->headerSize;
+	if (_recvLenOffSet < _recvTotalLen)
+	{
+		PostRecv();
+		return;
+	}
+
 	switch (packetHeader->index)
 	{
 	case PacketIndex::Login:
@@ -36,5 +49,6 @@ void TcpSession::CheckPcketSize()
 	default:
 		break;
 	}
+	_recvTotalLen -= packetHeader->headerSize;
 	PostRecv();
 }

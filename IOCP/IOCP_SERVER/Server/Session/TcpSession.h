@@ -1,26 +1,30 @@
 #pragma once
 #include "OverlappedCustom.h"
 
+const static int MAX_BUF_SIZE = 1024;
+
 class TcpSession
 {
 public:
 	TcpSession(HANDLE cpHandle, SOCKET sock) : _cpHandle(cpHandle), _sock(sock)
-		, _recvOverlapped(Overlapped::IO_TYPE::RECV) 
+		, _recvOverlapped(Overlapped::IO_TYPE::RECV)
 	{
 		memset(&_recvBuff, 0, sizeof(WSABUF));
 		_recvBuff.len = 1024;
-		_recvBuff.buf = _tempBuf;
+		_recvBuff.buf = new char[MAX_BUF_SIZE];
 		CreateIoCompletionPort((HANDLE)sock, _cpHandle, sock, 0);
 	};
+	~TcpSession();
 	void PostRecv();
-	void CheckPcketSize();
+	void CheckPcketSize(int recvTransLen);
 private:
 	SOCKET _sock;
 	HANDLE _cpHandle;
 
 	Overlapped _recvOverlapped;
 	WSABUF _recvBuff;
-	char _tempBuf[1024];
 	unsigned long _recvFlag = 0;
 	unsigned int _recvLen = 0;
+	unsigned int _recvTotalLen = 0;
+	unsigned int _recvLenOffSet = 0;
 };

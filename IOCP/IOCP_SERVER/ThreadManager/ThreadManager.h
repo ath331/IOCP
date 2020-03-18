@@ -18,7 +18,6 @@ enum class QueueIndex : int
 class DB;
 class ClientManager;
 class Acceptor;
-class Recver;
 class ThreadManager
 {
 public:
@@ -44,7 +43,6 @@ private:
 
 	void _PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 	void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
-
 
 	//TODO : class °ü¸® ´Ùµë±â
 	ClientManager* _clientManager;

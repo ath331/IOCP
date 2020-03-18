@@ -96,14 +96,14 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 			thisObject->_acceptor->AcceptClient();
 		}
 
-		if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)
+		else if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)
 		{
 			if (bytesTrans == 0)
 			{
 				thisObject->_clientManager->clientSessionMap.erase(sock);
 				continue;
 			}
-			thisObject->_clientManager->clientSessionMap.find(sock)->second->CheckPcketSize();
+			thisObject->_clientManager->clientSessionMap.find(sock)->second->CheckPcketSize(bytesTrans);
 
 		}
 
