@@ -100,8 +100,8 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 				continue;
 			}
 			thisObject->_clientManager->clientSessionMap.find(sock)->second->CheckPcketSize(bytesTrans);
-
 		}
+
 		//	if (packetHeader.index > PacketIndex::DB_INDEX)
 		//	{
 		//		thisObject->_PushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);

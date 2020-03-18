@@ -9,7 +9,6 @@ public:
 	TcpSession(HANDLE cpHandle, SOCKET sock) : _cpHandle(cpHandle), _sock(sock)
 		, _recvOverlapped(Overlapped::IO_TYPE::RECV)
 	{
-		memset(&_recvBuff, 0, sizeof(WSABUF));
 		_recvBuff.len = 1024;
 		_recvBuff.buf = new char[MAX_BUF_SIZE];
 		CreateIoCompletionPort((HANDLE)sock, _cpHandle, sock, 0);
