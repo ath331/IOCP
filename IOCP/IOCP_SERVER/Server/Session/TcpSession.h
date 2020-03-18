@@ -8,6 +8,8 @@ public:
 		, _recvOverlapped(Overlapped::IO_TYPE::RECV) 
 	{
 		memset(&_recvBuff, 0, sizeof(WSABUF));
+		_recvBuff.len = 1024;
+		_recvBuff.buf = _tempBuf;
 		CreateIoCompletionPort((HANDLE)sock, _cpHandle, sock, 0);
 	};
 	void PostRecv();
@@ -18,6 +20,7 @@ private:
 
 	Overlapped _recvOverlapped;
 	WSABUF _recvBuff;
+	char _tempBuf[1024];
 	unsigned long _recvFlag = 0;
 	unsigned int _recvLen = 0;
 };

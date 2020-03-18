@@ -18,15 +18,14 @@ void TcpSession::PostRecv()
 
 void TcpSession::CheckPcketSize()
 {
-	if (_recvBuff.len < sizeof(PacketHeader))
+	if (sizeof(_recvBuff.buf) < sizeof(PacketHeader))
 	{
 		PostRecv();
 		return;
 	}
 
-	PacketHeader packetHeader;
-	memcpy(&packetHeader, &_recvBuff, sizeof(PacketHeader));
-	switch (packetHeader.index)
+	PacketHeader* packetHeader = reinterpret_cast<PacketHeader*>(_recvBuff.buf);
+	switch (packetHeader->index)
 	{
 	case PacketIndex::Login:
 	{
