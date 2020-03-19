@@ -109,6 +109,12 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		//	else
 		//		thisObject->_PushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 
+		else if (ioInfo->ioType == Overlapped::IO_TYPE::SEND)
+		{
+			std::cout << "send" << std::endl;
+			thisObject->_clientManager->clientSessionMap.find(sock)->second->PostSend();
+		}
+
 	}
 	return 0;
 }

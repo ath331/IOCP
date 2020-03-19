@@ -52,3 +52,15 @@ void TcpSession::CheckPcketSize(int recvTransLen)
 	_recvTotalLen -= packetHeader->headerSize;
 	PostRecv();
 }
+
+void TcpSession::PostSend()
+{
+	if (SOCKET_ERROR == WSASend(_sock, &_sendBuff, 1, (DWORD*)sizeof(&_sendBuff.buf), 0, (LPOVERLAPPED)&_sendOverlapped, NULL))
+	{
+		int error = WSAGetLastError();
+		if (error != WSA_IO_PENDING)
+		{
+			cout << error << " TcpSession PostSend() WSASend() error" << endl;
+		}
+	}
+}
