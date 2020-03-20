@@ -56,16 +56,15 @@ void ThreadManager::WaitThread()
 }
 
 
-void ThreadManager::_PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[])
+void ThreadManager::_PushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[])
 {
-	if (queueIndex == QueueIndex::NORMAL_QUEUE)
+	PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
+	if (packetIndex < PacketIndex::DB_INDEX)
 	{
-		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
 		_packetQueue.push(tempPacketInfo);
 	}
-	else if (queueIndex == QueueIndex::DB)
+	else if (packetIndex > PacketIndex::DB_INDEX)
 	{
-		PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
 		_packetDBQueue.push(tempPacketInfo);
 	}
 }
@@ -85,7 +84,8 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		if (ioInfo->ioType == Overlapped::IO_TYPE::ACCEPT)
 		{
 			SOCKET sock = ioInfo->sock; //접속한 clientSock
-			TcpSession* session = new TcpSession(thisObject->_comPort, sock);
+			//auto fptr = &ThreadManager::_PushPacketQueue;
+			TcpSession* session = new TcpSession(thisObject->_comPort, sock, &thisObject->_packetQueue, &thisObject->_packetDBQueue);
 			thisObject->_clientManager->clientSessionMap.insert(make_pair(sock, session));
 			session->PostRecv();
 
@@ -101,13 +101,6 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 			}
 			thisObject->_clientManager->clientSessionMap.find(sock)->second->CheckPcketSize(bytesTrans);
 		}
-
-		//	if (packetHeader.index > PacketIndex::DB_INDEX)
-		//	{
-		//		thisObject->_PushPacketQueue(QueueIndex::DB, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
-		//	}
-		//	else
-		//		thisObject->_PushPacketQueue(QueueIndex::NORMAL_QUEUE, clientInfo->clientSock, packetHeader.index, ioInfo->buffer);
 
 		else if (ioInfo->ioType == Overlapped::IO_TYPE::SEND)
 		{
@@ -252,25 +245,25 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 
 			case PacketIndex::MAKE_CLIENT_ID_INFO:
 			{
-				PacketClientIdInfo packetClientIdInfo;
-				memcpy(&packetClientIdInfo, packetInfo.packetBuffer, sizeof(PacketClientIdInfo));
+				//PacketClientIdInfo packetClientIdInfo;
+				//memcpy(&packetClientIdInfo, packetInfo.packetBuffer, sizeof(PacketClientIdInfo));
 
-				if (packetClientIdInfo.isChangeName == FALSE)
-				{
-					PacketDBInsertData packetDbInsertData;
-					if (thisObject->_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name))
-					{
-						//DB에 데이터등록이 성공할 경우
-						packetDbInsertData.isSuccessInsertData = TRUE;
-					}
-					send(packetInfo.sock, (const char*)&packetDbInsertData, packetDbInsertData.header.headerSize, 0);
-					break;
-				}
-				else if (packetClientIdInfo.isChangeName == TRUE)
-				{
-					thisObject->_db->UpdateData(UpdataType::NAME, "tempId", packetClientIdInfo.name, packetInfo.sock);
-					break;
-				}
+				//if (packetClientIdInfo.isChangeName == FALSE)
+				//{
+				//	PacketDBInsertData packetDbInsertData;
+				//	if (thisObject->_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name))
+				//	{
+				//		//DB에 데이터등록이 성공할 경우
+				//		packetDbInsertData.isSuccessInsertData = TRUE;
+				//	}
+				//	send(packetInfo.sock, (const char*)&packetDbInsertData, packetDbInsertData.header.headerSize, 0);
+				//	break;
+				//}
+				//else if (packetClientIdInfo.isChangeName == TRUE)
+				//{
+				//	thisObject->_db->UpdateData(UpdataType::NAME, "tempId", packetClientIdInfo.name, packetInfo.sock);
+				//	break;
+				//}
 			}
 
 			default:

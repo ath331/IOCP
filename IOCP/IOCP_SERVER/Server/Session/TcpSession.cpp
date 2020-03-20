@@ -1,5 +1,4 @@
 #include "TcpSession.h"
-#include "packet.h"
 #include <iostream>
 
 using namespace std;
@@ -38,17 +37,16 @@ void TcpSession::CheckPcketSize(int recvTransLen)
 		return;
 	}
 
-	switch (packetHeader->index)
+	PacketInfo tempPacketInfo = { _sock, packetHeader->index, (const char*)_recvBuff.buf };
+	if (packetHeader->index < PacketIndex::DB_INDEX)
 	{
-	case PacketIndex::Login:
-	{
-		cout << "Recv Login Packet" << endl;
+		_packetQueue->push(tempPacketInfo);
 	}
-	break;
+	else if (packetHeader->index > PacketIndex::DB_INDEX)
+	{
+		_packetDBQueue->push(tempPacketInfo);
+	}
 
-	default:
-		break;
-	}
 	_recvTotalLen -= packetHeader->headerSize;
 	PostRecv();
 }

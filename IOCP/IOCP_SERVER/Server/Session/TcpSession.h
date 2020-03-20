@@ -1,20 +1,20 @@
 #pragma once
+#include "packet.h"
 #include "OverlappedCustom.h"
+#include <concurrent_queue.h>
 
 const static int MAX_BUF_SIZE = 1024;
 
 class TcpSession
 {
 public:
-	TcpSession(HANDLE cpHandle, SOCKET sock) : _cpHandle(cpHandle), _sock(sock)
+	TcpSession(HANDLE cpHandle, SOCKET sock, concurrency::concurrent_queue<PacketInfo>* packetQueue, concurrency::concurrent_queue<PacketInfo>* packetDBQueue/*, pushQueuePtr fptr*/) :
+		_cpHandle(cpHandle), _sock(sock), _packetQueue(packetQueue), _packetDBQueue(packetDBQueue)//, _pushQueuePtr(fptr)
 		, _recvOverlapped(Overlapped::IO_TYPE::RECV)
 		, _sendOverlapped(Overlapped::IO_TYPE::SEND)
 	{
 		_recvBuff.len = 1024;
 		_recvBuff.buf = new char[MAX_BUF_SIZE];
-
-		_snedBuff.len = 1024;
-		_snedBuff.buf = new char[MAX_BUF_SIZE];
 
 		CreateIoCompletionPort((HANDLE)sock, _cpHandle, sock, 0);
 	};
@@ -27,12 +27,14 @@ public:
 private:
 	SOCKET _sock;
 	HANDLE _cpHandle;
+	concurrency::concurrent_queue<PacketInfo>* _packetDBQueue;
+	concurrency::concurrent_queue<PacketInfo>* _packetQueue;
 
 	Overlapped _recvOverlapped;
 	WSABUF _recvBuff;
-	unsigned long _recvFlag = 0;
-	unsigned int _recvLen = 0;
-	unsigned int _recvTotalLen = 0;
+	unsigned long _recvFlag		= 0;
+	unsigned int _recvLen		= 0;
+	unsigned int _recvTotalLen	= 0;
 	unsigned int _recvLenOffSet = 0;
 
 	Overlapped _sendOverlapped;

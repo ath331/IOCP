@@ -9,12 +9,6 @@
 
 using namespace std;
 
-enum class QueueIndex : int
-{
-	DB,
-	NORMAL_QUEUE, //DB관련 패킷이 아닌 패킷들
-};
-
 class DB;
 class ClientManager;
 class Acceptor;
@@ -41,7 +35,7 @@ private:
 	concurrency::concurrent_queue<PacketInfo> _packetDBQueue;
 	concurrency::concurrent_queue<PacketInfo> _packetQueue;
 
-	void _PushPacketQueue(QueueIndex queueIndex, SOCKET sock, PacketIndex packetIndex, const char buffer[]);
+	void _PushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 	void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
 
 	//TODO : class 관리 다듬기
