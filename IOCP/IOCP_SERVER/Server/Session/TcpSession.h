@@ -5,11 +5,13 @@
 
 const static int MAX_BUF_SIZE = 1024;
 
+using namespace concurrency;
+
 class TcpSession
 {
 public:
-	TcpSession(HANDLE cpHandle, SOCKET sock, concurrency::concurrent_queue<PacketInfo>* packetQueue, concurrency::concurrent_queue<PacketInfo>* packetDBQueue/*, pushQueuePtr fptr*/) :
-		_cpHandle(cpHandle), _sock(sock), _packetQueue(packetQueue), _packetDBQueue(packetDBQueue)//, _pushQueuePtr(fptr)
+	TcpSession(HANDLE cpHandle, SOCKET sock, concurrent_queue<PacketInfo>* packetQueue, concurrent_queue<PacketInfo>* packetDBQueue) :
+		_cpHandle(cpHandle), _sock(sock), _packetQueue(packetQueue), _packetDBQueue(packetDBQueue)
 		, _recvOverlapped(Overlapped::IO_TYPE::RECV)
 		, _sendOverlapped(Overlapped::IO_TYPE::SEND)
 	{
@@ -27,8 +29,8 @@ public:
 private:
 	SOCKET _sock;
 	HANDLE _cpHandle;
-	concurrency::concurrent_queue<PacketInfo>* _packetDBQueue;
-	concurrency::concurrent_queue<PacketInfo>* _packetQueue;
+	concurrent_queue<PacketInfo>* _packetDBQueue;
+	concurrent_queue<PacketInfo>* _packetQueue;
 
 	Overlapped _recvOverlapped;
 	WSABUF _recvBuff;
