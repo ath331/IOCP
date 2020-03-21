@@ -19,3 +19,4 @@ Thread safe queue = concurrent_queue : https://docs.microsoft.com/ko-kr/cpp/para
 algorithm vector find_if : https://riptutorial.com/ko/cplusplus/example/2326/std----vector%EC%97%90%EC%84%9C-%EC%9A%94%EC%86%8C-%EC%B0%BE%EA%B8%B0
 mswsock acceptEX : https://teraphonia.tistory.com/28
 WSARECV 비동기 recv 수신 : https://www.joinc.co.kr/w/man/4100/WSARecv
+IOCP 비동기 모델 유의점 : https://m.blog.naver.com/PostView.nhn?blogId=zard9023&logNo=220609396561&proxyReferer=https%3A%2F%2Fwww.google.com%2F
