@@ -95,11 +95,10 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		{
 			if (bytesTrans == 0)
 			{
-				/*TODO : 바로 끊어 버리면 문제가 생길수 있다.수신버퍼만 끊기?
-				clientManager 객체관리를 해당 클래스가 아닌 곳으로 수정하고
+				/*TODO :clientManager 객체관리를 해당 클래스가 아닌 곳으로 수정하고
 				해당 구현부분은 session 내부로 이동시키기?
 				*/
-				thisObject->_clientManager->clientSessionMap.erase(sock);
+				thisObject->_clientManager->CloseClient(sock);
 				continue;
 			}
 			thisObject->_clientManager->clientSessionMap.find(sock)->second->CheckPcketSize(bytesTrans);

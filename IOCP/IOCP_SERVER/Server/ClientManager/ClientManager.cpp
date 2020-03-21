@@ -8,6 +8,14 @@ void ClientManager::PushClientInfo(ClientInfo* clientInfo)
 	cout << clientInfo->clientName << " connect!" << endl;
 }
 
+void ClientManager::CloseClient(SOCKET sock)
+{
+	shutdown(sock, SD_BOTH);
+	closesocket(sock);
+	clientSessionMap.erase(sock);
+}
+
+
 void ClientManager::PopClientInfo(SOCKET sock)
 {
 	auto iter = find_if(_clientVec.begin(), _clientVec.end(), SearchClient(sock));

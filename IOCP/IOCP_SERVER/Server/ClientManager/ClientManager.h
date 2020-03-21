@@ -11,7 +11,7 @@ class ClientManager
 public:
 	void PushClientInfo(ClientInfo* clientInfo);
 	void PopClientInfo(SOCKET sock);
-
+	void CloseClient(SOCKET sock);
 	ClientInfo* GetClientInfo(SOCKET sock);
 	map<SOCKET, TcpSession*> clientSessionMap;
 
