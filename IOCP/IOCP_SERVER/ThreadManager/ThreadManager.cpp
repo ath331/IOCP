@@ -84,7 +84,6 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		if (ioInfo->ioType == Overlapped::IO_TYPE::ACCEPT)
 		{
 			SOCKET sock = ioInfo->sock; //접속한 clientSock
-			//auto fptr = &ThreadManager::_PushPacketQueue;
 			TcpSession* session = new TcpSession(thisObject->_comPort, sock, &thisObject->_packetQueue, &thisObject->_packetDBQueue);
 			thisObject->_clientManager->clientSessionMap.insert(make_pair(sock, session));
 			session->PostRecv();
@@ -96,6 +95,10 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		{
 			if (bytesTrans == 0)
 			{
+				/*TODO : 바로 끊어 버리면 문제가 생길수 있다.수신버퍼만 끊기?
+				clientManager 객체관리를 해당 클래스가 아닌 곳으로 수정하고
+				해당 구현부분은 session 내부로 이동시키기?
+				*/
 				thisObject->_clientManager->clientSessionMap.erase(sock);
 				continue;
 			}
@@ -104,7 +107,6 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 
 		else if (ioInfo->ioType == Overlapped::IO_TYPE::SEND)
 		{
-			std::cout << "send" << std::endl;
 			thisObject->_clientManager->clientSessionMap.find(sock)->second->PostSend();
 		}
 

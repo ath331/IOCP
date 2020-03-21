@@ -4,12 +4,14 @@
 using namespace std;
 TcpSession::~TcpSession()
 {
-	delete _recvBuff.buf;
+	delete _recvBuf.buf;
 }
 
 void TcpSession::PostRecv()
 {
-	if (SOCKET_ERROR == WSARecv(_sock, &_recvBuff, 1, (DWORD*)&_recvLen, &_recvFlag, (LPOVERLAPPED)&_recvOverlapped, NULL))
+	_recvBuf.len = MAX_BUF_SIZE - _recvLenOffSet;
+
+	if (SOCKET_ERROR == WSARecv(_sock, &_recvBuf, 1, (DWORD*)&_recvLen, &_recvFlag, (LPOVERLAPPED)&_recvOverlapped, NULL))
 	{
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING)
@@ -21,39 +23,56 @@ void TcpSession::PostRecv()
 
 void TcpSession::CheckPcketSize(int recvTransLen)
 {
-	//TODO : 데이터길이가 패킷의 길이보다 많이오면?
 	_recvLenOffSet += recvTransLen;
-	if (sizeof(_recvBuff.buf) < sizeof(PacketHeader))
+	while (TRUE)
 	{
-		PostRecv();
-		return;
-	}
+		if (_recvLenOffSet < sizeof(PacketHeader))
+		{
+			PostRecv();
+			return;
+		}
 
-	PacketHeader* packetHeader = reinterpret_cast<PacketHeader*>(_recvBuff.buf);
-	_recvTotalLen = packetHeader->headerSize;
-	if (_recvLenOffSet < _recvTotalLen)
-	{
-		PostRecv();
-		return;
-	}
+		PacketHeader* packetHeader = reinterpret_cast<PacketHeader*>(_recvBuf.buf);
+		int _recvTotalLen = packetHeader->headerSize;
+		if (MAX_BUF_SIZE < _recvTotalLen)
+		{
+			char* tempBuf = new char[_recvTotalLen];
+			memcpy(&tempBuf, _recvBuf.buf, _recvLenOffSet);
+			delete[] _recvBuf.buf;
+			_recvBuf.buf = tempBuf;
+			_recvBuf.len = _recvTotalLen;
+			//TODO : cout으로 띄우지말고 error관련 class 만들기
+			std::cout << "Change Recv Buf Size : " << _recvTotalLen << std::endl;
+		}
 
-	PacketInfo tempPacketInfo = { _sock, packetHeader->index, (const char*)_recvBuff.buf };
-	if (packetHeader->index < PacketIndex::DB_INDEX)
-	{
-		_packetQueue->push(tempPacketInfo);
-	}
-	else if (packetHeader->index > PacketIndex::DB_INDEX)
-	{
-		_packetDBQueue->push(tempPacketInfo);
-	}
+		if (_recvLenOffSet < _recvTotalLen)
+		{
+			PostRecv();
+			return;
+		}
 
-	_recvTotalLen -= packetHeader->headerSize;
-	PostRecv();
+		/*_recvBuf.buf에 packetHeader->headerSize 이상의 데이터가 있음
+		사용할 패킷의 크기만큼만 이동하고 초과의 데이터는 앞으로 땡긴다*/
+		char cpyRecvBuf[MAX_BUF_SIZE + 1];
+		memmove(cpyRecvBuf, _recvBuf.buf, _recvTotalLen);
+		PacketInfo tempPacketInfo = { _sock, packetHeader->index, (const char*)cpyRecvBuf };
+		if (packetHeader->index < PacketIndex::DB_INDEX)
+		{
+			_packetQueue->push(tempPacketInfo);
+		}
+		else if (packetHeader->index > PacketIndex::DB_INDEX)
+		{
+			_packetDBQueue->push(tempPacketInfo);
+		}
+
+		_recvLenOffSet -= _recvTotalLen;
+		memmove(_recvBuf.buf, _recvBuf.buf + _recvTotalLen, _recvLenOffSet);
+	}
 }
 
 void TcpSession::PostSend()
 {
-	if (SOCKET_ERROR == WSASend(_sock, &_sendBuff, 1, (DWORD*)sizeof(&_sendBuff.buf), 0, (LPOVERLAPPED)&_sendOverlapped, NULL))
+	if (SOCKET_ERROR == WSASend(_sock, &_sendBuf, 1, (DWORD*)sizeof(&_sendBuf.buf), 0, (LPOVERLAPPED)&_sendOverlapped, NULL))
 	{
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING)

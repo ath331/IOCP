@@ -15,8 +15,8 @@ public:
 		, _recvOverlapped(Overlapped::IO_TYPE::RECV)
 		, _sendOverlapped(Overlapped::IO_TYPE::SEND)
 	{
-		_recvBuff.len = 1024;
-		_recvBuff.buf = new char[MAX_BUF_SIZE];
+		_recvBuf.len = 0;
+		_recvBuf.buf = new char[MAX_BUF_SIZE];
 
 		CreateIoCompletionPort((HANDLE)sock, _cpHandle, sock, 0);
 	};
@@ -33,12 +33,11 @@ private:
 	concurrent_queue<PacketInfo>* _packetQueue;
 
 	Overlapped _recvOverlapped;
-	WSABUF _recvBuff;
+	WSABUF _recvBuf;
 	unsigned long _recvFlag		= 0;
 	unsigned int _recvLen		= 0;
-	unsigned int _recvTotalLen	= 0;
 	unsigned int _recvLenOffSet = 0;
 
 	Overlapped _sendOverlapped;
-	WSABUF _sendBuff;
+	WSABUF _sendBuf;
 };
