@@ -33,7 +33,7 @@ void TcpSession::CheckPcketSize(int recvTransLen)
 		}
 
 		PacketHeader* packetHeader = reinterpret_cast<PacketHeader*>(_recvBuf.buf);
-		int _recvTotalLen = packetHeader->headerSize;
+		unsigned int _recvTotalLen = packetHeader->headerSize;
 		if (MAX_BUF_SIZE < _recvTotalLen)
 		{
 			char* tempBuf = new char[_recvTotalLen];
@@ -70,9 +70,26 @@ void TcpSession::CheckPcketSize(int recvTransLen)
 	}
 }
 
+void TcpSession::PushSendVec(PacketInfo pck,int pckSize)
+{
+	Pck packet = { pckSize,(CHAR*)pck.packetBuffer };
+	_packetSendQueue.push(packet);
+
+	PostSend();
+	return;
+}
+
 void TcpSession::PostSend()
 {
-	if (SOCKET_ERROR == WSASend(_sock, &_sendBuf, 1, (DWORD*)sizeof(&_sendBuf.buf), 0, (LPOVERLAPPED)&_sendOverlapped, NULL))
+	if (_packetSendQueue.empty())
+	{
+		return;
+	}
+
+	Pck tempPacket;
+	_packetSendQueue.try_pop(tempPacket);
+
+	if (SOCKET_ERROR == WSASend(_sock, &tempPacket, 1, (LPDWORD)&_sendLen, NULL, (LPOVERLAPPED)&_sendOverlapped, NULL))
 	{
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING)
@@ -80,4 +97,6 @@ void TcpSession::PostSend()
 			cout << error << " TcpSession PostSend() WSASend() error" << endl;
 		}
 	}
+
+	isSending = true;
 }

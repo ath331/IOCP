@@ -1,11 +1,13 @@
 #pragma once
 #include "packet.h"
+#include "Lock.h"
 #include "OverlappedCustom.h"
 #include <concurrent_queue.h>
 
 const static int MAX_BUF_SIZE = 1024;
 
 using namespace concurrency;
+using namespace std;
 
 class TcpSession
 {
@@ -26,6 +28,8 @@ public:
 	void CheckPcketSize(int recvTransLen);
 
 	void PostSend();
+	void PushSendVec(PacketInfo pck, int pckSize);
+	bool isSending				= false;
 private:
 	SOCKET _sock;
 	HANDLE _cpHandle;
@@ -39,5 +43,6 @@ private:
 	unsigned int _recvLenOffSet = 0;
 
 	Overlapped _sendOverlapped;
-	WSABUF _sendBuf;
+	unsigned int _sendLen		= 0;
+	concurrent_queue<Pck> _packetSendQueue;
 };

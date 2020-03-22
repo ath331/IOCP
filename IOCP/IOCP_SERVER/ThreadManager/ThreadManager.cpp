@@ -95,9 +95,6 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		{
 			if (bytesTrans == 0)
 			{
-				/*TODO :clientManager 객체관리를 해당 클래스가 아닌 곳으로 수정하고
-				해당 구현부분은 session 내부로 이동시키기?
-				*/
 				thisObject->_clientManager->CloseClient(sock);
 				continue;
 			}
@@ -106,7 +103,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 
 		else if (ioInfo->ioType == Overlapped::IO_TYPE::SEND)
 		{
-			thisObject->_clientManager->clientSessionMap.find(sock)->second->PostSend();
+			thisObject->_clientManager->clientSessionMap.find(sock)->second->isSending = false;
 		}
 
 	}
@@ -137,7 +134,9 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				RES_PacketMakeRoom resPacketMakeRoom;
 				resPacketMakeRoom.roomNum = thisObject->_roomManager.GetRoomCount() - 1;
 				clientInfo->roomNum = resPacketMakeRoom.roomNum;
-				send(packetInfo.sock, (const char*)&resPacketMakeRoom, resPacketMakeRoom.header.headerSize, 0);
+
+				packetInfo.packetBuffer = (const char*)&resPacketMakeRoom;
+				thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(RES_PacketMakeRoom));
 			}
 			break;
 
@@ -156,7 +155,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 						resPacketRoomList.roomInfoList[i].maxClientInRoom = thisObject->_roomManager.GetRoomInfoByCountNum(i).GetMaxClientCount();
 						resPacketRoomList.roomInfoList[i].curClientNum = thisObject->_roomManager.GetRoomInfoByCountNum(i).clientInfoVec.size();
 					}
-					send(packetInfo.sock, (const char*)&resPacketRoomList, resPacketRoomList.header.headerSize, 0);
+					packetInfo.packetBuffer = (const char*)&resPacketRoomList;
+					thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(RES_PacketRoomList));
 				}
 			}
 			break;
@@ -197,7 +197,9 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 			case PacketIndex::SEND_MESSAGE:
 			{
 				PacketSendMessage packetSendMessage;
-				memcpy(&packetSendMessage, packetInfo.packetBuffer, sizeof(PacketSendMessage));
+				memmove(&packetSendMessage, packetInfo.packetBuffer, sizeof(PacketSendMessage));
+				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
+				packetSendMessage.roomNum = clientInfo->roomNum;
 				thisObject->_SendMessageToClient(packetSendMessage.roomNum, packetSendMessage.buffer);
 			}
 			break;
@@ -239,7 +241,8 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 
 					memcpy((void*)&packetLogin.name, (const void*)name.c_str(), sizeof(name.c_str()));
 					packetLogin.isSuccessIdCheck = TRUE;
-					send(packetInfo.sock, (const char*)&packetLogin, packetLogin.header.headerSize, 0);
+					packetInfo.packetBuffer = (const char*)&packetLogin;
+					thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(PacketLogin));
 				}
 			}
 			break;

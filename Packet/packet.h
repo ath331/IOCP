@@ -6,6 +6,8 @@ const static int MAX_NAME_LENGTH = 10;
 const static int MAX_ROOM_NAME_LENGTH = 20;
 const static int MAX_ROOM_COUNT = 20;
 
+using Pck = WSABUF;
+
 enum class PacketIndex : int
 {
 
