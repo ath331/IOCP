@@ -1,5 +1,4 @@
 #pragma once
-//TODO : IOCP send ´Ùµë±â
 #include <WinSock2.h>
 #include <windows.h>
 
@@ -7,6 +6,7 @@ class DB;
 class ClientManager;
 class ThreadManager;
 class Acceptor;
+class RoomManager;
 class Server
 {
 public:
@@ -24,11 +24,13 @@ private:
 	DB* _db;
 	ClientManager* _clientManager;
 	ThreadManager* _threadManager;
+	RoomManager* _roomManager;
 
 	Acceptor* _acceptor;
 
 	int _portNum = 9999;
 	int _recvBytes = 0, _flags = 0;
 
+	void _InitManagers();
 };
 

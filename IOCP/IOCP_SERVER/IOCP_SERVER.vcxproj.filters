@@ -28,13 +28,13 @@
     <Filter Include="Server\ClientManager">
       <UniqueIdentifier>{ae57f057-daf7-4ae6-9494-3272ffc5d8f2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ThreadMamager\RoomManager">
-      <UniqueIdentifier>{d6d27152-28fd-48e7-98ad-4a19c84e238d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Server\Session">
       <UniqueIdentifier>{484c910b-ca11-4a09-a3b3-6a9f1f626b55}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\Session\Acceptor">
+    <Filter Include="Server\RoomManager">
+      <UniqueIdentifier>{d6d27152-28fd-48e7-98ad-4a19c84e238d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\Acceptor">
       <UniqueIdentifier>{47c54913-5dd5-43c3-8ef9-f61f54d9a5bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -51,20 +51,20 @@
     <ClCompile Include="Server\ClientManager\ClientManager.cpp">
       <Filter>Server\ClientManager</Filter>
     </ClCompile>
-    <ClCompile Include="ThreadManager\RoomManager\Room.cpp">
-      <Filter>ThreadMamager\RoomManager</Filter>
-    </ClCompile>
-    <ClCompile Include="ThreadManager\RoomManager\RoomManager.cpp">
-      <Filter>ThreadMamager\RoomManager</Filter>
-    </ClCompile>
     <ClCompile Include="Basic\ClientInfo.cpp">
       <Filter>Basic</Filter>
     </ClCompile>
-    <ClCompile Include="Server\Session\Acceptor\Acceptor.cpp">
-      <Filter>Server\Session\Acceptor</Filter>
-    </ClCompile>
     <ClCompile Include="Server\Session\TcpSession.cpp">
       <Filter>Server\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\Acceptor\Acceptor.cpp">
+      <Filter>Server\Acceptor</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\RoomManager\Room.cpp">
+      <Filter>Server\RoomManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\RoomManager\RoomManager.cpp">
+      <Filter>Server\RoomManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,17 +89,17 @@
     <ClInclude Include="Server\ClientManager\ClientManager.h">
       <Filter>Server\ClientManager</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadManager\RoomManager\Room.h">
-      <Filter>ThreadMamager\RoomManager</Filter>
-    </ClInclude>
-    <ClInclude Include="ThreadManager\RoomManager\RoomManager.h">
-      <Filter>ThreadMamager\RoomManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Server\Session\Acceptor\Acceptor.h">
-      <Filter>Server\Session\Acceptor</Filter>
-    </ClInclude>
     <ClInclude Include="Server\Session\TcpSession.h">
       <Filter>Server\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\Acceptor\Acceptor.h">
+      <Filter>Server\Acceptor</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\RoomManager\Room.h">
+      <Filter>Server\RoomManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\RoomManager\RoomManager.h">
+      <Filter>Server\RoomManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

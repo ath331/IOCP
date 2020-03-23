@@ -1,24 +1,25 @@
 #include "ThreadManager.h"
 #include "ClientInfo.h"
 #include "OverlappedCustom.h"
-#include "../Server/ClientManager/ClientManager.h"
 #include "DB.h"
 
 #include <process.h>
 #include <iostream>
-
 #include <algorithm>
 
+#include "../Server/Acceptor/Acceptor.h"
 #include "../Server/Session/TcpSession.h"
-#include "../Server/Session/Acceptor/Acceptor.h"
+#include "../Server/ClientManager/ClientManager.h"
+#include "../Server/RoomManager/RoomManager.h"
 
-void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db, Acceptor* acceptor)
+void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db, Acceptor* acceptor, RoomManager* roomManager)
 {
 	_maxThreadNum = maxThreadNum;
 	_comPort = comPort;
 	_clientManager = clientManager;
 	_db = db;
 	_acceptor = acceptor;
+	_roomManager = roomManager;
 }
 
 void ThreadManager::MakeThread()
@@ -129,10 +130,10 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				PacketMakeRoom packetMakeRoom;
 				memcpy(&packetMakeRoom, packetInfo.packetBuffer, sizeof(PacketMakeRoom));
 				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
-				thisObject->_roomManager.MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
+				thisObject->_roomManager->MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
 
 				RES_PacketMakeRoom resPacketMakeRoom;
-				resPacketMakeRoom.roomNum = thisObject->_roomManager.GetRoomCount() - 1;
+				resPacketMakeRoom.roomNum = thisObject->_roomManager->GetRoomCount() - 1;
 				clientInfo->roomNum = resPacketMakeRoom.roomNum;
 
 				packetInfo.packetBuffer = (const char*)&resPacketMakeRoom;
@@ -143,17 +144,17 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 			case PacketIndex::ROOM_LIST:
 			{
 				RES_PacketRoomList resPacketRoomList;
-				resPacketRoomList.maxRoomCount = thisObject->_roomManager.GetRoomVecSize();
+				resPacketRoomList.maxRoomCount = thisObject->_roomManager->GetRoomVecSize();
 				if (resPacketRoomList.maxRoomCount != 0) //만든 방이 하나라도 있을때
 				{
 					if (resPacketRoomList.maxRoomCount > MAX_ROOM_COUNT)
 						resPacketRoomList.maxRoomCount = MAX_ROOM_COUNT;
 					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
 					{
-						resPacketRoomList.roomInfoList[i].roomNum = thisObject->_roomManager.GetRoomInfoByCountNum(i).GetRoomNum();
-						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, thisObject->_roomManager.GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(thisObject->_roomManager.GetRoomInfoByCountNum(i).GetRoomName().c_str()));
-						resPacketRoomList.roomInfoList[i].maxClientInRoom = thisObject->_roomManager.GetRoomInfoByCountNum(i).GetMaxClientCount();
-						resPacketRoomList.roomInfoList[i].curClientNum = thisObject->_roomManager.GetRoomInfoByCountNum(i).clientInfoVec.size();
+						resPacketRoomList.roomInfoList[i].roomNum = thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomNum();
+						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str()));
+						resPacketRoomList.roomInfoList[i].maxClientInRoom = thisObject->_roomManager->GetRoomInfoByCountNum(i).GetMaxClientCount();
+						resPacketRoomList.roomInfoList[i].curClientNum = thisObject->_roomManager->GetRoomInfoByCountNum(i).clientInfoVec.size();
 					}
 					packetInfo.packetBuffer = (const char*)&resPacketRoomList;
 					thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(RES_PacketRoomList));
@@ -167,7 +168,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				memcpy(&packetEnterRoom, packetInfo.packetBuffer, sizeof(PacketEnterRoom));
 				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
 				clientInfo->roomNum = packetEnterRoom.roomNum;
-				thisObject->_roomManager.EnterRoom(packetEnterRoom.roomNum, clientInfo);
+				thisObject->_roomManager->EnterRoom(packetEnterRoom.roomNum, clientInfo);
 
 				//TODO : Message 관리 class 만들기
 				string enterMessage = "[SYSTEM] ";
@@ -183,7 +184,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				memcpy(&packetCloseRoom, packetInfo.packetBuffer, sizeof(PacketCloseRoom));
 				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
 				clientInfo->OutRoom(packetCloseRoom.roomNum);
-				if ((thisObject->_roomManager.OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum)))
+				if ((thisObject->_roomManager->OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum)))
 				{
 					//TODO : Message 관리 class 만들기
 					string enterMessage = "[SYSTEM] ";
@@ -280,12 +281,12 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 
 void ThreadManager::_SendMessageToClient(int roomNum, const char* msg, bool isSystemMessage)
 {
-	Room room = _roomManager.GetRoomInfoByRoomNum(roomNum);
+	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
 	int clientCount = room.clientInfoVec.size();
 
 	for (int i = 0; i < clientCount; i++)
 	{
-		SOCKET sock = _roomManager.GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
+		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
 		send(sock, msg, strlen(msg), 0);
 	}
 }

@@ -5,17 +5,17 @@
 #include <concurrent_queue.h>
 
 #include "packet.h"
-#include "RoomManager/RoomManager.h"
 
 using namespace std;
 
 class DB;
 class ClientManager;
 class Acceptor;
+class RoomManager;
 class ThreadManager
 {
 public:
-	void InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db, Acceptor* accept);
+	void InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db, Acceptor* accept, RoomManager* roomManager);
 	void MakeThread();
 	void WaitThread();
 private:
@@ -43,6 +43,6 @@ private:
 	DB* _db;
 	Acceptor* _acceptor;
 
-	RoomManager _roomManager;
+	RoomManager* _roomManager;
 };
 

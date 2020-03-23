@@ -3,9 +3,10 @@
 #include "ClientInfo.h"
 
 #include "DB.h"
-#include "ClientManager/ClientManager.h"
 #include "../ThreadManager/ThreadManager.h"
-#include "../Server/Session/Acceptor/Acceptor.h"
+#include "ClientManager/ClientManager.h"
+#include "RoomManager/RoomManager.h"
+#include "Acceptor/Acceptor.h"
 
 #include <iostream>
 
@@ -27,9 +28,7 @@ void Server::InitServer()
 		exit(1);
 	}
 
-	_threadManager = new ThreadManager;
-	_clientManager = new ClientManager;
-	_db = new DB;
+	_InitManagers();
 
 	_comPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 
@@ -52,28 +51,22 @@ void Server::InitServer()
 
 	CreateIoCompletionPort((HANDLE)_servSock, _comPort, NULL, 0);
 	_acceptor = new Acceptor(_servSock);
-	_threadManager->InitThreadManager(_sysInfo.dwNumberOfProcessors * 2, _comPort, _clientManager, _db, _acceptor);
+	_threadManager->InitThreadManager(_sysInfo.dwNumberOfProcessors * 2, _comPort, _clientManager, _db, _acceptor,_roomManager);
+}
+
+void Server::_InitManagers()
+{
+	_db = new DB;
+	_threadManager = new ThreadManager;
+	_clientManager = new ClientManager;
+	_roomManager = new RoomManager;
 }
 
 
 void Server::RunServer()
 {
 	_threadManager->MakeThread();
-	/*while (1)
-	{
-		ClientSocketInfo* clientSocketInfo;
-		Overlapped* ioInfo;
 
-		clientSocketInfo = new ClientSocketInfo();
-		int addrLen = sizeof(clientSocketInfo->clientAdr);
-		clientSocketInfo->clientSock = accept(_servSock, (SOCKADDR*)&(clientSocketInfo->clientAdr), &addrLen);
-
-		CreateIoCompletionPort((HANDLE)clientSocketInfo->clientSock, _comPort, (ULONG_PTR)clientSocketInfo, 0);
-
-		ioInfo = new Overlapped(Overlapped::IO_TYPE::RECV);
-		ioInfo->wsaBuf.buf = ioInfo->buffer;
-		WSARecv(clientSocketInfo->clientSock, &(ioInfo->wsaBuf), 1, (LPDWORD)&_recvBytes, (LPDWORD)&_flags, &(ioInfo->overlapped), NULL);
-	}*/
 	for (int i = 0; i < MAX_CLIENT_ACCEPT_NUM; i++)
 		_acceptor->AcceptClient();
 
