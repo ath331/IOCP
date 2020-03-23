@@ -275,12 +275,12 @@ void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
 
 	ClientInfo* clientInfo = _clientManager->GetClientInfo(sock);
 	int roomNum = clientInfo->roomNum;
-	packetSendMessage.roomNum = roomNum;
 
 	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
 	int clientCount = room.clientInfoVec.size();
 
-	PacketInfo packetInfo = { sock ,(PacketIndex)-1 ,(const char*)&packetSendMessage };
+	PacketInfo packetInfo;
+	packetInfo.packetBuffer = packetSendMessage.buffer;
 	for (int i = 0; i < clientCount; i++)
 	{
 		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
@@ -306,9 +306,11 @@ void ThreadManager::_SendSystemMessage(int roomNum, const char* name, bool isEnt
 		tempSystempMsg += " ¥‘¿Ã ≈¿Â «ﬂΩ¿¥œ¥Ÿ.";
 	}
 
+	PacketInfo packetInfo;
+	packetInfo.packetBuffer = tempSystempMsg.c_str();
 	for (int i = 0; i < clientCount; i++)
 	{
 		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
-		send(sock, tempSystempMsg.c_str(), strlen(tempSystempMsg.c_str()), 0);
+		_clientManager->clientSessionMap.find(sock)->second->PushSendVec(packetInfo, sizeof(tempSystempMsg));
 	}
 }

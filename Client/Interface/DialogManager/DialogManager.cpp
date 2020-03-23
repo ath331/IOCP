@@ -417,7 +417,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		case FD_READ:
 		{
 			PacketSendMessage packetSendMessage;
-			recv((SOCKET)wParam, (char*)packetSendMessage.buffer, 500, 0);
+			recv((SOCKET)wParam, (char*)packetSendMessage.buffer, sizeof(PacketSendMessage), 0);
 			HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
 			if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
 			{
