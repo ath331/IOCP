@@ -51,9 +51,6 @@
     <ClCompile Include="Server\ClientManager\ClientManager.cpp">
       <Filter>Server\ClientManager</Filter>
     </ClCompile>
-    <ClCompile Include="Basic\ClientInfo.cpp">
-      <Filter>Basic</Filter>
-    </ClCompile>
     <ClCompile Include="Server\Session\TcpSession.cpp">
       <Filter>Server\Session</Filter>
     </ClCompile>
@@ -66,6 +63,9 @@
     <ClCompile Include="Server\RoomManager\RoomManager.cpp">
       <Filter>Server\RoomManager</Filter>
     </ClCompile>
+    <ClCompile Include="Server\ClientManager\ClientInfo.cpp">
+      <Filter>Server\ClientManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server\Server.h">
@@ -73,9 +73,6 @@
     </ClInclude>
     <ClInclude Include="ThreadManager\ThreadManager.h">
       <Filter>ThreadMamager</Filter>
-    </ClInclude>
-    <ClInclude Include="Basic\ClientInfo.h">
-      <Filter>Basic</Filter>
     </ClInclude>
     <ClInclude Include="Basic\OverlappedCustom.h">
       <Filter>Basic</Filter>
@@ -100,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="Server\RoomManager\RoomManager.h">
       <Filter>Server\RoomManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\ClientManager\ClientInfo.h">
+      <Filter>Server\ClientManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

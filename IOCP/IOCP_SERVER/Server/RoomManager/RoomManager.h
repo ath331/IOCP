@@ -1,6 +1,6 @@
 #pragma once
 #include "Room.h"
-#include "ClientInfo.h"
+#include "../ClientManager/ClientInfo.h"
 #include <vector>
 #include <string>
 

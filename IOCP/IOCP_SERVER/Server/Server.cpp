@@ -1,6 +1,6 @@
 #include "Server.h"
 #include "OverlappedCustom.h"
-#include "ClientInfo.h"
+#include "ClientManager/ClientInfo.h"
 
 #include "DB.h"
 #include "../ThreadManager/ThreadManager.h"

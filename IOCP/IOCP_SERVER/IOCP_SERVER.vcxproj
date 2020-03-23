@@ -148,9 +148,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Basic\ClientInfo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server\Acceptor\Acceptor.cpp" />
+    <ClCompile Include="Server\ClientManager\ClientInfo.cpp" />
     <ClCompile Include="Server\ClientManager\ClientManager.cpp" />
     <ClCompile Include="Server\RoomManager\Room.cpp" />
     <ClCompile Include="Server\RoomManager\RoomManager.cpp" />
@@ -160,10 +160,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Packet\packet.h" />
-    <ClInclude Include="Basic\ClientInfo.h" />
     <ClInclude Include="Basic\Lock.h" />
     <ClInclude Include="Basic\OverlappedCustom.h" />
     <ClInclude Include="Server\Acceptor\Acceptor.h" />
+    <ClInclude Include="Server\ClientManager\ClientInfo.h" />
     <ClInclude Include="Server\ClientManager\ClientManager.h" />
     <ClInclude Include="Server\RoomManager\Room.h" />
     <ClInclude Include="Server\RoomManager\RoomManager.h" />
