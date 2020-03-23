@@ -1,5 +1,5 @@
 #include "ThreadManager.h"
-#include "ClientInfo.h"
+#include "../IOCP_SERVER/Server/ClientManager/ClientInfo.h"
 #include "OverlappedCustom.h"
 #include "DB.h"
 
@@ -170,11 +170,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				clientInfo->roomNum = packetEnterRoom.roomNum;
 				thisObject->_roomManager->EnterRoom(packetEnterRoom.roomNum, clientInfo);
 
-				//TODO : Message 관리 class 만들기
-				string enterMessage = "[SYSTEM] ";
-				enterMessage += clientInfo->clientName;
-				enterMessage += "님이 접속했습니다.";
-				thisObject->_SendMessageToClient(packetEnterRoom.roomNum, enterMessage.c_str(), TRUE);
+				string enterMessage = clientInfo->clientName;
+				thisObject->_SendSystemMessage(packetEnterRoom.roomNum, enterMessage.c_str(), TRUE);
 			}
 			break;
 
@@ -186,22 +183,15 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				clientInfo->OutRoom(packetCloseRoom.roomNum);
 				if ((thisObject->_roomManager->OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum)))
 				{
-					//TODO : Message 관리 class 만들기
-					string enterMessage = "[SYSTEM] ";
-					enterMessage += clientInfo->clientName;
-					enterMessage += "님이 나갔습니다.";
-					thisObject->_SendMessageToClient(packetCloseRoom.roomNum, enterMessage.c_str(), TRUE);
+					string enterMessage = clientInfo->clientName;
+					thisObject->_SendSystemMessage(packetCloseRoom.roomNum, enterMessage.c_str(), FALSE);
 				}
 			}
 			break;
 
 			case PacketIndex::SEND_MESSAGE:
 			{
-				PacketSendMessage packetSendMessage;
-				memmove(&packetSendMessage, packetInfo.packetBuffer, sizeof(PacketSendMessage));
-				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
-				packetSendMessage.roomNum = clientInfo->roomNum;
-				thisObject->_SendMessageToClient(packetSendMessage.roomNum, packetSendMessage.buffer);
+				thisObject->_SendMessageToClient(packetInfo.sock, packetInfo.packetBuffer);
 			}
 			break;
 
@@ -278,15 +268,47 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 	}
 }
 
+void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
+{
+	PacketSendMessage packetSendMessage;
+	memmove(&packetSendMessage, pckBuf, sizeof(PacketSendMessage));
 
-void ThreadManager::_SendMessageToClient(int roomNum, const char* msg, bool isSystemMessage)
+	ClientInfo* clientInfo = _clientManager->GetClientInfo(sock);
+	int roomNum = clientInfo->roomNum;
+	packetSendMessage.roomNum = roomNum;
+
+	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
+	int clientCount = room.clientInfoVec.size();
+
+	PacketInfo packetInfo = { sock ,(PacketIndex)-1 ,(const char*)&packetSendMessage };
+	for (int i = 0; i < clientCount; i++)
+	{
+		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
+		_clientManager->clientSessionMap.find(sock)->second->PushSendVec(packetInfo, sizeof(PacketSendMessage));
+	}
+}
+
+
+void ThreadManager::_SendSystemMessage(int roomNum, const char* name, bool isEnter)
 {
 	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
 	int clientCount = room.clientInfoVec.size();
 
+	string tempSystempMsg = "[SYSTEM] ";
+	tempSystempMsg += name;
+
+	if (isEnter)
+	{
+		tempSystempMsg += " 님이 접속 했습니다.";
+	}
+	else
+	{
+		tempSystempMsg += " 님이 퇴장 했습니다.";
+	}
+
 	for (int i = 0; i < clientCount; i++)
 	{
 		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
-		send(sock, msg, strlen(msg), 0);
+		send(sock, tempSystempMsg.c_str(), strlen(tempSystempMsg.c_str()), 0);
 	}
 }

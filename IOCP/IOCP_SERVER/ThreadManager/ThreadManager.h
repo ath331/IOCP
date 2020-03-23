@@ -36,7 +36,8 @@ private:
 	concurrency::concurrent_queue<PacketInfo> _packetQueue;
 
 	void _PushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[]);
-	void _SendMessageToClient(int roomNum,const char* msg, bool isSystemMessage = FALSE);
+	void _SendSystemMessage(int roomNum, const char* name, bool isEnter = TRUE);
+	void _SendMessageToClient(SOCKET sock, const char* pckBuf);
 
 	//TODO : class °ü¸® ´Ùµë±â
 	ClientManager* _clientManager;
