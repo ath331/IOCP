@@ -75,11 +75,11 @@ void TcpSession::PushSendVec(PacketInfo pck,int pckSize)
 	Pck packet = { pckSize,(CHAR*)pck.packetBuffer };
 	_packetSendQueue.push(packet);
 
-	PostSend();
+	_PostSend();
 	return;
 }
 
-void TcpSession::PostSend()
+void TcpSession::_PostSend()
 {
 	if (_packetSendQueue.empty())
 	{

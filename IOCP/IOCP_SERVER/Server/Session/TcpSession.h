@@ -27,10 +27,10 @@ public:
 	void PostRecv();
 	void CheckPcketSize(int recvTransLen);
 
-	void PostSend();
 	void PushSendVec(PacketInfo pck, int pckSize);
 	bool isSending				= false;
 private:
+	void _PostSend();
 	SOCKET _sock;
 	HANDLE _cpHandle;
 	concurrent_queue<PacketInfo>* _packetDBQueue;
