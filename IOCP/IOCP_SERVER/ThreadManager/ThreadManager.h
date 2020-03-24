@@ -35,7 +35,6 @@ private:
 	concurrency::concurrent_queue<PacketInfo> _packetDBQueue;
 	concurrency::concurrent_queue<PacketInfo> _packetQueue;
 
-	void _PushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[]);
 	void _SendSystemMessage(int roomNum, const char* name, bool isEnter = TRUE);
 	void _SendMessageToClient(SOCKET sock, const char* pckBuf);
 

@@ -56,21 +56,6 @@ void ThreadManager::WaitThread()
 		WaitForMultipleObjects(_threadHandleVec.size(), &_threadHandleVec[0], true, INFINITE);
 }
 
-
-void ThreadManager::_PushPacketQueue(SOCKET sock, PacketIndex packetIndex, const char buffer[])
-{
-	PacketInfo tempPacketInfo = { sock, packetIndex, buffer };
-	if (packetIndex < PacketIndex::DB_INDEX)
-	{
-		_packetQueue.push(tempPacketInfo);
-	}
-	else if (packetIndex > PacketIndex::DB_INDEX)
-	{
-		_packetDBQueue.push(tempPacketInfo);
-	}
-}
-
-
 unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 {
 	ThreadManager* thisObject = (ThreadManager*)_thisObject;
