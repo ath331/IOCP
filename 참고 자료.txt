@@ -21,3 +21,5 @@ mswsock acceptEX : https://teraphonia.tistory.com/28
 WSARECV 비동기 recv 수신 : https://www.joinc.co.kr/w/man/4100/WSARecv
 IOCP 비동기 모델 유의점 : https://m.blog.naver.com/PostView.nhn?blogId=zard9023&logNo=220609396561&proxyReferer=https%3A%2F%2Fwww.google.com%2F
 shutdown()과 closesocket() : https://chfhrqnfrhc.tistory.com/entry/%EC%86%8C%EC%BC%93-%EC%A2%85%EB%A3%8C (IOCP, Overlapped IO 설명도 있음)
+C4996 error : https://oulth.tistory.com/28
+범위 기반 for : https://blockdmask.tistory.com/319
