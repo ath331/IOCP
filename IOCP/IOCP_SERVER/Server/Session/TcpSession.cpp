@@ -9,6 +9,7 @@ TcpSession::~TcpSession()
 
 void TcpSession::PostRecv()
 {
+	//TODO : buf조절하기
 	_recvBuf.len = MAX_BUF_SIZE - _recvLenOffSet;
 
 	if (SOCKET_ERROR == WSARecv(_sock, &_recvBuf, 1, (DWORD*)&_recvLen, &_recvFlag, (LPOVERLAPPED)&_recvOverlapped, NULL))
@@ -53,9 +54,9 @@ void TcpSession::CheckPcketSize(int recvTransLen)
 
 		/*_recvBuf.buf에 packetHeader->headerSize 이상의 데이터가 있음
 		사용할 패킷의 크기만큼만 이동하고 초과의 데이터는 앞으로 땡긴다*/
-		char cpyRecvBuf[MAX_BUF_SIZE + 1];
-		memmove(cpyRecvBuf, _recvBuf.buf, _recvTotalLen);
-		PacketInfo tempPacketInfo = { _sock, packetHeader->index, (const char*)cpyRecvBuf };
+		char moveRecvBuf[MAX_BUF_SIZE + 1];
+		memmove(moveRecvBuf, _recvBuf.buf, _recvTotalLen);
+		PacketInfo tempPacketInfo = { _sock, packetHeader->index, (const char*)moveRecvBuf };
 		if (packetHeader->index < PacketIndex::DB_INDEX)
 		{
 			_packetQueue->push(tempPacketInfo);
@@ -74,7 +75,7 @@ void TcpSession::PushSendVec(PacketInfo pck,ULONG pckSize)
 {
 	Pck packet = { pckSize,(CHAR*)pck.packetBuffer };
 	_packetSendQueue.push(packet);
-
+	//TODO : queue를 사용하는 의미가 없다 (하나넣고 그냥 바로 사용해서?)
 	_PostSend();
 	return;
 }
