@@ -102,11 +102,9 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 	while (true)
 	{
 		Sleep(1);
-		if (!(thisObject->_packetQueue.empty()))
+		PacketInfo packetInfo;
+		if (thisObject->_packetQueue.try_pop(packetInfo))
 		{
-			PacketInfo packetInfo;
-			thisObject->_packetQueue.try_pop(packetInfo);
-
 			switch (packetInfo.packetIndex)
 			{
 			case PacketIndex::MAKE_ROOM:

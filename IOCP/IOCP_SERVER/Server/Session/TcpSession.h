@@ -28,7 +28,7 @@ public:
 	void CheckPcketSize(int recvTransLen);
 
 	void PushSendVec(PacketInfo pck, ULONG pckSize);
-	bool isSending				= false;
+	bool isSending				= false; //TODO : 여러 쓰레드에서 쓰기를 하고있다
 private:
 	void _PostSend();
 	SOCKET _sock;
