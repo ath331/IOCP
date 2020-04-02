@@ -53,7 +53,7 @@ void ThreadManager::_MakeDBThread()
 void ThreadManager::WaitThread()
 {
 	if (_threadHandleVec.empty() == false)
-		WaitForMultipleObjects(_threadHandleVec.size(), &_threadHandleVec[0], true, INFINITE);
+		WaitForMultipleObjects(static_cast<DWORD>(_threadHandleVec.size()), &_threadHandleVec[0], true, INFINITE);
 }
 
 unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
@@ -139,7 +139,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 						resPacketRoomList.roomInfoList[i].roomNum = thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomNum();
 						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str()));
 						resPacketRoomList.roomInfoList[i].maxClientInRoom = thisObject->_roomManager->GetRoomInfoByCountNum(i).GetMaxClientCount();
-						resPacketRoomList.roomInfoList[i].curClientNum = thisObject->_roomManager->GetRoomInfoByCountNum(i).clientInfoVec.size();
+						resPacketRoomList.roomInfoList[i].curClientNum = static_cast<int>(thisObject->_roomManager->GetRoomInfoByCountNum(i).clientInfoVec.size());
 					}
 					packetInfo.packetBuffer = (const char*)&resPacketRoomList;
 					thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(RES_PacketRoomList));
@@ -213,7 +213,7 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 					memcpy((void*)clientInfo->clientName, (const void*)name.c_str(), sizeof(name.c_str()));
 					thisObject->_clientManager->PushClientInfo(clientInfo);
 
-					thisObject->_db->UpdateData(UpdataType::SOCK, packetLogin.id, packetLogin.name, packetInfo.sock);
+					thisObject->_db->UpdateData(UpdataType::SOCK, packetLogin.id, packetLogin.name, static_cast<int>(packetInfo.sock));
 
 					memcpy((void*)&packetLogin.name, (const void*)name.c_str(), sizeof(name.c_str()));
 					packetLogin.isSuccessIdCheck = TRUE;
@@ -262,7 +262,7 @@ void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
 	int roomNum = clientInfo->roomNum;
 
 	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
-	int clientCount = room.clientInfoVec.size();
+	int clientCount = static_cast<int>(room.clientInfoVec.size());
 
 	PacketInfo packetInfo;
 	packetInfo.packetBuffer = packetSendMessage.buffer;
@@ -277,7 +277,7 @@ void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
 void ThreadManager::_SendSystemMessage(int roomNum, const char* name, bool isEnter)
 {
 	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
-	int clientCount = room.clientInfoVec.size();
+	int clientCount = static_cast<int>(room.clientInfoVec.size());
 
 	string tempSystempMsg = "[SYSTEM] ";
 	tempSystempMsg += name;

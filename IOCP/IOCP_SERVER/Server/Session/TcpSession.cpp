@@ -70,7 +70,7 @@ void TcpSession::CheckPcketSize(int recvTransLen)
 	}
 }
 
-void TcpSession::PushSendVec(PacketInfo pck,int pckSize)
+void TcpSession::PushSendVec(PacketInfo pck,ULONG pckSize)
 {
 	Pck packet = { pckSize,(CHAR*)pck.packetBuffer };
 	_packetSendQueue.push(packet);

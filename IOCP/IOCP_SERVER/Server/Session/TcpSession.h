@@ -27,7 +27,7 @@ public:
 	void PostRecv();
 	void CheckPcketSize(int recvTransLen);
 
-	void PushSendVec(PacketInfo pck, int pckSize);
+	void PushSendVec(PacketInfo pck, ULONG pckSize);
 	bool isSending				= false;
 private:
 	void _PostSend();
