@@ -22,7 +22,7 @@ void TcpSession::PostRecv()
 	}
 }
 
-void TcpSession::CheckPcketSize(int recvTransLen)
+void TcpSession::OnRecvForIocp(int recvTransLen)
 {
 	_recvLenOffSet += recvTransLen;
 	while (TRUE)
@@ -71,26 +71,32 @@ void TcpSession::CheckPcketSize(int recvTransLen)
 	}
 }
 
-void TcpSession::PushSendVec(PacketInfo pck,ULONG pckSize)
+void TcpSession::PushSendVec(PacketInfo pck, ULONG pckSize)
 {
 	Pck packet = { pckSize,(CHAR*)pck.packetBuffer };
-	_packetSendQueue.push(packet);
-	//TODO : queue를 사용하는 의미가 없다 (하나넣고 그냥 바로 사용해서?)
+	_packetTempSendVec.push_back(packet);
+
 	_PostSend();
 	return;
 }
 
+void TcpSession::OnSendForIocp()
+{
+	_isSending = false;
+	if (_packetTempSendVec.empty())
+		return;
+	_PostSend();
+}
+
+
 void TcpSession::_PostSend()
 {
-	if (_packetSendQueue.empty())
-	{
-		return;
-	}
+	_packetSendVec = _packetTempSendVec;
+	_packetTempSendVec.clear();
 
-	Pck tempPacket;
-	_packetSendQueue.try_pop(tempPacket);
-
-	if (SOCKET_ERROR == WSASend(_sock, &tempPacket, 1, (LPDWORD)&_sendLen, NULL, (LPOVERLAPPED)&_sendOverlapped, NULL))
+	/*_packetSendVec의 원소들을 하나씩 비동기 송신을 하는데 마지막 까지 다보내고
+	iocp를 호출하나? 아니면 원소 하나의 송신을 완료 할때마다?*/
+	if (SOCKET_ERROR == WSASend(_sock, &_packetSendVec[0], static_cast<DWORD>(_packetSendVec.size()), (LPDWORD)&_sendLen, NULL, (LPOVERLAPPED)&_sendOverlapped, NULL))
 	{
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING)
@@ -99,5 +105,5 @@ void TcpSession::_PostSend()
 		}
 	}
 
-	isSending = true;
+	_isSending = true;
 }

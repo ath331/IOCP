@@ -84,12 +84,12 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 				thisObject->_clientManager->CloseClient(sock);
 				continue;
 			}
-			thisObject->_clientManager->clientSessionMap.find(sock)->second->CheckPcketSize(bytesTrans);
+			thisObject->_clientManager->clientSessionMap.find(sock)->second->OnRecvForIocp(bytesTrans);
 		}
 
 		else if (ioInfo->ioType == Overlapped::IO_TYPE::SEND)
 		{
-			thisObject->_clientManager->clientSessionMap.find(sock)->second->isSending = false;
+			thisObject->_clientManager->clientSessionMap.find(sock)->second->OnSendForIocp();
 		}
 
 	}

@@ -3,6 +3,7 @@
 #include "Lock.h"
 #include "OverlappedCustom.h"
 #include <concurrent_queue.h>
+#include <vector>
 
 const static int MAX_BUF_SIZE = 1024;
 
@@ -25,12 +26,11 @@ public:
 	~TcpSession();
 
 	void PostRecv();
-	void CheckPcketSize(int recvTransLen);
+	void OnRecvForIocp(int recvTransLen); //For IOCP RECV 
 
 	void PushSendVec(PacketInfo pck, ULONG pckSize);
-	bool isSending				= false; //TODO : 여러 쓰레드에서 쓰기를 하고있다
+	void OnSendForIocp();
 private:
-	void _PostSend();
 	SOCKET _sock;
 	HANDLE _cpHandle;
 	concurrent_queue<PacketInfo>* _packetDBQueue;
@@ -44,5 +44,8 @@ private:
 
 	Overlapped _sendOverlapped;
 	unsigned int _sendLen		= 0;
-	concurrent_queue<Pck> _packetSendQueue;
+	vector<Pck> _packetSendVec;
+	vector<Pck> _packetTempSendVec;
+	bool _isSending				= false;
+	void _PostSend();
 };
