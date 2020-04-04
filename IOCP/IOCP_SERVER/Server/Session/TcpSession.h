@@ -48,4 +48,5 @@ private:
 	vector<Pck> _packetTempSendVec;
 	bool _isSending				= false;
 	void _PostSend();
+	Lock _sendLock;
 };

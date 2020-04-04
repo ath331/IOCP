@@ -73,15 +73,19 @@ void TcpSession::OnRecvForIocp(int recvTransLen)
 
 void TcpSession::PushSendVec(PacketInfo pck, ULONG pckSize)
 {
+	LockGuard sendLcokGuard(_sendLock);
 	Pck packet = { pckSize,(CHAR*)pck.packetBuffer };
 	_packetTempSendVec.push_back(packet);
 
-	_PostSend();
+	if (!_isSending)
+		_PostSend();
+
 	return;
 }
 
 void TcpSession::OnSendForIocp()
 {
+	LockGuard sendLcokGuard(_sendLock);
 	_isSending = false;
 	if (_packetTempSendVec.empty())
 		return;
@@ -95,7 +99,7 @@ void TcpSession::_PostSend()
 	_packetTempSendVec.clear();
 
 	/*_packetSendVec의 원소들을 하나씩 비동기 송신을 하는데 마지막 까지 다보내고
-	iocp를 호출하나? 아니면 원소 하나의 송신을 완료 할때마다?*/
+	iocp가 호출되나? 아니면 원소 하나의 송신을 완료 할때마다?*/
 	if (SOCKET_ERROR == WSASend(_sock, &_packetSendVec[0], static_cast<DWORD>(_packetSendVec.size()), (LPDWORD)&_sendLen, NULL, (LPOVERLAPPED)&_sendOverlapped, NULL))
 	{
 		int error = WSAGetLastError();
