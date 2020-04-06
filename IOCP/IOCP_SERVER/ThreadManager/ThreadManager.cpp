@@ -205,9 +205,7 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 				{
 					string name = thisObject->_db->GetName(packetLogin.id);
 
-					ClientInfo* clientInfo = new ClientInfo(packetInfo.sock);
-					memcpy((void*)clientInfo->clientName, (const void*)name.c_str(), sizeof(name.c_str()));
-					thisObject->_clientManager->PushClientInfo(clientInfo);
+					thisObject->_clientManager->PushClientInfo(packetInfo.sock, name);
 
 					thisObject->_db->UpdateData(UpdataType::SOCK, packetLogin.id, packetLogin.name, static_cast<int>(packetInfo.sock));
 

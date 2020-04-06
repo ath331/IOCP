@@ -10,6 +10,7 @@ class ClientManager
 {
 public:
 	void PushClientInfo(ClientInfo* clientInfo);
+	void PushClientInfo(SOCKET sock,string name);
 	void PopClientInfo(SOCKET sock);
 	void CloseClient(SOCKET sock);
 	ClientInfo* GetClientInfo(SOCKET sock);

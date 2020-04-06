@@ -6,6 +6,14 @@ void ClientManager::PushClientInfo(ClientInfo* clientInfo)
 	_clientVec.push_back(clientInfo);
 }
 
+void ClientManager::PushClientInfo(SOCKET sock, string name)
+{
+	ClientInfo* clientInfo = new ClientInfo(sock);
+	clientInfo->clientName = name;
+	PushClientInfo(clientInfo);
+}
+
+
 void ClientManager::CloseClient(SOCKET sock)
 {
 	shutdown(sock, SD_BOTH);
