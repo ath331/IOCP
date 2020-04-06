@@ -71,6 +71,8 @@ string DB::GetName(string id)
 			return (string)_mysqlInstance->_row[2];
 		}
 	}
+
+	return static_cast<string>("DEFUALT");
 }
 
 void DB::UpdateData(UpdataType type, string id, string name, int sock)
