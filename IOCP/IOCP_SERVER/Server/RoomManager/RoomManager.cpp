@@ -25,7 +25,7 @@ void RoomManager::EnterRoom(int roomNum, ClientInfo* clientInfo)
 
 int RoomManager::GetRoomVecSize()
 {
-	return _roomVec.size();
+	return static_cast<int>(_roomVec.size());
 }
 
 Room RoomManager::GetRoomInfoByRoomNum(int roomNum)

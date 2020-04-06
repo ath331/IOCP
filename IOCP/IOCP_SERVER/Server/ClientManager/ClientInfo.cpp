@@ -11,11 +11,3 @@ bool ClientInfo::IsAcceptingRoomNum(int _roomNum)
 		return TRUE;
 	return FALSE;
 }
-
-const ClientInfo& ClientInfo::operator=(ClientInfo clientInfo)
-{
-	clientSock = clientInfo.clientSock;
-	memcpy((void*)clientName, clientInfo.clientName, sizeof(clientInfo.clientName));
-	roomNum = clientInfo.roomNum;
-	return *this;
-}

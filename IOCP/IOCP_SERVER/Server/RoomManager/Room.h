@@ -22,19 +22,10 @@ public:
 	int GetRoomNum();
 	int OutClientInRoom(SOCKET clientSock, int roomNum);
 
-	const Room& operator=(Room roomInfo)
-	{
-		_roomNum = roomInfo._roomNum;
-		_maxClientCount = roomInfo._maxClientCount;
-		_roomName = roomInfo._roomName;
-		_isPublicRoom = roomInfo._isPublicRoom;
-		return *this;
-	}
-
 private:
 	int _roomNum = -1;
 	string _roomName;
 	int _maxClientCount;
 	bool _isPublicRoom = true;
-	const int _passWord = 0000;
+	int _passWord = 0000;
 };

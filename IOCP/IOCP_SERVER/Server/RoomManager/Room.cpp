@@ -27,7 +27,9 @@ int Room::OutClientInRoom(SOCKET clientSock,int roomNum)
 		if ((*iter)->clientSock == clientSock && (*iter)->IsAcceptingRoomNum(roomNum))
 		{
 			iter = clientInfoVec.erase(iter);
-			return clientInfoVec.size();
+			return static_cast<int>(clientInfoVec.size());
 		}
 	}
+
+	return static_cast<int>(-1);
 }

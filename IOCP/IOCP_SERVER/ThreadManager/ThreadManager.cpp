@@ -135,7 +135,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
 					{
 						resPacketRoomList.roomInfoList[i].roomNum = thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomNum();
-						memcpy((void*)&resPacketRoomList.roomInfoList[i].roomName, thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str()));
+						memcpy(&resPacketRoomList.roomInfoList[i].roomName, thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str()));
 						resPacketRoomList.roomInfoList[i].maxClientInRoom = thisObject->_roomManager->GetRoomInfoByCountNum(i).GetMaxClientCount();
 						resPacketRoomList.roomInfoList[i].curClientNum = static_cast<int>(thisObject->_roomManager->GetRoomInfoByCountNum(i).clientInfoVec.size());
 					}
@@ -223,25 +223,25 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 
 			case PacketIndex::MAKE_CLIENT_ID_INFO:
 			{
-				//PacketClientIdInfo packetClientIdInfo;
-				//memcpy(&packetClientIdInfo, packetInfo.packetBuffer, sizeof(PacketClientIdInfo));
+				PacketClientIdInfo packetClientIdInfo;
+				memcpy(&packetClientIdInfo, packetInfo.packetBuffer, sizeof(PacketClientIdInfo));
 
-				//if (packetClientIdInfo.isChangeName == FALSE)
-				//{
-				//	PacketDBInsertData packetDbInsertData;
-				//	if (thisObject->_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name))
-				//	{
-				//		//DB에 데이터등록이 성공할 경우
-				//		packetDbInsertData.isSuccessInsertData = TRUE;
-				//	}
-				//	send(packetInfo.sock, (const char*)&packetDbInsertData, packetDbInsertData.header.headerSize, 0);
-				//	break;
-				//}
-				//else if (packetClientIdInfo.isChangeName == TRUE)
-				//{
-				//	thisObject->_db->UpdateData(UpdataType::NAME, "tempId", packetClientIdInfo.name, packetInfo.sock);
-				//	break;
-				//}
+				if (packetClientIdInfo.isChangeName == FALSE)
+				{
+					PacketDBInsertData packetDbInsertData;
+					if (thisObject->_db->InsertData(packetClientIdInfo.id, packetClientIdInfo.pw, packetClientIdInfo.name))
+					{
+						//DB에 데이터등록이 성공할 경우
+						packetDbInsertData.isSuccessInsertData = TRUE;
+					}
+					send(packetInfo.sock, (const char*)&packetDbInsertData, packetDbInsertData.header.headerSize, 0);
+					break;
+				}
+				else if (packetClientIdInfo.isChangeName == TRUE)
+				{
+					thisObject->_db->UpdateData(UpdataType::NAME, "tempId", packetClientIdInfo.name, static_cast<int>(packetInfo.sock));
+					break;
+				}
 			}
 
 			default:

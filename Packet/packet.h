@@ -103,7 +103,7 @@ struct RES_PacketRoomList
 	struct RoomInfo
 	{
 		int roomNum = -1;
-		const char roomName[MAX_ROOM_NAME_LENGTH] = "";
+		char roomName[MAX_ROOM_NAME_LENGTH] = "";
 		int maxClientInRoom = 10;
 		int curClientNum = 1;
 	};

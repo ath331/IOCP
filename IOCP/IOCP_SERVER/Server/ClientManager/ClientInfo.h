@@ -13,13 +13,11 @@ struct ClientInfo
 {
 	SOCKET clientSock;
 	SOCKADDR_IN clientAdr;
-	const char clientName[MAX_CLIENT_NAME_LENGTH] = "DEFAULT";
+	char clientName[MAX_CLIENT_NAME_LENGTH] = "DEFAULT";
 	int roomNum = -1;
 	ClientInfo() {};
 	ClientInfo(SOCKET sock) : clientSock(sock) {};
 	void OutRoom(int _roomNum);
 
 	bool IsAcceptingRoomNum(int _roomNum);
-
-	const ClientInfo& operator=(ClientInfo clientInfo);
 };
