@@ -99,10 +99,10 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 {
 	ThreadManager* thisObject = (ThreadManager*)_thisObject;
+	PacketInfo packetInfo;
 	while (true)
 	{
 		Sleep(1);
-		PacketInfo packetInfo;
 		if (thisObject->_packetQueue.try_pop(packetInfo))
 		{
 			switch (packetInfo.packetIndex)
@@ -189,14 +189,12 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 {
 	ThreadManager* thisObject = (ThreadManager*)_thisObject;
+	PacketInfo packetInfo;
 	while (true)
 	{
 		Sleep(1);
-		if (!(thisObject->_packetDBQueue.empty()))
+		if (thisObject->_packetDBQueue.try_pop(packetInfo))
 		{
-			PacketInfo packetInfo;
-			thisObject->_packetDBQueue.try_pop(packetInfo);
-
 			switch (packetInfo.packetIndex)
 			{
 			case PacketIndex::Login:

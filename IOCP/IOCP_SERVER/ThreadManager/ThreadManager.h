@@ -44,5 +44,8 @@ private:
 	Acceptor* _acceptor;
 
 	RoomManager* _roomManager;
+
+	PacketInfo _dbThreadPacket;
+	PacketInfo _logicThreadPacket;
 };
 
