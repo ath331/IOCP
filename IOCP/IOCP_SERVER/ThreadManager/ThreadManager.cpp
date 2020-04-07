@@ -71,7 +71,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 		{
 			SOCKET sock = ioInfo->sock; //Á¢¼ÓÇÑ clientSock
 			TcpSession* session = new TcpSession(thisObject->_comPort, sock, &thisObject->_packetQueue, &thisObject->_packetDBQueue);
-			thisObject->_clientManager->clientSessionMap.insert(make_pair(sock, session));
+			thisObject->_clientManager->PushClientInfo(sock, session);
 			session->PostRecv();
 
 			thisObject->_acceptor->AcceptClient();
@@ -84,12 +84,12 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 				thisObject->_clientManager->CloseClient(sock);
 				continue;
 			}
-			thisObject->_clientManager->clientSessionMap.find(sock)->second->OnRecvForIocp(bytesTrans);
+			thisObject->_clientManager->GetClientSession(sock)->OnRecvForIocp(bytesTrans);
 		}
 
 		else if (ioInfo->ioType == Overlapped::IO_TYPE::SEND)
 		{
-			thisObject->_clientManager->clientSessionMap.find(sock)->second->OnSendForIocp();
+			thisObject->_clientManager->GetClientSession(sock)->OnSendForIocp();
 		}
 
 	}
@@ -106,7 +106,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 		Sleep(1);
 		if (thisObject->_packetQueue.try_pop(packetInfo))
 		{
-			clientSession = thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second;
+			clientSession = thisObject->_clientManager->GetClientSession(packetInfo.sock);
 			switch (packetInfo.packetIndex)
 			{
 			case PacketIndex::MAKE_ROOM:
@@ -189,7 +189,7 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 		Sleep(1);
 		if (thisObject->_packetDBQueue.try_pop(packetInfo))
 		{
-			clientSession = thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second;
+			clientSession = thisObject->_clientManager->GetClientSession(packetInfo.sock);
 			switch (packetInfo.packetIndex)
 			{
 			case PacketIndex::Login:
@@ -259,7 +259,7 @@ void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
 	for (int i = 0; i < clientCount; i++)
 	{
 		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
-		_clientManager->clientSessionMap.find(sock)->second->PushSendVec(packetInfo, sizeof(PacketSendMessage));
+		_clientManager->GetClientSession(sock)->PushSendVec(packetInfo, sizeof(PacketSendMessage));
 	}
 }
 
@@ -286,6 +286,6 @@ void ThreadManager::_SendSystemMessage(int roomNum, const char* name, bool isEnt
 	for (int i = 0; i < clientCount; i++)
 	{
 		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
-		_clientManager->clientSessionMap.find(sock)->second->PushSendVec(packetInfo, sizeof(tempSystempMsg));
+		_clientManager->GetClientSession(sock)->PushSendVec(packetInfo, sizeof(tempSystempMsg));
 	}
 }
