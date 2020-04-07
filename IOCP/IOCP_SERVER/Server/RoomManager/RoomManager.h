@@ -1,12 +1,12 @@
 #pragma once
 #include "Room.h"
-#include "../ClientManager/ClientInfo.h"
 #include <vector>
 #include <string>
 
 using namespace std;
 
 struct RES_PacketRoomList;
+struct  ClientInfo;
 class RoomManager
 {
 public:
