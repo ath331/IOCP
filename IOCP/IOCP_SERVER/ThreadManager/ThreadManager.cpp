@@ -100,16 +100,17 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 {
 	ThreadManager* thisObject = (ThreadManager*)_thisObject;
 	PacketInfo packetInfo;
+	TcpSession* clientSession = nullptr;
 	while (true)
 	{
 		Sleep(1);
 		if (thisObject->_packetQueue.try_pop(packetInfo))
 		{
+			clientSession = thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second;
 			switch (packetInfo.packetIndex)
 			{
 			case PacketIndex::MAKE_ROOM:
 			{
-				//TODO : 방만들기와 방접속 분리하기
 				PacketMakeRoom packetMakeRoom;
 				memcpy(&packetMakeRoom, packetInfo.packetBuffer, sizeof(PacketMakeRoom));
 				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
@@ -120,7 +121,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				clientInfo->roomNum = resPacketMakeRoom.roomNum;
 
 				packetInfo.packetBuffer = (const char*)&resPacketMakeRoom;
-				thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(RES_PacketMakeRoom));
+				clientSession->PushSendVec(packetInfo, sizeof(RES_PacketMakeRoom));
 			}
 			break;
 
@@ -128,12 +129,12 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 			{
 				RES_PacketRoomList resPacketRoomList;
 				resPacketRoomList.maxRoomCount = thisObject->_roomManager->GetRoomVecSize();
-				if (resPacketRoomList.maxRoomCount != 0) //만든 방이 하나라도 있을때
+				if (resPacketRoomList.maxRoomCount > 0) //만든 방이 하나라도 있을때
 				{
 					thisObject->_roomManager->SettingRoomList(resPacketRoomList);
 
 					packetInfo.packetBuffer = (const char*)&resPacketRoomList;
-					thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(RES_PacketRoomList));
+					clientSession->PushSendVec(packetInfo, sizeof(RES_PacketRoomList));
 				}
 			}
 			break;
@@ -183,11 +184,13 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 {
 	ThreadManager* thisObject = (ThreadManager*)_thisObject;
 	PacketInfo packetInfo;
+	TcpSession* clientSession = nullptr;
 	while (true)
 	{
 		Sleep(1);
 		if (thisObject->_packetDBQueue.try_pop(packetInfo))
 		{
+			clientSession = thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second;
 			switch (packetInfo.packetIndex)
 			{
 			case PacketIndex::Login:
@@ -205,7 +208,7 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 					memcpy((void*)&packetLogin.name, (const void*)name.c_str(), sizeof(name.c_str()));
 					packetLogin.isSuccessIdCheck = TRUE;
 					packetInfo.packetBuffer = (const char*)&packetLogin;
-					thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(PacketLogin));
+					clientSession->PushSendVec(packetInfo, sizeof(PacketLogin));
 				}
 			}
 			break;
@@ -223,7 +226,7 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 						//DB에 데이터등록이 성공할 경우
 						packetDbInsertData.isSuccessInsertData = TRUE;
 					}
-					thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(PacketLogin));
+					clientSession->PushSendVec(packetInfo, sizeof(PacketLogin));
 
 					break;
 				}

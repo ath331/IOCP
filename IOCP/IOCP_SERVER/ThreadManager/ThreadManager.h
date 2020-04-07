@@ -28,9 +28,9 @@ private:
 	void _MakeLogicThread();
 	void _MakeDBThread();
 
-	static unsigned int WINAPI _RunIOThreadMain(void* thisObject);
-	static unsigned int WINAPI _RunLogicThreadMain(void* thisObject);
-	static unsigned int WINAPI _RunDBThreadMain(void* thisObject);
+	static unsigned int WINAPI _RunIOThreadMain(void* thisObject); //IO처리 멀티스레드
+	static unsigned int WINAPI _RunLogicThreadMain(void* thisObject); //Logic처리 싱글스레드
+	static unsigned int WINAPI _RunDBThreadMain(void* thisObject); //DB처리 싱글스레드
 
 	concurrency::concurrent_queue<PacketInfo> _packetDBQueue;
 	concurrency::concurrent_queue<PacketInfo> _packetQueue;
