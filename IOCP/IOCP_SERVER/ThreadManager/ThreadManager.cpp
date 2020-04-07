@@ -130,15 +130,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				resPacketRoomList.maxRoomCount = thisObject->_roomManager->GetRoomVecSize();
 				if (resPacketRoomList.maxRoomCount != 0) //만든 방이 하나라도 있을때
 				{
-					if (resPacketRoomList.maxRoomCount > MAX_ROOM_COUNT)
-						resPacketRoomList.maxRoomCount = MAX_ROOM_COUNT;
-					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
-					{
-						resPacketRoomList.roomInfoList[i].roomNum = thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomNum();
-						memcpy(&resPacketRoomList.roomInfoList[i].roomName, thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(thisObject->_roomManager->GetRoomInfoByCountNum(i).GetRoomName().c_str()));
-						resPacketRoomList.roomInfoList[i].maxClientInRoom = thisObject->_roomManager->GetRoomInfoByCountNum(i).GetMaxClientCount();
-						resPacketRoomList.roomInfoList[i].curClientNum = static_cast<int>(thisObject->_roomManager->GetRoomInfoByCountNum(i).clientInfoVec.size());
-					}
+					thisObject->_roomManager->SettingRoomList(resPacketRoomList);
+
 					packetInfo.packetBuffer = (const char*)&resPacketRoomList;
 					thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(RES_PacketRoomList));
 				}
@@ -230,7 +223,8 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 						//DB에 데이터등록이 성공할 경우
 						packetDbInsertData.isSuccessInsertData = TRUE;
 					}
-					send(packetInfo.sock, (const char*)&packetDbInsertData, packetDbInsertData.header.headerSize, 0);
+					thisObject->_clientManager->clientSessionMap.find(packetInfo.sock)->second->PushSendVec(packetInfo, sizeof(PacketLogin));
+
 					break;
 				}
 				else if (packetClientIdInfo.isChangeName == TRUE)

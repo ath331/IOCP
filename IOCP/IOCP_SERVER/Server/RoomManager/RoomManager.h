@@ -6,6 +6,7 @@
 
 using namespace std;
 
+struct RES_PacketRoomList;
 class RoomManager
 {
 public:
@@ -17,6 +18,8 @@ public:
 	Room GetRoomInfoByRoomNum(int roomNum);
 	Room GetRoomInfoByCountNum(int count); //count번쨰 방 객체를 반환
 	int GetRoomCount();
+
+	void SettingRoomList(RES_PacketRoomList& pck);
 private:
 	int _roomCount = 0;
 	vector<Room> _roomVec;
