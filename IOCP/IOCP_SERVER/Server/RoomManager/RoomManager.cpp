@@ -1,4 +1,5 @@
 #include "RoomManager.h"
+#include "../ClientManager/ClientInfo.h"
 #include <packet.h>
 #include <algorithm>
 
@@ -59,10 +60,12 @@ int RoomManager::GetRoomCount()
 
 void RoomManager::SettingRoomList(RES_PacketRoomList& resPacketRoomList)
 {
+	resPacketRoomList.maxRoomCount = static_cast<int>(_roomVec.size());
+
 	if (resPacketRoomList.maxRoomCount > MAX_ROOM_COUNT)
 		resPacketRoomList.maxRoomCount = MAX_ROOM_COUNT;
 
-	for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
+	for (int i = 0; i < _roomVec.size(); i++)
 	{
 		resPacketRoomList.roomInfoList[i].roomNum = GetRoomInfoByCountNum(i).GetRoomNum();
 		memcpy(&resPacketRoomList.roomInfoList[i].roomName, GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(GetRoomInfoByCountNum(i).GetRoomName().c_str()));
