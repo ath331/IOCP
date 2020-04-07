@@ -98,7 +98,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 
 unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 {
-	ThreadManager* thisObject = (ThreadManager*)_thisObject;
+	ThreadManager* thisObject = static_cast<ThreadManager*>(_thisObject);
 	PacketInfo packetInfo;
 	TcpSession* clientSession = nullptr;
 	while (true)
@@ -127,10 +127,9 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 
 			case PacketIndex::ROOM_LIST:
 			{
-				RES_PacketRoomList resPacketRoomList;
-				resPacketRoomList.maxRoomCount = thisObject->_roomManager->GetRoomVecSize();
-				if (resPacketRoomList.maxRoomCount > 0) //만든 방이 하나라도 있을때
+				if (thisObject->_roomManager->GetRoomVecSize() > 0) //만든 방이 하나라도 있을때
 				{
+					RES_PacketRoomList resPacketRoomList;
 					thisObject->_roomManager->SettingRoomList(resPacketRoomList);
 
 					packetInfo.packetBuffer = (const char*)&resPacketRoomList;
@@ -182,7 +181,7 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 
 unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 {
-	ThreadManager* thisObject = (ThreadManager*)_thisObject;
+	ThreadManager* thisObject = static_cast<ThreadManager*>(_thisObject);
 	PacketInfo packetInfo;
 	TcpSession* clientSession = nullptr;
 	while (true)
