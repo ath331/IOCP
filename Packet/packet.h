@@ -42,9 +42,8 @@ struct PacketHeader
 	int headerSize = sizeof(PacketHeader);
 };
 
-struct PacketLogin
+struct PacketLogin : public PacketHeader
 {
-	PacketHeader header;
 	const char id[20] = "DEFUALT_ID";
 	const char pw[20] = "DEFUALT_PW";
 	const char name[MAX_NAME_LENGTH] = "DEFUALT";
@@ -52,14 +51,13 @@ struct PacketLogin
 
 	PacketLogin()
 	{
-		header.index = PacketIndex::Login;
-		header.headerSize = sizeof(PacketLogin);
+		index = PacketIndex::Login;
+		headerSize = sizeof(PacketLogin);
 	}
 };
 
-struct PacketMakeRoom
+struct PacketMakeRoom : public PacketHeader
 {
-	PacketHeader header;
 	char roomName[MAX_ROOM_NAME_LENGTH] = {};
 	int maxClientCount = 2;
 	bool isPrivateRoom = false;
@@ -67,37 +65,33 @@ struct PacketMakeRoom
 
 	PacketMakeRoom()
 	{
-		header.index = PacketIndex::MAKE_ROOM;
-		header.headerSize = sizeof(PacketMakeRoom);
+		index = PacketIndex::MAKE_ROOM;
+		headerSize = sizeof(PacketMakeRoom);
 	}
 };
 
-struct RES_PacketMakeRoom
+struct RES_PacketMakeRoom : public PacketHeader
 {
-	PacketHeader header;
 	int roomNum = 100;
 
 	RES_PacketMakeRoom()
 	{
-		header.index = PacketIndex::RES_MAKE_ROOM;
-		header.headerSize = sizeof(RES_PacketMakeRoom);
+		index = PacketIndex::RES_MAKE_ROOM;
+		headerSize = sizeof(RES_PacketMakeRoom);
 	}
 };
 
-struct PacketRoomList
+struct PacketRoomList : public PacketHeader
 {
-	PacketHeader header;
-
 	PacketRoomList()
 	{
-		header.index = PacketIndex::ROOM_LIST;
-		header.headerSize = sizeof(PacketRoomList);
+		index = PacketIndex::ROOM_LIST;
+		headerSize = sizeof(PacketRoomList);
 	}
 };
 
-struct RES_PacketRoomList
+struct RES_PacketRoomList : public PacketHeader
 {
-	PacketHeader header;
 	int maxRoomCount = 0;
 
 	struct RoomInfo
@@ -110,51 +104,47 @@ struct RES_PacketRoomList
 	RoomInfo roomInfoList[MAX_ROOM_COUNT];
 	RES_PacketRoomList()
 	{
-		header.index = PacketIndex::RES_ROOM_LIST;
-		header.headerSize = sizeof(RES_PacketRoomList);
+		index = PacketIndex::RES_ROOM_LIST;
+		headerSize = sizeof(RES_PacketRoomList);
 	}
 };
 
-struct PacketEnterRoom
+struct PacketEnterRoom : public PacketHeader
 {
-	PacketHeader header;
 	int roomNum = -1;
 
 	PacketEnterRoom()
 	{
-		header.index = PacketIndex::ENTER_ROOM;
-		header.headerSize = sizeof(PacketEnterRoom);
+		index = PacketIndex::ENTER_ROOM;
+		headerSize = sizeof(PacketEnterRoom);
 	}
 };
 
-struct PacketCloseRoom
+struct PacketCloseRoom : public PacketHeader
 {
-	PacketHeader header;
 	int roomNum = -1;
 
 	PacketCloseRoom()
 	{
-		header.index = PacketIndex::CLOSE_ROOM;
-		header.headerSize = sizeof(PacketCloseRoom);
+		index = PacketIndex::CLOSE_ROOM;
+		headerSize = sizeof(PacketCloseRoom);
 	}
 };
 
-struct PacketSendMessage
+struct PacketSendMessage : public PacketHeader
 {
-	PacketHeader header;
 	const char buffer[500] = " ";
 	int roomNum = -1;
 
 	PacketSendMessage()
 	{
-		header.index = PacketIndex::SEND_MESSAGE;
-		header.headerSize = sizeof(PacketSendMessage);
+		index = PacketIndex::SEND_MESSAGE;
+		headerSize = sizeof(PacketSendMessage);
 	}
 };
 
-struct PacketClientIdInfo
+struct PacketClientIdInfo : public PacketHeader
 {
-	PacketHeader header;
 	const char id[20] = "";
 	const char pw[20] = "";
 	const char name[MAX_NAME_LENGTH] = "";
@@ -163,20 +153,19 @@ struct PacketClientIdInfo
 
 	PacketClientIdInfo()
 	{
-		header.index = PacketIndex::MAKE_CLIENT_ID_INFO;
-		header.headerSize = sizeof(PacketClientIdInfo);
+		index = PacketIndex::MAKE_CLIENT_ID_INFO;
+		headerSize = sizeof(PacketClientIdInfo);
 	}
 };
 
-struct PacketDBInsertData
+struct PacketDBInsertData : public PacketHeader
 {
-	PacketHeader header;
 	bool isSuccessInsertData = FALSE;
 
 	PacketDBInsertData()
 	{
-		header.index = PacketIndex::DB_INSERT_DATA;
-		header.headerSize = sizeof(PacketDBInsertData);
+		index = PacketIndex::DB_INSERT_DATA;
+		headerSize = sizeof(PacketDBInsertData);
 	}
 };
 
