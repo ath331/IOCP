@@ -24,3 +24,4 @@ shutdown()과 closesocket() : https://chfhrqnfrhc.tistory.com/entry/%EC%86%8C%EC
 C4996 error : https://oulth.tistory.com/28
 범위 기반 for : https://blockdmask.tistory.com/319
 IOCP 팁 : https://yamoe.tistory.com/421
+mysql connector : https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-examples-connecting.html
