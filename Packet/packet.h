@@ -40,6 +40,8 @@ struct PacketHeader
 {
 	PacketIndex index = (PacketIndex)-1;
 	int headerSize = sizeof(PacketHeader);
+
+	virtual ~PacketHeader() {};
 };
 
 struct PacketLogin : public PacketHeader
