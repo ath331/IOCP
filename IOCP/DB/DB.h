@@ -1,5 +1,7 @@
 #pragma once
 #pragma comment (lib,"libmySQL.lib")
+#pragma comment (lib,"mysqlcppconn.lib")
+
 #include <iostream>
 
 using namespace std;

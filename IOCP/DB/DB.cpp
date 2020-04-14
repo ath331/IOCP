@@ -2,6 +2,9 @@
 #include <mysql.h>
 #include <string>
 #include <stdio.h>
+#include <mysql_connection.h>
+#include <mysql_driver.h>
+#include <cppconn/prepared_statement.h>
 
 struct DB::_MysqlStruct
 {
@@ -9,6 +12,7 @@ struct DB::_MysqlStruct
 	MYSQL* _connPtr = NULL;
 	MYSQL_RES* _result;
 	MYSQL_ROW _row;
+
 };
 
 DB::DB() : _mysqlInstance(make_unique<_MysqlStruct>())
@@ -20,14 +24,40 @@ DB::DB() : _mysqlInstance(make_unique<_MysqlStruct>())
 		cout << "DB::DB() Error" << endl;
 
 	UpdateData(UpdataType::SOCK);
+
 }
 
 DB::~DB() {}
 
 bool DB::InsertData(string id, string pw, string name)
 {
+	sql::Connection* con;
+	sql::PreparedStatement* prep_stmt;
 
-	string insertQuery = "INSERT INTO clientinfo values('";
+	sql::mysql::MySQL_Driver* driver;
+
+	driver = sql::mysql::get_mysql_driver_instance();
+	con = driver->connect("tcp://127.0.0.1:3306", "user", "password");
+	prep_stmt = con->prepareStatement("INSERT INTO clientinfo VALUES (?,?,?,?)");
+
+	prep_stmt->setString(1, id.c_str());
+	prep_stmt->setString(2, pw.c_str());
+	prep_stmt->setString(3, name.c_str());
+	prep_stmt->setString(4, "-1");
+	if (!prep_stmt->execute())
+	{
+		cout << "mysql_query(_mysqlInstance->_connPtr,insertQuery.c_str()) error" << endl;
+		fprintf(stderr, "%s\n", mysql_error(&(_mysqlInstance->_conn)));
+		delete prep_stmt;
+		delete con;
+		return FALSE;
+	}
+
+	delete prep_stmt;
+	delete con;
+	return TRUE;
+
+	/*string insertQuery = "INSERT INTO clientinfo values('";
 	insertQuery += id;
 	insertQuery += "','";
 	insertQuery += pw;
@@ -42,7 +72,7 @@ bool DB::InsertData(string id, string pw, string name)
 		fprintf(stderr, "%s\n", mysql_error(&(_mysqlInstance->_conn)));
 		return FALSE;
 	}
-	return TRUE;
+	return TRUE;*/
 }
 
 bool DB::CheckIdPw(string id, string pw)
