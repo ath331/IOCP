@@ -16,12 +16,8 @@ public:
 
 	void SetName(std::string name);
 	std::string GetName();
-	//template <typename PacketKind>
-	//PacketKind SendPacket(PacketIndex type, const char* buffer);
-	//template <>
 	int SendPacket(PacketIndex type, const char* buffer);
-	//template <typename PacketKind>
-	char* RecvPacket(PacketIndex type);
+	char* RecvPacket(int packetSize);
 	char buf[1024] = { 0, };
 
 	SOCKET _socket;
@@ -44,4 +40,3 @@ private:
 
 	bool _isEnteredRoom = FALSE;
 };
-//#include "ClientLogic.hpp"

@@ -127,34 +127,13 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 	}
 }
 
-//TODO : templete화 시키기
-char* ClientLogic::RecvPacket(PacketIndex type)
+char* ClientLogic::RecvPacket(int packetSize)
 {
 	std::fill_n(buf, 1024, 0);
-	switch (type)
+	int recvLen = recv(_socket, (char*)buf, packetSize, 0);
+	while (recvLen < packetSize)
 	{
-	case PacketIndex::DB_INSERT_DATA:
-	{
-		int recvLen = recv(_socket, (char*)buf, sizeof(PacketDBInsertData), 0);
-		while (recvLen < sizeof(PacketDBInsertData))
-		{
-			recvLen += recv(_socket, (char*)buf[recvLen], 1, 0);
-		}
-		return buf;
+		recvLen += recv(_socket, (char*)buf[recvLen], 1, 0);
 	}
-
-	case PacketIndex::Login:
-	{
-		int recvLen = recv(_socket, (char*)buf, sizeof(PacketLogin), 0);
-		while (recvLen < sizeof(PacketLogin))
-		{
-			recvLen += recv(_socket, (char*)buf[recvLen], 1, 0);
-		}
-		return buf;
-	}
-
-	default:
-		break;
-	}
+	return buf;
 }
-

@@ -80,7 +80,7 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 
 			_instance->_clientLogic->SendPacket(PacketIndex::Login, (const char*)&packetLogin);
 			PacketLogin* tempPacketLogin = NULL;
-			tempPacketLogin = (PacketLogin*)(_instance->_clientLogic->RecvPacket(PacketIndex::Login));
+			tempPacketLogin = (PacketLogin*)(_instance->_clientLogic->RecvPacket(sizeof(PacketLogin)));
 			_instance->_clientLogic->SetName(tempPacketLogin->name);
 			if (tempPacketLogin->isSuccessIdCheck)
 			{
@@ -527,9 +527,11 @@ BOOL CALLBACK DialogManager::DlgProcMakeID(HWND hwnd, UINT message, WPARAM wPara
 			memcpy((void*)&packetClientIdInfo.id, tempID, sizeof(tempID));
 			memcpy((void*)&packetClientIdInfo.pw, tempPW, sizeof(tempPW));
 			memcpy((void*)&packetClientIdInfo.name, tempName, sizeof(tempName));
+
 			_instance->_clientLogic->SendPacket(PacketIndex::MAKE_CLIENT_ID_INFO, (const char*)&packetClientIdInfo);
+
 			PacketDBInsertData* packetDbInsertData = NULL;
-			packetDbInsertData = (PacketDBInsertData*)(_instance->_clientLogic->RecvPacket(PacketIndex::DB_INSERT_DATA));
+			packetDbInsertData = (PacketDBInsertData*)(_instance->_clientLogic->RecvPacket(sizeof(PacketDBInsertData)));
 			if (packetDbInsertData->isSuccessInsertData)
 			{
 				msgboxID = MessageBox(hwnd, "ID»ý¼º", "MAKE_ID", MB_OK);
