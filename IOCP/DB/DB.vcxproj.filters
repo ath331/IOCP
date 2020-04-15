@@ -13,15 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="PreparedStatement">
+      <UniqueIdentifier>{e09c3ae0-9d7f-443d-8959-da62b26bc893}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DB.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="PreparedStatement\PreparedStatement.cpp">
+      <Filter>PreparedStatement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DB.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PreparedStatement\PreparedStatement.h">
+      <Filter>PreparedStatement</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

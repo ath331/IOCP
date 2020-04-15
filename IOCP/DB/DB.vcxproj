@@ -146,9 +146,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DB.cpp" />
+    <ClCompile Include="PreparedStatement\PreparedStatement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DB.h" />
+    <ClInclude Include="PreparedStatement\PreparedStatement.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
