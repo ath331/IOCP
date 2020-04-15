@@ -225,7 +225,8 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 						//DB에 데이터등록이 성공할 경우
 						packetDbInsertData.isSuccessInsertData = TRUE;
 					}
-					clientSession->PushSendVec(packetInfo, sizeof(PacketLogin));
+					packetInfo.packetBuffer = (const char*)&packetDbInsertData;
+					clientSession->PushSendVec(packetInfo, sizeof(PacketDBInsertData));
 
 					break;
 				}
