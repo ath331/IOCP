@@ -25,3 +25,4 @@ C4996 error : https://oulth.tistory.com/28
 범위 기반 for : https://blockdmask.tistory.com/319
 IOCP 팁 : https://yamoe.tistory.com/421
 mysql connector : https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-examples-connecting.html
+mysql connector function : https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-examples-complete-example-1.html
