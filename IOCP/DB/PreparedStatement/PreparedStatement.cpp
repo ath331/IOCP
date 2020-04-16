@@ -2,17 +2,20 @@
 
 void PreparedStatement::SetSqlStr(vector<string>& strVec)
 {
-	for (int i=0 ; i < strVec.size() ; i++)
+	for (int i = 0; i < strVec.size(); i++)
 	{
-		_prep_stmt->setString(i+1, strVec[i].c_str());
+		_preStmt->setString(i + 1, strVec[i].c_str());
 	}
 }
 
-bool PreparedStatement::Execute()
+bool PreparedStatement::ExecuteUpdate()
 {
 	try
 	{
-		_prep_stmt->execute();
+		if (_preStmt->executeUpdate() < 0)
+		{
+			throw;
+		}
 	}
 	catch (sql::SQLException & e)
 	{
@@ -24,3 +27,4 @@ bool PreparedStatement::Execute()
 
 	return true;
 }
+

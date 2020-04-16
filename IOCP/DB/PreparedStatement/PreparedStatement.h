@@ -11,17 +11,17 @@ class PreparedStatement
 public:
 	PreparedStatement(sql::Connection* con, string str)
 	{
-		_prep_stmt = con->prepareStatement(str.c_str());
+		_preStmt = con->prepareStatement(str.c_str());
 	}
 
 	~PreparedStatement()
 	{
-		delete _prep_stmt;
+		delete _preStmt;
 	}
 
 	void SetSqlStr(vector<string>& strVec);
-	bool Execute();
+	bool ExecuteUpdate();
 
 private:
-	sql::PreparedStatement* _prep_stmt;
+	sql::PreparedStatement* _preStmt;
 };
