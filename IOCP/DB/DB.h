@@ -19,7 +19,6 @@ public:
 	bool CheckIdPw(string id, string pw);
 	string GetName(string id);
 	void UpdateData(UpdataType type, string id = "tempId", string name = "tempName", int sock = -1);
-	void SelectDBTable(bool isResetResult = false);
 	void CloseDB();
 
 	DB();

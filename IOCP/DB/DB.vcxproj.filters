@@ -16,6 +16,9 @@
     <Filter Include="PreparedStatement">
       <UniqueIdentifier>{e09c3ae0-9d7f-443d-8959-da62b26bc893}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ResultSet">
+      <UniqueIdentifier>{3f234093-b373-4ef9-9490-0f65638798ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DB.cpp">
@@ -24,6 +27,9 @@
     <ClCompile Include="PreparedStatement\PreparedStatement.cpp">
       <Filter>PreparedStatement</Filter>
     </ClCompile>
+    <ClCompile Include="ResultSet\ResultSet.cpp">
+      <Filter>ResultSet</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DB.h">
@@ -31,6 +37,9 @@
     </ClInclude>
     <ClInclude Include="PreparedStatement\PreparedStatement.h">
       <Filter>PreparedStatement</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultSet\ResultSet.h">
+      <Filter>ResultSet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
