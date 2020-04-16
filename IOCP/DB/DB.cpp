@@ -38,10 +38,8 @@ DB::~DB() {}
 bool DB::InsertData(string id, string pw, string name)
 {
 	PreparedStatement prepareStatement(_mysqlInstance->con, "INSERT INTO clientinfo VALUES (?, ?, ?, ?)");
-	prepareStatement.SetString(1, id.c_str());
-	prepareStatement.SetString(2, pw.c_str());
-	prepareStatement.SetString(3, name.c_str());
-	prepareStatement.SetString(4, "-1");
+	vector<string> strVec = { id,pw,name,"-1" };
+	prepareStatement.SetSqlStr(strVec);
 
 	return prepareStatement.Execute();
 }

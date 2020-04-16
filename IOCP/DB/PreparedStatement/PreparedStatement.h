@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <mysql_connection.h>
 #include <cppconn/prepared_statement.h>
 
@@ -18,7 +19,7 @@ public:
 		delete _prep_stmt;
 	}
 
-	void SetString(int index, string value);
+	void SetSqlStr(vector<string>& strVec);
 	bool Execute();
 
 private:

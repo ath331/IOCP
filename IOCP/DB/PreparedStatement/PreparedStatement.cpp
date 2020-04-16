@@ -1,8 +1,11 @@
 #include "PreparedStatement.h"
 
-void PreparedStatement::SetString(int index, string value)
+void PreparedStatement::SetSqlStr(vector<string>& strVec)
 {
-	_prep_stmt->setString(index, value.c_str());
+	for (int i=0 ; i < strVec.size() ; i++)
+	{
+		_prep_stmt->setString(i+1, strVec[i].c_str());
+	}
 }
 
 bool PreparedStatement::Execute()
