@@ -3,6 +3,7 @@
 #include "ClientManager/ClientInfo.h"
 
 #include "DB.h"
+#include "Log/Log.h"
 #include "../ThreadManager/ThreadManager.h"
 #include "ClientManager/ClientManager.h"
 #include "RoomManager/RoomManager.h"
@@ -24,8 +25,7 @@ void Server::InitServer()
 
 	if (WSAStartup(MAKEWORD(2, 2), &_wsaData) != 0)
 	{
-		std::cout << "WSAStartup() error";
-		exit(1);
+		Log log(LogIndex::Error, "WSAStartup() error");
 	}
 
 	_InitManagers();
@@ -40,13 +40,11 @@ void Server::InitServer()
 
 	if (bind(_servSock, (SOCKADDR*)&_servAdr, sizeof(_servAdr)) == SOCKET_ERROR)
 	{
-		std::cout << "bind() error";
-		exit(1);
+		Log log(LogIndex::Error, "bind() error");
 	}
 	if (listen(_servSock, 5) == SOCKET_ERROR)
 	{
-		std::cout << "listen() error";
-		exit(1);
+		Log log(LogIndex::Error, "listen() error");
 	}
 
 	CreateIoCompletionPort((HANDLE)_servSock, _comPort, NULL, 0);

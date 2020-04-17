@@ -6,22 +6,22 @@ using namespace std;
 enum class LogIndex : int
 {
 	WARNING,
-	ERROR,
+	Error,
 };
 
 class Log
 {
 public:
-	Log(LogIndex index, const char* errStr)
+	Log(LogIndex index, const char* errStr, int errNo = 0)
 	{
 		switch (index)
 		{
 		case LogIndex::WARNING:
-			cout << "Warning : " << errStr << endl;
+			cout << "Warning : " << errNo << " " << errStr << endl;
 			break;
 
-		case LogIndex::ERROR:
-			cout << "Error : " << errStr << endl;
+		case LogIndex::Error:
+			cout << "Error : " << errNo << " " << errStr << endl;
 			exit(1);
 			break;
 
@@ -29,6 +29,6 @@ public:
 			break;
 		}
 	}
+
 private:
 };
-

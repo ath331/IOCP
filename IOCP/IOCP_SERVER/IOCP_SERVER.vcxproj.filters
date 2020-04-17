@@ -37,6 +37,9 @@
     <Filter Include="Server\Acceptor">
       <UniqueIdentifier>{47c54913-5dd5-43c3-8ef9-f61f54d9a5bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Basic\Log">
+      <UniqueIdentifier>{8e852c32-4306-4750-970c-b970a0c196da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="Server\ClientManager\ClientInfo.h">
       <Filter>Server\ClientManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Basic\Log\Log.h">
+      <Filter>Basic\Log</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

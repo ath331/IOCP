@@ -1,4 +1,5 @@
 #include "TcpSession.h"
+#include "Log/Log.h"
 #include <iostream>
 
 using namespace std;
@@ -17,7 +18,7 @@ void TcpSession::PostRecv()
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING)
 		{
-			cout << error << " TcpSession PostRecv() WSARecv() error" << endl;
+			Log log(LogIndex::WARNING, "TcpSession PostRecv() WSARecv() error", error);
 		}
 	}
 }
@@ -42,8 +43,8 @@ void TcpSession::OnRecvForIocp(int recvTransLen)
 			delete[] _recvBuf.buf;
 			_recvBuf.buf = tempBuf;
 			_recvBuf.len = _recvTotalLen;
-			//TODO : cout으로 띄우지말고 error관련 class 만들기
-			std::cout << "Change Recv Buf Size : " << _recvTotalLen << std::endl;
+
+			Log log(LogIndex::WARNING, "Change Recv Buf Size : ",_recvLen);
 		}
 
 		if (_recvLenOffSet < _recvTotalLen)
@@ -103,7 +104,7 @@ void TcpSession::_PostSend()
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING)
 		{
-			cout << error << " TcpSession PostSend() WSASend() error" << endl;
+			Log log(LogIndex::WARNING, "TcpSession PostSend() WSASend() error", error);
 		}
 	}
 

@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Packet\packet.h" />
     <ClInclude Include="Basic\Lock.h" />
+    <ClInclude Include="Basic\Log\Log.h" />
     <ClInclude Include="Basic\OverlappedCustom.h" />
     <ClInclude Include="Server\Acceptor\Acceptor.h" />
     <ClInclude Include="Server\ClientManager\ClientInfo.h" />

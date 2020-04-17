@@ -29,5 +29,5 @@ public:
 	string GetName(string id) const;
 private:
 	sql::ResultSet* _res;
-	void _ExecuteQuery() const;
+	void _ExecuteQuery();
 };

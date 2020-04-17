@@ -1,4 +1,6 @@
 #include "Acceptor.h"
+#include "Log/Log.h"
+
 #include <MSWSock.h>
 #include <iostream>
 
@@ -18,8 +20,7 @@ void Acceptor::AcceptClient()
 		int errorCode = WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			std::cout << "AcceptEx() error" << std::endl;
-			std::cout << errorCode << std::endl;
+			Log log(LogIndex::WARNING, "AcceptEx() error", errorCode);
 		}
 	}
 }

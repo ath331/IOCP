@@ -1,4 +1,5 @@
 #include "PreparedStatement.h"
+#include "../../IOCP_SERVER/Basic/Log/Log.h"
 
 void PreparedStatement::SetSqlStr(vector<string>& strVec) const
 {
@@ -19,9 +20,7 @@ bool PreparedStatement::ExecuteUpdate() const
 	}
 	catch (sql::SQLException & e)
 	{
-		cout << "SQLException error" << endl;
-		cout << "# ERR: " << e.what();
-		cout << " (MySQL error code: " << e.getErrorCode() << " )" << endl;
+		Log log(LogIndex::WARNING, e.what(), e.getErrorCode());
 		return false;
 	}
 

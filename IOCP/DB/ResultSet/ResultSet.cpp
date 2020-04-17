@@ -1,4 +1,5 @@
 #include "ResultSet.h"
+#include "../../IOCP_SERVER/Basic/Log/Log.h"
 
 bool ResultSet::CheckIdPw(string id, string pw) const
 {
@@ -31,9 +32,7 @@ void ResultSet::_ExecuteQuery()
 	}
 	catch (sql::SQLException & e)
 	{
-		cout << "SQLException error" << endl;
-		cout << "# ERR: " << e.what();
-		cout << " (MySQL error code: " << e.getErrorCode() << " )" << endl;
+		Log log(LogIndex::WARNING, e.what(), e.getErrorCode());
 	}
 }
 
