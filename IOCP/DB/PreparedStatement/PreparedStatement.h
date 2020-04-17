@@ -19,8 +19,8 @@ public:
 		delete _preStmt;
 	}
 
-	void SetSqlStr(vector<string>& strVec);
-	bool ExecuteUpdate();
+	void SetSqlStr(vector<string>& strVec) const;
+	bool ExecuteUpdate() const;
 
 protected:
 	sql::PreparedStatement* _preStmt;

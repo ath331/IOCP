@@ -1,6 +1,6 @@
 #include "ResultSet.h"
 
-bool ResultSet::CheckIdPw(string id, string pw)
+bool ResultSet::CheckIdPw(string id, string pw) const
 {
 	while (_res->next())
 	{
@@ -11,7 +11,7 @@ bool ResultSet::CheckIdPw(string id, string pw)
 	return false;
 }
 
-string ResultSet::GetName(string id)
+string ResultSet::GetName(string id) const
 {
 	while (_res->next())
 	{

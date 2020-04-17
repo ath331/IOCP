@@ -1,6 +1,6 @@
 #include "PreparedStatement.h"
 
-void PreparedStatement::SetSqlStr(vector<string>& strVec)
+void PreparedStatement::SetSqlStr(vector<string>& strVec) const
 {
 	for (int i = 0; i < strVec.size(); i++)
 	{
@@ -8,7 +8,7 @@ void PreparedStatement::SetSqlStr(vector<string>& strVec)
 	}
 }
 
-bool PreparedStatement::ExecuteUpdate()
+bool PreparedStatement::ExecuteUpdate() const
 {
 	try
 	{

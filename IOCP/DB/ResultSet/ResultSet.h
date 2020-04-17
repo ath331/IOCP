@@ -25,9 +25,9 @@ public:
 		delete _res;
 	}
 
-	bool CheckIdPw(string id, string pw);
-	string GetName(string id);
+	bool CheckIdPw(string id, string pw) const;
+	string GetName(string id) const;
 private:
 	sql::ResultSet* _res;
-	void _ExecuteQuery();
+	void _ExecuteQuery() const;
 };
