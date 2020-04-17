@@ -1,21 +1,19 @@
 #pragma once
 #include <string>
 #include <cppconn/resultset.h>
-#include <cppconn/connection.h>
-#include <cppconn/prepared_statement.h>
+#include "../PreparedStatement/PreparedStatement.h"
 
 using namespace std;
 
-//TODO : PreparedStatement clss 상속받기
-class ResultSet
+class ResultSet : public PreparedStatement
 {
 public:
 	ResultSet(sql::Connection* con, string str)
+		: PreparedStatement(con, str)
 	{
 		try
 		{
-			_stmt = con->prepareStatement(str.c_str());
-			_res = _stmt->executeQuery();
+			_res = _preStmt->executeQuery();
 
 		}
 		catch (sql::SQLException & e)
@@ -29,12 +27,10 @@ public:
 	~ResultSet()
 	{
 		delete _res;
-		delete _stmt;
 	}
 
 	bool CheckIdPw(string id, string pw);
 	string GetName(string id);
 private:
 	sql::ResultSet* _res;
-	sql::PreparedStatement* _stmt;
 };

@@ -22,6 +22,6 @@ public:
 	void SetSqlStr(vector<string>& strVec);
 	bool ExecuteUpdate();
 
-private:
+protected:
 	sql::PreparedStatement* _preStmt;
 };
