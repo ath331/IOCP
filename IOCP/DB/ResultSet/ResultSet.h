@@ -8,20 +8,16 @@ using namespace std;
 class ResultSet : public PreparedStatement
 {
 public:
+	ResultSet(sql::Connection* con)
+		: PreparedStatement(con, "SELECT * FROM clientinfo")
+	{
+		_ExecuteQuery();
+	}
+
 	ResultSet(sql::Connection* con, string str)
 		: PreparedStatement(con, str)
 	{
-		try
-		{
-			_res = _preStmt->executeQuery();
-
-		}
-		catch (sql::SQLException & e)
-		{
-			cout << "SQLException error" << endl;
-			cout << "# ERR: " << e.what();
-			cout << " (MySQL error code: " << e.getErrorCode() << " )" << endl;
-		}
+		_ExecuteQuery();
 	}
 
 	~ResultSet()
@@ -33,4 +29,5 @@ public:
 	string GetName(string id);
 private:
 	sql::ResultSet* _res;
+	void _ExecuteQuery();
 };

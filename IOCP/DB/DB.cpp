@@ -35,13 +35,13 @@ bool DB::InsertData(string id, string pw, string name)
 
 bool DB::CheckIdPw(string id, string pw)
 {
-	ResultSet resultSet(_mysqlInstance->con, "SELECT * FROM clientinfo");
+	ResultSet resultSet(_mysqlInstance->con);
 	return resultSet.CheckIdPw(id, pw);
 }
 
 string DB::GetName(string id)
 {
-	ResultSet resultSet(_mysqlInstance->con, "SELECT * FROM clientinfo");
+	ResultSet resultSet(_mysqlInstance->con);
 	return resultSet.GetName(id);
 }
 

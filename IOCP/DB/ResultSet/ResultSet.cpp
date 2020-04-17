@@ -21,3 +21,19 @@ string ResultSet::GetName(string id)
 
 	return static_cast<string>("DEFUALT");
 }
+
+void ResultSet::_ExecuteQuery()
+{
+	try
+	{
+		_res = _preStmt->executeQuery();
+
+	}
+	catch (sql::SQLException & e)
+	{
+		cout << "SQLException error" << endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode() << " )" << endl;
+	}
+}
+
