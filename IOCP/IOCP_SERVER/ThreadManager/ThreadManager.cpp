@@ -1,16 +1,10 @@
 #include "ThreadManager.h"
-#include "../IOCP_SERVER/Server/ClientManager/ClientInfo.h"
+#include "ThreadManagerCppHeader.h"
 #include "OverlappedCustom.h"
 #include "DB.h"
 
 #include <process.h>
-#include <iostream>
 #include <algorithm>
-
-#include "../Server/Acceptor/Acceptor.h"
-#include "../Server/Session/TcpSession.h"
-#include "../Server/ClientManager/ClientManager.h"
-#include "../Server/RoomManager/RoomManager.h"
 
 void ThreadManager::InitThreadManager(int maxThreadNum, HANDLE comPort, ClientManager* clientManager, DB* db, Acceptor* acceptor, RoomManager* roomManager)
 {

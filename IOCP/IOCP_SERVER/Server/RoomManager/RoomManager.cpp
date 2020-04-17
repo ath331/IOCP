@@ -1,5 +1,5 @@
 #include "RoomManager.h"
-#include "../ClientManager/ClientInfo.h"
+#include "ClientManager/ClientInfo.h"
 #include <packet.h>
 #include <algorithm>
 

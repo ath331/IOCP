@@ -1,5 +1,5 @@
 #include "PreparedStatement.h"
-#include "../../IOCP_SERVER/Basic/Log/Log.h"
+#include "Log.h"
 
 void PreparedStatement::SetSqlStr(vector<string>& strVec) const
 {

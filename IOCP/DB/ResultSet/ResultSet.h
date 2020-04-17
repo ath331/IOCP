@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include <cppconn/resultset.h>
 #include "../PreparedStatement/PreparedStatement.h"
 

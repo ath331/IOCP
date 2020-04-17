@@ -1,15 +1,10 @@
 #include "Server.h"
 #include "OverlappedCustom.h"
-#include "ClientManager/ClientInfo.h"
 
 #include "DB.h"
 #include "Log/Log.h"
-#include "../ThreadManager/ThreadManager.h"
-#include "ClientManager/ClientManager.h"
-#include "RoomManager/RoomManager.h"
-#include "Acceptor/Acceptor.h"
-
-#include <iostream>
+#include "ThreadManager.h"
+#include "../BaseHeader.h"
 
 const static int MAX_CLIENT_ACCEPT_NUM = 10;
 

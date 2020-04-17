@@ -107,5 +107,11 @@
     <ClInclude Include="Basic\Log\Log.h">
       <Filter>Basic\Log</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadManager\ThreadManagerCppHeader.h">
+      <Filter>ThreadMamager</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseHeader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

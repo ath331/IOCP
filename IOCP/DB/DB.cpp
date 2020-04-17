@@ -1,5 +1,4 @@
 #include "DB.h"
-#include <string>
 #include <stdio.h>
 #include <mysql_connection.h>
 #include <mysql_driver.h>

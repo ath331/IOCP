@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\MySQL\MySQL Server 8.0\include;C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc;C:\boost_1_72_0;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\MySQL\MySQL Server 8.0\include;C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc;C:\boost_1_72_0;$(ProjectDir)\Basic\Log;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\MySQL\MySQL Server 8.0\lib;C:\Program Files\MySQL\Connector C++ 8.0\lib64\vs14;C:\boost_1_72_0\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Packet;.\Basic;..\DB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Packet;.\Basic;..\DB;.\Server;.\ThreadManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Packet\packet.h" />
+    <ClInclude Include="BaseHeader.h" />
     <ClInclude Include="Basic\Lock.h" />
     <ClInclude Include="Basic\Log\Log.h" />
     <ClInclude Include="Basic\OverlappedCustom.h" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Server\Server.h" />
     <ClInclude Include="Server\Session\TcpSession.h" />
     <ClInclude Include="ThreadManager\ThreadManager.h" />
+    <ClInclude Include="ThreadManager\ThreadManagerCppHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DB\DB.vcxproj">
