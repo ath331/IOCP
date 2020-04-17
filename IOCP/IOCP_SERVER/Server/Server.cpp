@@ -13,8 +13,7 @@ void Server::InputPortNum()
 	std::cout << "Input PortNum : ";
 	std::cin >> _portNum;
 }
-
-void Server::InitServer()
+Server::Server()
 {
 	GetSystemInfo(&_sysInfo);
 
@@ -44,7 +43,7 @@ void Server::InitServer()
 
 	CreateIoCompletionPort((HANDLE)_servSock, _comPort, NULL, 0);
 	_acceptor = new Acceptor(_servSock);
-	_threadManager->InitThreadManager(_sysInfo.dwNumberOfProcessors * 2, _comPort, _clientManager, _db, _acceptor,_roomManager);
+	_threadManager->InitThreadManager(_sysInfo.dwNumberOfProcessors * 2, _comPort, _clientManager, _db, _acceptor, _roomManager);
 }
 
 void Server::_InitManagers()
