@@ -11,16 +11,8 @@ class Server
 {
 public:
 	Server();
-	~Server()
-	{
-		delete _db;
+	~Server();
 
-		delete _clientManager;
-		delete _threadManager;
-		delete _roomManager;
-
-		delete _acceptor;
-	}
 	void InputPortNum();
 	void RunServer();
 private:

@@ -2,6 +2,7 @@
 #include "ThreadManagerCppHeader.h"
 #include "OverlappedCustom.h"
 #include "DB.h"
+#include "Log/Log.h"
 
 #include <process.h>
 #include <algorithm>
@@ -69,6 +70,8 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 			session->PostRecv();
 
 			thisObject->_acceptor->AcceptClient();
+
+			Log log(LogIndex::LOG, "Client Accept");
 		}
 
 		else if (ioInfo->ioType == Overlapped::IO_TYPE::RECV)
@@ -76,6 +79,7 @@ unsigned int WINAPI ThreadManager::_RunIOThreadMain(void* _thisObject)
 			if (bytesTrans == 0)
 			{
 				thisObject->_clientManager->CloseClient(sock);
+				Log log(LogIndex::LOG, "Client Close");
 				continue;
 			}
 			thisObject->_clientManager->GetClientSession(sock)->OnRecvForIocp(bytesTrans);
@@ -116,6 +120,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 
 				packetInfo.packetBuffer = (const char*)&resPacketMakeRoom;
 				clientSession->PushSendVec(packetInfo, sizeof(RES_PacketMakeRoom));
+
+				Log log(LogIndex::LOG, "Room Make");
 			}
 			break;
 
@@ -128,6 +134,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 
 					packetInfo.packetBuffer = (const char*)&resPacketRoomList;
 					clientSession->PushSendVec(packetInfo, sizeof(RES_PacketRoomList));
+
+					Log log(LogIndex::LOG, "Room List");
 				}
 			}
 			break;
@@ -142,6 +150,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 
 				string enterMessage = clientInfo->clientName;
 				thisObject->_SendSystemMessage(packetEnterRoom.roomNum, enterMessage.c_str(), TRUE);
+
+				Log log(LogIndex::LOG, "Enter Room");
 			}
 			break;
 
@@ -156,6 +166,8 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 					string enterMessage = clientInfo->clientName;
 					thisObject->_SendSystemMessage(packetCloseRoom.roomNum, enterMessage.c_str(), FALSE);
 				}
+
+				Log log(LogIndex::LOG, "Close Room");
 			}
 			break;
 
@@ -203,6 +215,9 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 					packetInfo.packetBuffer = (const char*)&packetLogin;
 					clientSession->PushSendVec(packetInfo, sizeof(PacketLogin));
 				}
+
+				Log log(LogIndex::LOG, "Client Login");
+
 			}
 			break;
 
@@ -222,11 +237,14 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 					packetInfo.packetBuffer = (const char*)&packetDbInsertData;
 					clientSession->PushSendVec(packetInfo, sizeof(PacketDBInsertData));
 
+					Log log(LogIndex::LOG, "Make Client Info");
 					break;
 				}
 				else if (packetClientIdInfo.isChangeName == TRUE)
 				{
 					thisObject->_db->UpdateData(UpdataType::NAME, "tempId", packetClientIdInfo.name, static_cast<int>(packetInfo.sock));
+
+					Log log(LogIndex::LOG, "Change Client Name");
 					break;
 				}
 			}
@@ -255,6 +273,7 @@ void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
 	{
 		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
 		_clientManager->GetClientSession(sock)->PushSendVec(packetInfo, sizeof(PacketSendMessage));
+		Log log(LogIndex::LOG, "Send Message");
 	}
 }
 
@@ -282,5 +301,7 @@ void ThreadManager::_SendSystemMessage(int roomNum, const char* name, bool isEnt
 	{
 		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
 		_clientManager->GetClientSession(sock)->PushSendVec(packetInfo, sizeof(tempSystempMsg));
+
+		Log log(LogIndex::LOG, "Send SystemMessage");
 	}
 }

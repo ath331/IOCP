@@ -65,3 +65,13 @@ void Server::RunServer()
 	_threadManager->WaitThread();
 }
 
+Server::~Server()
+{
+	delete _db;
+
+	delete _clientManager;
+	delete _threadManager;
+	delete _roomManager;
+
+	delete _acceptor;
+}
