@@ -26,3 +26,4 @@ C4996 error : https://oulth.tistory.com/28
 IOCP 팁 : https://yamoe.tistory.com/421
 mysql connector : https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-examples-connecting.html
 mysql connector function : https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-examples-complete-example-1.html
+프로젝트 설정 : https://bsh0608.tistory.com/entry/visual-studio-%EC%99%B8%EB%B6%80-include-library-%EC%84%A4%EC%A0%95-%EB%B0%A9%EB%B2%95
