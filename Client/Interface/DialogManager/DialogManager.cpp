@@ -79,10 +79,11 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 			memcpy((void*)&packetLogin.pw, &pw, sizeof(pw));
 
 			_instance->_clientLogic->SendPacket(PacketIndex::Login, (const char*)&packetLogin);
-			PacketLogin* tempPacketLogin = NULL;
-			tempPacketLogin = (PacketLogin*)(_instance->_clientLogic->RecvPacket(sizeof(PacketLogin)));
-			_instance->_clientLogic->SetName(tempPacketLogin->name);
-			if (tempPacketLogin->isSuccessIdCheck)
+			PacketLogin tempPacketLogin;
+			memcpy((void*)&tempPacketLogin, &_instance->_clientLogic->buf, sizeof(PacketLogin));
+
+			_instance->_clientLogic->SetName(tempPacketLogin.name);
+			if (tempPacketLogin.isSuccessIdCheck)
 			{
 				EndDialog(hwnd, 0);
 				_instance->MakeDialog(DialogType::Main);
@@ -165,46 +166,39 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 		}
 		break;
 
-		case FD_READ:
-		{
-			//TODO : recv를 clientLogic으로 빼기
-			PacketHeader packetHeader;
-			char buf[1024];
-			int recvLen = recv(wParam, (char*)&packetHeader, sizeof(PacketHeader), 0);
-			switch (packetHeader.index)
-			{
-			case PacketIndex::RES_ROOM_LIST:
-			{
-				memcpy(&buf, (const void*)&packetHeader, recvLen);
-				while (recvLen < sizeof(RES_PacketRoomList))
-					recvLen += recv(wParam, &buf[recvLen], 1, 0);
-				RES_PacketRoomList resPacketRoomList;
-				memcpy(&resPacketRoomList, &buf, sizeof(RES_PacketRoomList));
+		//case FD_READ:
+		//{
+		//	//TODO : recv를 clientLogic으로 빼기
+		//	PacketHeader packetHeader;
+		//	char buf[1024];
+		//	int recvLen = recv(wParam, (char*)&packetHeader, sizeof(PacketHeader), 0);
+		//	switch (packetHeader.index)
+		//	{
+		//	case PacketIndex::RES_ROOM_LIST:
+		//	{
+		//		memcpy(&buf, (const void*)&packetHeader, recvLen);
+		//		while (recvLen < sizeof(RES_PacketRoomList))
+		//			recvLen += recv(wParam, &buf[recvLen], 1, 0);
+		//		RES_PacketRoomList resPacketRoomList;
+		//		memcpy(&resPacketRoomList, &buf, sizeof(RES_PacketRoomList));
 
-				if (resPacketRoomList.maxRoomCount != 0)
-				{
-					HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
-					for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
-					{
-						string tempStr = std::to_string(resPacketRoomList.roomInfoList[i].roomNum) + " 번방	" + resPacketRoomList.roomInfoList[i].roomName + "	" + std::to_string(resPacketRoomList.roomInfoList[i].curClientNum) + "/" + std::to_string(resPacketRoomList.roomInfoList[i].maxClientInRoom);
-						SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)tempStr.c_str());
-					}
-				}
-			}
-			break;
+		//		if (resPacketRoomList.maxRoomCount != 0)
+		//		{
+		//			HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
+		//			for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
+		//			{
+		//				string tempStr = std::to_string(resPacketRoomList.roomInfoList[i].roomNum) + " 번방	" + resPacketRoomList.roomInfoList[i].roomName + "	" + std::to_string(resPacketRoomList.roomInfoList[i].curClientNum) + "/" + std::to_string(resPacketRoomList.roomInfoList[i].maxClientInRoom);
+		//				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)tempStr.c_str());
+		//			}
+		//		}
+		//	}
+		//	break;
 
-			default:
-				break;
-			}
-			//HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
-			//if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
-			//{
-			//	SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
-			//	int maxListBoxSize = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
-			//	SendMessageA(listBox, LB_SETTOPINDEX, maxListBoxSize - 1, 0);
-			//}
-		}
-		break;
+		//	default:
+		//		break;
+		//	}
+		//}
+		//break;
 
 		default:
 			break;
@@ -231,7 +225,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				_instance->_clientLogic->SetName(tempNameStr);
 
 				PacketClientIdInfo packetClientIdInfo;
-				memcpy((void*)&packetClientIdInfo.name, tempNameStr.c_str(),sizeof(tempNameStr.c_str()));
+				memcpy((void*)&packetClientIdInfo.name, tempNameStr.c_str(), sizeof(tempNameStr.c_str()));
 				packetClientIdInfo.isChangeName = TRUE;
 				_instance->_clientLogic->SendPacket(PacketIndex::MAKE_CLIENT_ID_INFO, (const char*)&packetClientIdInfo);
 				msgboxID = MessageBox(hwnd, "닉네임이 변경되었습니다!", "닉네임변경", MB_OK);
@@ -243,10 +237,20 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 
 		case IDC_RESET_ROOM:
 		{
-			RES_PacketRoomList resPacketRoomList;
-			_instance->_clientLogic->SendPacket(PacketIndex::ROOM_LIST, (const char*)&resPacketRoomList);
 			HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
 			SendMessageA(listBox, LB_RESETCONTENT, 0, 0);
+
+			RES_PacketRoomList resPacketRoomList;
+			_instance->_clientLogic->SendPacket(PacketIndex::ROOM_LIST, (const char*)&resPacketRoomList);
+			memcpy(&resPacketRoomList, &_instance->_clientLogic->buf, sizeof(RES_PacketRoomList));
+			if (resPacketRoomList.maxRoomCount != 0)
+			{
+				for (int i = 0; i < resPacketRoomList.maxRoomCount; i++)
+				{
+					string tempStr = std::to_string(resPacketRoomList.roomInfoList[i].roomNum) + " 번방	" + resPacketRoomList.roomInfoList[i].roomName + "	" + std::to_string(resPacketRoomList.roomInfoList[i].curClientNum) + "/" + std::to_string(resPacketRoomList.roomInfoList[i].maxClientInRoom);
+					SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)tempStr.c_str());
+				}
+			}
 		}
 		break;
 
@@ -258,7 +262,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				int roomIndex = SendMessage(listBox, LB_GETCURSEL, 0, 0);
 				if (roomIndex != -1)
 				{
-					string  roomInfoStr = " "; //초기화안하면 저장이 안되는거 같다
+					string  roomInfoStr = " ";
 					SendMessage(listBox, LB_GETTEXT, roomIndex, (LPARAM)roomInfoStr.c_str());
 					string roomNumStr = roomInfoStr.substr(0, 2);
 					PacketEnterRoom packetEnterRoom;
@@ -346,11 +350,13 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 				packetMakeRoom.maxClientCount = 10;
 
 			PacketIndex packetIndex = PacketIndex::MAKE_ROOM;
-			int temp = _instance->_clientLogic->SendPacket(packetIndex, (const char*)&packetMakeRoom);
-			if (temp != -1 && packetIndex == PacketIndex::MAKE_ROOM)
+			_instance->_clientLogic->SendPacket(packetIndex, (const char*)&packetMakeRoom);
+
+			RES_PacketMakeRoom resPacketRoomList;
+			memcpy(&resPacketRoomList, &_instance->_clientLogic->buf, sizeof(RES_PacketMakeRoom));
+			if (resPacketRoomList.roomNum != -1 && packetIndex == PacketIndex::MAKE_ROOM)
 			{
-				//temp = roomNum
-				string tempRoomName = to_string(temp);
+				string tempRoomName = to_string(resPacketRoomList.roomNum);
 				tempRoomName += "번방 ";
 				tempRoomName += packetMakeRoom.roomName;
 				EndDialog(hwnd, 0);
@@ -417,7 +423,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		case FD_READ:
 		{
 			PacketSendMessage packetSendMessage;
-			recv((SOCKET)wParam, (char*)packetSendMessage.buffer, sizeof(PacketSendMessage), 0);
+			recv((SOCKET)wParam, (char*)packetSendMessage.buffer, sizeof(packetSendMessage.buffer), 0);
 			HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
 			if (packetSendMessage.buffer != " ") //recv가 두번읽혀서 빈칸 예외처리
 			{
@@ -455,6 +461,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		break;
 
 		case IDCANCEL:
+		{
 			PacketCloseRoom packetCloseRoom;
 			string tempRoomNum = "";
 			GetWindowText(hwnd, (char*)tempRoomNum.c_str(), 2);
@@ -462,7 +469,9 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			_instance->_clientLogic->SendPacket(PacketIndex::CLOSE_ROOM, (const char*)&packetCloseRoom);
 			EndDialog(hwnd, 0);
 			_instance->_clientLogic->SetIsEnteredRoom(FALSE);
+		}
 			break;
+
 		}
 		break;
 
@@ -530,9 +539,9 @@ BOOL CALLBACK DialogManager::DlgProcMakeID(HWND hwnd, UINT message, WPARAM wPara
 
 			_instance->_clientLogic->SendPacket(PacketIndex::MAKE_CLIENT_ID_INFO, (const char*)&packetClientIdInfo);
 
-			PacketDBInsertData* packetDbInsertData = NULL;
-			packetDbInsertData = (PacketDBInsertData*)(_instance->_clientLogic->RecvPacket(sizeof(PacketDBInsertData)));
-			if (packetDbInsertData->isSuccessInsertData)
+			PacketDBInsertData packetDbInsertData;
+			memcpy((void*)&packetDbInsertData, &_instance->_clientLogic->buf, sizeof(PacketDBInsertData));
+			if (packetDbInsertData.isSuccessInsertData)
 			{
 				msgboxID = MessageBox(hwnd, "ID생성", "MAKE_ID", MB_OK);
 				if (msgboxID == 6) //확인버튼 누름

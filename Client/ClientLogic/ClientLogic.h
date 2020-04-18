@@ -16,9 +16,9 @@ public:
 
 	void SetName(std::string name);
 	std::string GetName();
-	int SendPacket(PacketIndex type, const char* buffer);
+	void SendPacket(PacketIndex type, const char* buffer);
 	char* RecvPacket(int packetSize);
-	char buf[1024] = { 0, };
+	char buf[4096] = { 0, };
 
 	SOCKET _socket;
 

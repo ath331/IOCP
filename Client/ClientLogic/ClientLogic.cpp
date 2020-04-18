@@ -15,8 +15,8 @@ void ClientLogic::Init(std::string IP, short portNum)
 	}
 
 	_socket = socket(PF_INET, SOCK_STREAM, 0);
-	_recvTimeout = 1000;  // 1√ .
-	setsockopt(_socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&_recvTimeout, sizeof(_recvTimeout));
+	//_recvTimeout = 1000;  // 1√ .
+	//setsockopt(_socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&_recvTimeout, sizeof(_recvTimeout));
 
 
 	if (_socket == INVALID_SOCKET)
@@ -67,10 +67,10 @@ void ErrorHandling(const char* msg)
 	exit(1);
 }
 
-int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
+void ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 {
 	if (buffer == NULL)
-		return 0;
+		return;
 
 	switch (type)
 	{
@@ -78,49 +78,45 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 	{
 		PacketRoomList packetRoomList;
 		send(_socket, (const char*)&packetRoomList, packetRoomList.headerSize, 0);
-		return 0;
+		RecvPacket(sizeof(RES_PacketRoomList));
+		break;
 	}
 	case PacketIndex::Login:
 	{
 		send(_socket, buffer, sizeof(PacketLogin), 0);
+		RecvPacket(sizeof(PacketLogin));
 		break;
 	}
 
 	case PacketIndex::MAKE_ROOM:
 	{
 		send(_socket, buffer, sizeof(PacketMakeRoom), 0);
-		RES_PacketMakeRoom resPacketMakeRoom;
-		Sleep(100);
-		int recvLen = recv(_socket, (char*)&resPacketMakeRoom, sizeof(RES_PacketMakeRoom), 0);
-		while (recvLen < sizeof(RES_PacketMakeRoom))
-		{
-			recvLen += recv(_socket, (char*)&resPacketMakeRoom, 1, 0);
-		}
-		std::cout << resPacketMakeRoom.roomNum << " make " << std::endl;
-		return resPacketMakeRoom.roomNum;
+		RecvPacket(sizeof(RES_PacketMakeRoom));
+		break;
 	}
 
 	case PacketIndex::ENTER_ROOM:
 	{
 		send(_socket, buffer, sizeof(PacketEnterRoom), 0);
-		return 0;
+		break;
 	}
 
 	case PacketIndex::CLOSE_ROOM:
 	{
 		send(_socket, buffer, sizeof(PacketCloseRoom), 0);
-		return 0;
+		break;
 	}
 	case PacketIndex::SEND_MESSAGE:
 	{
 		send(_socket, buffer, sizeof(PacketSendMessage), 0);
-		return 0;
+		break;
 	}
 
 	case PacketIndex::MAKE_CLIENT_ID_INFO:
 	{
 		send(_socket, buffer, sizeof(PacketClientIdInfo), 0);
-		return 0;
+		RecvPacket(sizeof(PacketDBInsertData));
+		break;
 	}
 	default:
 		break;
@@ -129,9 +125,10 @@ int ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 
 char* ClientLogic::RecvPacket(int packetSize)
 {
+	Sleep(100);
 	std::fill_n(buf, 1024, 0);
 	int recvLen = recv(_socket, (char*)buf, packetSize, 0);
-	while (recvLen < packetSize)
+	while (recvLen < packetSize && 0 < recvLen)
 	{
 		recvLen += recv(_socket, (char*)buf[recvLen], 1, 0);
 	}
