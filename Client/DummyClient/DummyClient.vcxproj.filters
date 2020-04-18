@@ -29,5 +29,8 @@
     <ClInclude Include="Client\TestClient.h">
       <Filter>TestClient</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadSafeRandom.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
