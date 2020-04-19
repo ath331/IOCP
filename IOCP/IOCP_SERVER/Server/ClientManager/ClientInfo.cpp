@@ -1,6 +1,6 @@
 #include "ClientInfo.h"
 
-void ClientInfo::OutRoom(int _roomNum)
+void ClientInfo::OutRoom()
 {
 	roomNum = -1;
 }
