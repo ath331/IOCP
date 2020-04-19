@@ -44,7 +44,7 @@ void TcpSession::OnRecvForIocp(int recvTransLen)
 			_recvBuf.buf = tempBuf;
 			_recvBuf.len = _recvTotalLen;
 
-			Log log(LogIndex::WARNING, "Change Recv Buf Size : ",_recvLen);
+			Log log(LogIndex::WARNING, "Change Recv Buf Size : ", _recvLen);
 		}
 
 		if (_recvLenOffSet < _recvTotalLen)

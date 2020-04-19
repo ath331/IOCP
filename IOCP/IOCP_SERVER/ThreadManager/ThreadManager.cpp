@@ -127,16 +127,13 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 
 			case PacketIndex::ROOM_LIST:
 			{
-				if (thisObject->_roomManager->GetRoomVecSize() > 0) //만든 방이 하나라도 있을때
-				{
-					RES_PacketRoomList resPacketRoomList;
-					thisObject->_roomManager->SettingRoomList(resPacketRoomList);
+				RES_PacketRoomList resPacketRoomList;
+				thisObject->_roomManager->SettingRoomList(resPacketRoomList);
 
-					packetInfo.packetBuffer = (const char*)&resPacketRoomList;
-					clientSession->PushSendVec(packetInfo, sizeof(RES_PacketRoomList));
+				packetInfo.packetBuffer = (const char*)&resPacketRoomList;
+				clientSession->PushSendVec(packetInfo, sizeof(RES_PacketRoomList));
 
-					Log log(LogIndex::LOG, "Room List");
-				}
+				Log log(LogIndex::LOG, "Room List");
 			}
 			break;
 
@@ -160,12 +157,12 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				PacketCloseRoom packetCloseRoom;
 				memcpy(&packetCloseRoom, packetInfo.packetBuffer, sizeof(PacketCloseRoom));
 				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
-				clientInfo->OutRoom(packetCloseRoom.roomNum);
-				if ((thisObject->_roomManager->OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum)))
+				if ((thisObject->_roomManager->OutClientInRoom(packetInfo.sock, clientInfo->roomNum)))
 				{
 					string enterMessage = clientInfo->clientName;
-					thisObject->_SendSystemMessage(packetCloseRoom.roomNum, enterMessage.c_str(), FALSE);
+					thisObject->_SendSystemMessage(clientInfo->roomNum, enterMessage.c_str(), FALSE);
 				}
+				clientInfo->OutRoom();
 
 				Log log(LogIndex::LOG, "Close Room");
 			}
@@ -280,6 +277,9 @@ void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
 
 void ThreadManager::_SendSystemMessage(int roomNum, const char* name, bool isEnter)
 {
+	if (roomNum < 0 || roomNum > _roomManager->GetRoomVecSize())
+		return;
+
 	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
 	int clientCount = static_cast<int>(room.clientInfoVec.size());
 
@@ -302,6 +302,6 @@ void ThreadManager::_SendSystemMessage(int roomNum, const char* name, bool isEnt
 		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
 		_clientManager->GetClientSession(sock)->PushSendVec(packetInfo, sizeof(tempSystempMsg));
 
-		Log log(LogIndex::LOG, "Send SystemMessage");
+		Log log(LogIndex::LOG, tempSystempMsg.c_str());
 	}
 }
