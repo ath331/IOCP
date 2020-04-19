@@ -13,6 +13,8 @@ void RoomManager::MakeRoom(string roomName, ClientInfo* clientInfo, int maxClien
 
 void RoomManager::EnterRoom(int roomNum, ClientInfo* clientInfo)
 {
+	if (roomNum < 0 || roomNum > GetRoomVecSize())
+		return;
 	if (_roomVec.empty())
 		return;
 
@@ -43,9 +45,12 @@ Room RoomManager::GetRoomInfoByCountNum(int count)
 
 bool RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
 {
+	if(roomNum < 0 || roomNum > GetRoomVecSize())
+		return TRUE;
+
 	auto iter = find_if(_roomVec.begin(), _roomVec.end(), _SearchRoom(roomNum));
 	int temp = iter->OutClientInRoom(clientSock, roomNum); //temp = 방의 남은 인원
-	if (temp <= 0)
+	if (temp == 0)
 	{
 		_roomVec.erase(iter);
 		return FALSE;
@@ -73,4 +78,3 @@ void RoomManager::SettingRoomList(RES_PacketRoomList& resPacketRoomList)
 		resPacketRoomList.roomInfoList[i].curClientNum = static_cast<int>(GetRoomInfoByCountNum(i).clientInfoVec.size());
 	}
 }
-
