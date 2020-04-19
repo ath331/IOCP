@@ -126,7 +126,7 @@ void ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 char* ClientLogic::RecvPacket(int packetSize)
 {
 	Sleep(100);
-	std::fill_n(buf, 1024, 0);
+	std::fill_n(buf, 4096, 0);
 	int recvLen = recv(_socket, (char*)buf, packetSize, 0);
 	while (recvLen < packetSize && 0 < recvLen)
 	{

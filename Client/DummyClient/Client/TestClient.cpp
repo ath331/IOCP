@@ -1,10 +1,12 @@
 #include "TestClient.h"
 #include "ClientLogic.h"
 #include "packet.h"
-#include "../DummyClient/ThreadSafeRandom.h"
+#include "../DummyClient/Random/SafeRandom.h"
 
 TestClient::TestClient()
 {
+	_safeRandom = new SafeRandom;
+
 	_clientLogic = new ClientLogic;
 	_clientLogic->Init("127.0.0.1", 9999);
 	_clientLogic->Connect();
@@ -15,10 +17,10 @@ void TestClient::RunTestClient()
 	_Login();
 	while (true)
 	{
-		int num = GetThreadSafeRandom<int>(1, 2);
+		int num = _safeRandom->GetRandomNum<int>(1, 2);
 		if (num == 1)
 			_MakeRoom();
-		else
+		else if(num == 2)
 			_GetRoomList();
 	}
 }
@@ -50,8 +52,9 @@ void TestClient::_MakeRoom()
 		memcpy((void*)&resPacketMakeRoom, &_clientLogic->buf, sizeof(RES_PacketMakeRoom));
 		if (resPacketMakeRoom.roomNum > -1)
 		{
-			_EnterRoom(resPacketMakeRoom.roomNum);
+			_SendMessage();
 			_isEnterRoom = true;
+			_OutRoom(resPacketMakeRoom.roomNum);
 		}
 	}
 }
@@ -71,7 +74,7 @@ void TestClient::_GetRoomList()
 	if (_isLogin && !_isEnterRoom)
 	{
 		PacketRoomList packetRoomList;
-		_clientLogic->SendPacket(PacketIndex::MAKE_ROOM, (const char*)&packetRoomList);
+		_clientLogic->SendPacket(PacketIndex::ROOM_LIST, (const char*)&packetRoomList);
 
 		RES_PacketRoomList resPacketRoomList;
 		_clientLogic->RecvPacket(sizeof(RES_PacketRoomList));
@@ -80,8 +83,8 @@ void TestClient::_GetRoomList()
 		int roomCount = resPacketRoomList.maxRoomCount;
 		if (roomCount > 0)
 		{
-			unsigned int roomIndex = GetThreadSafeRandom<unsigned int>(0, roomCount);
-			_EnterRoom(roomIndex);
+			int num = _safeRandom->GetRandomNum<int>(0, roomCount);
+			_EnterRoom(num);
 		}
 	}
 }
@@ -94,8 +97,8 @@ void TestClient::_EnterRoom(int roomNum)
 		packetEnterRoom.roomNum = roomNum;
 		_clientLogic->SendPacket(PacketIndex::ENTER_ROOM, (const char*)&packetEnterRoom);
 
-		_SendMessage();
 		_isEnterRoom = true;
+		_SendMessage();
 		_OutRoom(roomNum);
 	}
 }

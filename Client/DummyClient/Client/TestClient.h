@@ -1,6 +1,7 @@
 #pragma once
 
 class ClientLogic;
+class SafeRandom;
 class TestClient
 {
 public:
@@ -8,11 +9,13 @@ public:
 	~TestClient()
 	{
 		delete _clientLogic;
+		delete _safeRandom;
 	}
 
 	void RunTestClient();
 
 private:
+	SafeRandom* _safeRandom;
 	ClientLogic* _clientLogic;
 
 	bool _isLogin = false;

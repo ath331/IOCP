@@ -16,6 +16,9 @@
     <Filter Include="TestClient">
       <UniqueIdentifier>{c566f8f5-9156-4c1f-b951-58d4989655d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Random">
+      <UniqueIdentifier>{45009a52-48d8-4f88-b29a-2125d413f3c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -24,13 +27,16 @@
     <ClCompile Include="Client\TestClient.cpp">
       <Filter>TestClient</Filter>
     </ClCompile>
+    <ClCompile Include="Random\SafeRandom.cpp">
+      <Filter>Random</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\TestClient.h">
       <Filter>TestClient</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadSafeRandom.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="Random\SafeRandom.h">
+      <Filter>Random</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
