@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\Header\MysqlConnect\jdbc;..\IOCP_SERVER\Basic\Log;C:\boost_1_72_0;$(IncludePath)</IncludePath>
-    <LibraryPath>..\Library\Library\MysqlConnect\vs14;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\Header\MysqlConnect\jdbc;..\IOCP_SERVER\Basic\Log;C:\boost_1_72_0;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\Library\Library\MysqlConnect\vs14;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
