@@ -75,8 +75,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\MySQL\MySQL Server 8.0\include;C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc;C:\boost_1_72_0;$(ProjectDir)\Basic\Log;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\MySQL\MySQL Server 8.0\lib;C:\Program Files\MySQL\Connector C++ 8.0\lib64\vs14;C:\boost_1_72_0\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\Header\MysqlConnect\jdbc;C:\boost_1_72_0;$(IncludePath)</IncludePath>
+    <LibraryPath>..\Library\MysqlConnect\vs14;C:\boost_1_72_0\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -109,7 +109,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>WS2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
