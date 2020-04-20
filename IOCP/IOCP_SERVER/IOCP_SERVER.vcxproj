@@ -76,7 +76,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\Header\MysqlConnect\jdbc;C:\boost_1_72_0;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\Library\MysqlConnect\vs14;C:\boost_1_72_0\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\Library\MysqlConnect\vs14;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
