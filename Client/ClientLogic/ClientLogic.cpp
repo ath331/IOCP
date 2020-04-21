@@ -27,6 +27,9 @@ void ClientLogic::Init(std::string IP, short portNum)
 	_servAdr.sin_family = AF_INET;
 	_servAdr.sin_addr.s_addr = inet_addr(IP.c_str());
 	_servAdr.sin_port = htons(portNum);
+
+	std::cout << "Server IP : " << IP << std::endl;
+	std::cout << "Server PortNum : " << portNum << std::endl;
 }
 
 int ClientLogic::Connect()

@@ -10,7 +10,6 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
-
 	ClientLogic clientLogic;
 	clientLogic.Init("182.230.110.26", 9999);
 
