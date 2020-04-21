@@ -6,6 +6,8 @@
 #include "ThreadManager.h"
 #include "../BaseHeader.h"
 
+#pragma warning(disable:4996)
+
 const static int MAX_CLIENT_ACCEPT_NUM = 10;
 
 void Server::InputPortNum()
@@ -13,6 +15,7 @@ void Server::InputPortNum()
 	std::cout << "Input PortNum : ";
 	std::cin >> _portNum;
 }
+
 Server::Server()
 {
 	GetSystemInfo(&_sysInfo);
@@ -31,6 +34,8 @@ Server::Server()
 	_servAdr.sin_family = AF_INET;
 	_servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
 	_servAdr.sin_port = htons(_portNum);
+
+	_PrintServerInfo();
 
 	if (bind(_servSock, (SOCKADDR*)&_servAdr, sizeof(_servAdr)) == SOCKET_ERROR)
 	{
@@ -63,6 +68,32 @@ void Server::RunServer()
 		_acceptor->AcceptClient();
 
 	_threadManager->WaitThread();
+}
+
+void Server::_PrintServerInfo()
+{
+	_PrintInternalIP();
+	_PrintExternalIP();
+	cout << "Server PortNum : " << _portNum << endl;
+}
+
+
+void Server::_PrintInternalIP()
+{
+	PHOSTENT hostinfo;
+	char hostname[50] = { 0, };
+	char ipAddr[50] = { 0, };
+	if (gethostname(hostname, sizeof(hostname)) == 0)
+	{
+		hostinfo = gethostbyname(hostname);
+		strcpy(ipAddr, inet_ntoa(*(in_addr*)(hostinfo->h_addr_list[0])));
+	}
+
+	std::cout << "Server Internal IP : " << ipAddr << std::endl;
+}
+void Server::_PrintExternalIP()
+{
+	
 }
 
 Server::~Server()

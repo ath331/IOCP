@@ -34,4 +34,9 @@ private:
 	int _recvBytes = 0, _flags = 0;
 
 	void _InitManagers();
+
+	void _PrintServerInfo();
+
+	void _PrintInternalIP();
+	void _PrintExternalIP();
 };
