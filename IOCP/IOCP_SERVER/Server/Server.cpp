@@ -91,9 +91,10 @@ void Server::_PrintInternalIP()
 
 	std::cout << "Server Internal IP : " << ipAddr << std::endl;
 }
+
 void Server::_PrintExternalIP()
 {
-	
+
 }
 
 Server::~Server()

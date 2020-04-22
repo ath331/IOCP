@@ -209,10 +209,10 @@ unsigned int WINAPI ThreadManager::_RunDBThreadMain(void* _thisObject)
 
 					memcpy((void*)&packetLogin.name, (const void*)name.c_str(), sizeof(name.c_str()));
 					packetLogin.isSuccessIdCheck = TRUE;
-					packetInfo.packetBuffer = (const char*)&packetLogin;
-					clientSession->PushSendVec(packetInfo, sizeof(PacketLogin));
 				}
 
+				packetInfo.packetBuffer = (const char*)&packetLogin;
+				clientSession->PushSendVec(packetInfo, sizeof(PacketLogin));
 				Log log(LogIndex::LOG, "Client Login");
 
 			}
