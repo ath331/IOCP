@@ -10,7 +10,6 @@ TcpSession::~TcpSession()
 
 void TcpSession::PostRecv()
 {
-	//TODO : buf조절하기
 	_recvBuf.len = MAX_BUF_SIZE - _recvLenOffSet;
 
 	if (SOCKET_ERROR == WSARecv(_sock, &_recvBuf, 1, (DWORD*)&_recvLen, &_recvFlag, (LPOVERLAPPED)&_recvOverlapped, NULL))
@@ -36,7 +35,7 @@ void TcpSession::OnRecvForIocp(int recvTransLen)
 
 		PacketHeader* packetHeader = reinterpret_cast<PacketHeader*>(_recvBuf.buf);
 		unsigned int _recvTotalLen = packetHeader->headerSize;
-		if (MAX_BUF_SIZE < _recvTotalLen)
+		if (_recvBuf.len < _recvTotalLen)
 		{
 			char* tempBuf = new char[_recvTotalLen];
 			memcpy(&tempBuf, _recvBuf.buf, _recvLenOffSet);
@@ -45,6 +44,9 @@ void TcpSession::OnRecvForIocp(int recvTransLen)
 			_recvBuf.len = _recvTotalLen;
 
 			Log log(LogIndex::WARNING, "Change Recv Buf Size : ", _recvLen);
+
+			PostRecv();
+			return;
 		}
 
 		if (_recvLenOffSet < _recvTotalLen)
@@ -53,11 +55,14 @@ void TcpSession::OnRecvForIocp(int recvTransLen)
 			return;
 		}
 
-		/*_recvBuf.buf에 packetHeader->headerSize 이상의 데이터가 있음
-		사용할 패킷의 크기만큼만 이동하고 초과의 데이터는 앞으로 땡긴다*/
-		char moveRecvBuf[MAX_BUF_SIZE + 1];
-		memmove(moveRecvBuf, _recvBuf.buf, _recvTotalLen);
-		PacketInfo tempPacketInfo = { _sock, packetHeader->index, (const char*)moveRecvBuf };
+		/*_recvBuf.buf에 packetHeader->headerSize 이상의 데이터가 있음.
+		사용할 패킷의 크기만큼만 복사하고 초과의 데이터는 앞으로 땡긴다*/
+		char* cpyRecvBuf = new char[_recvBuf.len];
+		//char cpyRecvBuf[MAX_BUF_SIZE];
+		memcpy(cpyRecvBuf, _recvBuf.buf, _recvTotalLen);
+		PacketInfo tempPacketInfo = { _sock, packetHeader->index, (const char*)cpyRecvBuf };
+		//delete[] cpyRecvBuf;
+
 		if (packetHeader->index < PacketIndex::DB_INDEX)
 		{
 			_packetQueue->push(tempPacketInfo);
@@ -96,6 +101,7 @@ void TcpSession::OnSendForIocp()
 
 void TcpSession::_PostSend()
 {
+	LockGuard sendLcokGuard(_sendLock);
 	_packetSendVec = _packetTempSendVec;
 	_packetTempSendVec.clear();
 
