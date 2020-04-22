@@ -38,12 +38,6 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 	switch (message)
 	{
 	case WM_INITDIALOG:
-		if (_instance->_clientLogic->Connect() != 0)
-		{
-			msgboxID = MessageBox(hwnd, "서버와 연결실패", "연결실패", MB_OK);
-			if (msgboxID == 6)
-				EndDialog(hwnd, 0);
-		}
 		g_hbrBackground = CreateSolidBrush(RGB(128, 128, 128));
 
 		SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(NULL,
@@ -70,6 +64,13 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 		{
 		case ID_ENTER:
 		{
+			if (_instance->_clientLogic->Connect() != 0)
+			{
+				msgboxID = MessageBox(hwnd, "서버와 연결실패", "연결실패", MB_OK);
+				if (msgboxID == 6)
+					EndDialog(hwnd, 0);
+			}
+
 			char id[20], pw[20];
 			GetDlgItemText(hwnd, ID_ID, id, 20);
 			GetDlgItemText(hwnd, ID_PW, pw, 20);
