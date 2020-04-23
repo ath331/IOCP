@@ -15,7 +15,7 @@ struct DB::_MysqlStruct
 DB::DB() : _mysqlInstance(make_unique<_MysqlStruct>())
 {
 	_mysqlInstance->driver = sql::mysql::get_mysql_driver_instance();
-	_mysqlInstance->con = _mysqlInstance->driver->connect(_dbIP, "root", "xoghks105");
+	_mysqlInstance->con = _mysqlInstance->driver->connect(_dbIP, _name, _pw);
 	cout << "DB IP : " << _dbIP << endl;
 	_mysqlInstance->con->setSchema("iocp_chat_db");
 

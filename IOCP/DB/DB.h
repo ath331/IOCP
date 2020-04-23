@@ -29,4 +29,6 @@ private:
 	unique_ptr<_MysqlStruct> _mysqlInstance;
 
 	const char* _dbIP = "tcp://127.0.0.1:3306";
+	const char* _name = "root";
+	const char* _pw = "xoghks105";
 };
