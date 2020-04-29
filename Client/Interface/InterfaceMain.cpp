@@ -11,7 +11,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
 	ClientLogic clientLogic;
-	clientLogic.Init("182.230.110.26", 9999);
+	clientLogic.Init("20.41.76.224", 3389);
 
 	DialogManager dialogManager(g_hInst, &clientLogic);
 	dialogManager.MakeDialog(DialogType::Login);

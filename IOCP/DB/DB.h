@@ -28,7 +28,7 @@ private:
 	struct _MysqlStruct;
 	unique_ptr<_MysqlStruct> _mysqlInstance;
 
-	const char* _dbIP = "tcp://127.0.0.1:3306";
-	const char* _name = "root";
-	const char* _pw = "xoghks105";
+	const char* _dbIP = "tcp://20.41.76.224:3306";
+	const char* _name = "serverComputer";
+	const char* _pw = "!qhdksxl0212";
 };
