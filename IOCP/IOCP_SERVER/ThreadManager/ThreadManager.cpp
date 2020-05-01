@@ -111,12 +111,10 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 			{
 				PacketMakeRoom packetMakeRoom;
 				memcpy(&packetMakeRoom, packetInfo.packetBuffer, sizeof(PacketMakeRoom));
-				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
-				thisObject->_roomManager->MakeRoom(packetMakeRoom.roomName, clientInfo, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
+				thisObject->_roomManager->MakeRoom(packetMakeRoom.roomName, packetMakeRoom.maxClientCount, packetMakeRoom.isPrivateRoom);
 
 				RES_PacketMakeRoom resPacketMakeRoom;
 				resPacketMakeRoom.roomNum = thisObject->_roomManager->GetRoomCount() - 1;
-				clientInfo->roomNum = resPacketMakeRoom.roomNum;
 
 				packetInfo.packetBuffer = (const char*)&resPacketMakeRoom;
 				clientSession->PushSendVec(packetInfo, sizeof(RES_PacketMakeRoom));
@@ -281,27 +279,30 @@ void ThreadManager::_SendSystemMessage(int roomNum, const char* name, bool isEnt
 		return;
 
 	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
-	int clientCount = static_cast<int>(room.clientInfoVec.size());
-
-	string tempSystempMsg = "[SYSTEM] ";
-	tempSystempMsg += name;
-
-	if (isEnter)
+	if (room.GetRoomNum() != -1)
 	{
-		tempSystempMsg += " 님이 접속 했습니다.";
-	}
-	else
-	{
-		tempSystempMsg += " 님이 퇴장 했습니다.";
-	}
+		int clientCount = static_cast<int>(room.clientInfoVec.size());
 
-	PacketInfo packetInfo;
-	packetInfo.packetBuffer = tempSystempMsg.c_str();
-	for (int i = 0; i < clientCount; i++)
-	{
-		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
-		_clientManager->GetClientSession(sock)->PushSendVec(packetInfo, sizeof(tempSystempMsg));
+		string tempSystempMsg = "[SYSTEM] ";
+		tempSystempMsg += name;
 
-		Log log(LogIndex::LOG, tempSystempMsg.c_str());
+		if (isEnter)
+		{
+			tempSystempMsg += " 님이 접속 했습니다.";
+		}
+		else
+		{
+			tempSystempMsg += " 님이 퇴장 했습니다.";
+		}
+
+		PacketInfo packetInfo;
+		packetInfo.packetBuffer = tempSystempMsg.c_str();
+		for (int i = 0; i < clientCount; i++)
+		{
+			SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
+			_clientManager->GetClientSession(sock)->PushSendVec(packetInfo, sizeof(tempSystempMsg));
+
+			Log log(LogIndex::LOG, tempSystempMsg.c_str());
+		}
 	}
 }

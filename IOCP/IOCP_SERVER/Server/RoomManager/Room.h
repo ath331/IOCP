@@ -10,11 +10,18 @@ using namespace std;
 class Room
 {
 public:
-	Room(int roomNum, string name, ClientInfo* clientInfo, int maxClientCount = 2, bool privateRoom = false)
+	Room()
+	{
+		_roomNum = -1;
+		_maxClientCount = 2;
+		_isPublicRoom = true;
+		_passWord = 0000;
+	}
+	Room(int roomNum, string name, int maxClientCount = 2, bool privateRoom = false)
 		: _roomNum(roomNum), _roomName(name), _maxClientCount(maxClientCount), _isPublicRoom(privateRoom)
 	{
-		clientInfoVec.push_back(clientInfo);
 	}
+
 	vector<ClientInfo*> clientInfoVec;
 	bool GetAccessInfoThisRoom();
 	string GetRoomName();

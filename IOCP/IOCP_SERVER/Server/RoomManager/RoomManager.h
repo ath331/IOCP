@@ -8,7 +8,8 @@ struct  ClientInfo;
 class RoomManager
 {
 public:
-	void MakeRoom(string roomName, ClientInfo* clientInfo, int maxClientCount = 2, bool privateRoom = false);
+	//void MakeRoom(string roomName, ClientInfo* clientInfo, int maxClientCount = 2, bool privateRoom = false);
+	void MakeRoom(string roomName, /*ClientInfo* clientInfo,*/ int maxClientCount = 2, bool privateRoom = false);
 	void EnterRoom(int roomNum, ClientInfo* clientInfo);
 	//남은 인원이 0이 되어 방을 삭제하면 FALSE반환
 	bool OutClientInRoom(SOCKET clientSock, int roomNum);

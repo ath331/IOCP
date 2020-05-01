@@ -3,9 +3,9 @@
 #include <packet.h>
 #include <algorithm>
 
-void RoomManager::MakeRoom(string roomName, ClientInfo* clientInfo, int maxClientCount, bool privateRoom)
+void RoomManager::MakeRoom(string roomName, int maxClientCount, bool privateRoom)
 {
-	Room room(_roomCount, roomName, clientInfo, maxClientCount, privateRoom);
+	Room room(_roomCount, roomName, maxClientCount, privateRoom);
 	_roomVec.push_back(room);
 	cout << _roomCount << "번방 " << roomName << "생성" << endl;
 	_roomCount++;
@@ -34,7 +34,14 @@ int RoomManager::GetRoomVecSize()
 
 Room RoomManager::GetRoomInfoByRoomNum(int roomNum)
 {
-	return *(find_if(_roomVec.begin(), _roomVec.end(), _SearchRoom(roomNum)));
+	auto iter = (find_if(_roomVec.begin(), _roomVec.end(), _SearchRoom(roomNum)));
+	if (iter != _roomVec.end())
+		return *iter;
+	else
+	{
+		Room room;
+		return room;
+	}
 }
 
 Room RoomManager::GetRoomInfoByCountNum(int count)
@@ -45,17 +52,21 @@ Room RoomManager::GetRoomInfoByCountNum(int count)
 
 bool RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
 {
-	if(roomNum < 0 || roomNum > GetRoomVecSize())
+	if (roomNum < 0 || roomNum > GetRoomVecSize())
 		return TRUE;
 
 	auto iter = find_if(_roomVec.begin(), _roomVec.end(), _SearchRoom(roomNum));
-	int temp = iter->OutClientInRoom(clientSock, roomNum); //temp = 방의 남은 인원
-	if (temp == 0)
+	if (iter != _roomVec.end())
 	{
-		_roomVec.erase(iter);
-		return FALSE;
+		int temp = iter->OutClientInRoom(clientSock, roomNum); //temp = 방의 남은 인원
+		if (temp == 0)
+		{
+			_roomVec.erase(iter);
+			return FALSE;
+		}
+		return TRUE;
 	}
-	return TRUE;
+	return FALSE;
 }
 
 int RoomManager::GetRoomCount()
