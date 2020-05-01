@@ -81,7 +81,7 @@ void ClientLogic::SendPacket(PacketIndex type, const char* buffer)
 	{
 		PacketRoomList packetRoomList;
 		send(_socket, (const char*)&packetRoomList, packetRoomList.headerSize, 0);
-		RecvPacket(sizeof(RES_PacketRoomList));
+		//RecvPacket(sizeof(RES_PacketRoomList));
 		break;
 	}
 	case PacketIndex::Login:

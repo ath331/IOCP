@@ -52,8 +52,8 @@ void TestClient::_MakeRoom()
 		memcpy((void*)&resPacketMakeRoom, &_clientLogic->buf, sizeof(RES_PacketMakeRoom));
 		if (resPacketMakeRoom.roomNum > -1)
 		{
+			_EnterRoom(resPacketMakeRoom.roomNum);
 			_SendMessage();
-			_isEnterRoom = true;
 			_OutRoom(resPacketMakeRoom.roomNum);
 		}
 	}
@@ -85,6 +85,8 @@ void TestClient::_GetRoomList()
 		{
 			int num = _safeRandom->GetRandomNum<int>(0, roomCount);
 			_EnterRoom(num);
+			_SendMessage();
+			_OutRoom(num);
 		}
 	}
 }
@@ -98,8 +100,6 @@ void TestClient::_EnterRoom(int roomNum)
 		_clientLogic->SendPacket(PacketIndex::ENTER_ROOM, (const char*)&packetEnterRoom);
 
 		_isEnterRoom = true;
-		_SendMessage();
-		_OutRoom(roomNum);
 	}
 }
 
