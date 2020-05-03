@@ -50,6 +50,7 @@ void TestClient::_MakeRoom()
 		_clientLogic->SendPacket(sizeof(PacketMakeRoom), (const char*)&packetMakeRoom);
 
 		RES_PacketMakeRoom resPacketMakeRoom;
+		_clientLogic->RecvPacket(sizeof(RES_PacketMakeRoom));
 		memcpy((void*)&resPacketMakeRoom, &_clientLogic->buf, sizeof(RES_PacketMakeRoom));
 		if (resPacketMakeRoom.roomNum > -1)
 		{
@@ -84,10 +85,12 @@ void TestClient::_GetRoomList()
 		int roomCount = resPacketRoomList.maxRoomCount;
 		if (roomCount > 0)
 		{
-			int num = _safeRandom->GetRandomNum<int>(0, roomCount);
-			_EnterRoom(num);
+			int roomCount = 0;
+			roomCount = _safeRandom->GetRandomNum<int>(0, roomCount);
+			int roomNum = resPacketRoomList.roomInfoList[roomCount].roomNum;
+			_EnterRoom(roomNum);
 			_SendMessage();
-			_OutRoom(num);
+			_OutRoom(roomNum);
 		}
 	}
 }
@@ -101,10 +104,10 @@ void TestClient::_EnterRoom(int roomNum)
 		_clientLogic->SendPacket(sizeof(PacketEnterRoom), (const char*)&packetEnterRoom);
 		_isEnterRoom = true;
 
-		PacketSendMessage packetSendMsg;
+		/*PacketSendMessage packetSendMsg;
 		_clientLogic->RecvPacket(sizeof(PacketSendMessage));
 		memcpy((void*)&packetSendMsg, &_clientLogic->buf, sizeof(PacketSendMessage));
-		std::cout << packetSendMsg.buffer << std::endl;
+		std::cout << packetSendMsg.buffer << std::endl;*/
 	}
 }
 
