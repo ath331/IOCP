@@ -143,9 +143,6 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				clientInfo->roomNum = packetEnterRoom.roomNum;
 				thisObject->_roomManager->EnterRoom(packetEnterRoom.roomNum, clientInfo);
 
-				/*string enterMessage = clientInfo->clientName;
-				thisObject->_SendSystemMessage(packetEnterRoom.roomNum, enterMessage.c_str(), TRUE);*/
-
 				Log log(LogIndex::LOG, "Enter Room");
 			}
 			break;
@@ -157,11 +154,6 @@ unsigned int WINAPI ThreadManager::_RunLogicThreadMain(void* _thisObject)
 				ClientInfo* clientInfo = thisObject->_clientManager->GetClientInfo(packetInfo.sock);
 				thisObject->_roomManager->OutClientInRoom(packetInfo.sock, packetCloseRoom.roomNum);
 				clientInfo->OutRoom();
-				/*if ((thisObject->_roomManager->OutClientInRoom(packetInfo.sock, clientInfo->roomNum)))
-				{
-					string enterMessage = clientInfo->clientName;
-					thisObject->_SendSystemMessage(clientInfo->roomNum, enterMessage.c_str(), FALSE);
-				}*/
 
 				Log log(LogIndex::LOG, "Close Room");
 			}
@@ -272,38 +264,3 @@ void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
 		Log log(LogIndex::LOG, "Send Message");
 	}
 }
-
-
-//void ThreadManager::_SendSystemMessage(int roomNum, const char* name, bool isEnter)
-//{
-//	if (roomNum < 0 || roomNum > _roomManager->GetRoomVecSize())
-//		return;
-//
-//	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
-//	if (room.GetRoomNum() != -1)
-//	{
-//		int clientCount = static_cast<int>(room.clientInfoVec.size());
-//
-//		string tempSystempMsg = "[SYSTEM] ";
-//		tempSystempMsg += name;
-//
-//		if (isEnter)
-//		{
-//			tempSystempMsg += " 님이 접속 했습니다.";
-//		}
-//		else
-//		{
-//			tempSystempMsg += " 님이 퇴장 했습니다.";
-//		}
-//
-//		PacketInfo packetInfo;
-//		packetInfo.packetBuffer = tempSystempMsg.c_str();
-//		for (int i = 0; i < clientCount; i++)
-//		{
-//			SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
-//			_clientManager->GetClientSession(sock)->PushSendVec(packetInfo, sizeof(tempSystempMsg));
-//
-//			Log log(LogIndex::LOG, tempSystempMsg.c_str());
-//		}
-//	}
-//}

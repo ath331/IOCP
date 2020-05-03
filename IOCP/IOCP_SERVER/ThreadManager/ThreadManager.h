@@ -35,10 +35,8 @@ private:
 	concurrency::concurrent_queue<PacketInfo> _packetDBQueue;
 	concurrency::concurrent_queue<PacketInfo> _packetQueue;
 
-	//void _SendSystemMessage(int roomNum, const char* name, bool isEnter = TRUE);
 	void _SendMessageToClient(SOCKET sock, const char* pckBuf);
 
-	//TODO : class °ü¸® ´Ùµë±â
 	ClientManager* _clientManager;
 	DB* _db;
 	Acceptor* _acceptor;
