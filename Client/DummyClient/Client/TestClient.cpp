@@ -32,8 +32,9 @@ void TestClient::_Login()
 		PacketLogin packetLogin;
 		memcpy((void*)&packetLogin.id, "a", sizeof("a"));
 		memcpy((void*)&packetLogin.pw, "1234", sizeof("1234"));
-		_clientLogic->SendPacket(PacketIndex::Login, (const char*)&packetLogin);
+		_clientLogic->SendPacket(sizeof(PacketLogin), (const char*)&packetLogin);
 
+		_clientLogic->RecvPacket(sizeof(PacketLogin));
 		memcpy((void*)&packetLogin, &_clientLogic->buf, sizeof(PacketLogin));
 		if (packetLogin.isSuccessIdCheck)
 			_isLogin = true;
@@ -46,7 +47,7 @@ void TestClient::_MakeRoom()
 	{
 		PacketMakeRoom packetMakeRoom;
 		memcpy((void*)&packetMakeRoom.roomName, "TestRoom", sizeof("TestRoom"));
-		_clientLogic->SendPacket(PacketIndex::MAKE_ROOM, (const char*)&packetMakeRoom);
+		_clientLogic->SendPacket(sizeof(PacketMakeRoom), (const char*)&packetMakeRoom);
 
 		RES_PacketMakeRoom resPacketMakeRoom;
 		memcpy((void*)&resPacketMakeRoom, &_clientLogic->buf, sizeof(RES_PacketMakeRoom));
@@ -65,7 +66,7 @@ void TestClient::_SendMessage()
 	{
 		PacketSendMessage packetSendMessge;
 		memcpy((void*)&packetSendMessge.buffer, "TestMessage", sizeof("TestMessage"));
-		_clientLogic->SendPacket(PacketIndex::SEND_MESSAGE, (const char*)&packetSendMessge);
+		_clientLogic->SendPacket(sizeof(PacketSendMessage), (const char*)&packetSendMessge);
 	}
 }
 
@@ -74,7 +75,7 @@ void TestClient::_GetRoomList()
 	if (_isLogin && !_isEnterRoom)
 	{
 		PacketRoomList packetRoomList;
-		_clientLogic->SendPacket(PacketIndex::ROOM_LIST, (const char*)&packetRoomList);
+		_clientLogic->SendPacket(sizeof(PacketRoomList), (const char*)&packetRoomList);
 
 		RES_PacketRoomList resPacketRoomList;
 		_clientLogic->RecvPacket(sizeof(RES_PacketRoomList));
@@ -97,9 +98,13 @@ void TestClient::_EnterRoom(int roomNum)
 	{
 		PacketEnterRoom packetEnterRoom;
 		packetEnterRoom.roomNum = roomNum;
-		_clientLogic->SendPacket(PacketIndex::ENTER_ROOM, (const char*)&packetEnterRoom);
-
+		_clientLogic->SendPacket(sizeof(PacketEnterRoom), (const char*)&packetEnterRoom);
 		_isEnterRoom = true;
+
+		PacketSendMessage packetSendMsg;
+		_clientLogic->RecvPacket(sizeof(PacketSendMessage));
+		memcpy((void*)&packetSendMsg, &_clientLogic->buf, sizeof(PacketSendMessage));
+		std::cout << packetSendMsg.buffer << std::endl;
 	}
 }
 
@@ -109,7 +114,7 @@ void TestClient::_OutRoom(int roomNum)
 	{
 		PacketCloseRoom packetCloseRoom;
 		packetCloseRoom.roomNum = roomNum;
-		_clientLogic->SendPacket(PacketIndex::CLOSE_ROOM, (const char*)&packetCloseRoom);
+		_clientLogic->SendPacket(sizeof(PacketCloseRoom), (const char*)&packetCloseRoom);
 
 		_isEnterRoom = false;
 	}

@@ -52,8 +52,6 @@ void ClientLogic::ExitClient()
 	WSACleanup();
 }
 
-
-
 void ClientLogic::SetName(std::string name)
 {
 	_name = name;
@@ -70,60 +68,12 @@ void ErrorHandling(const char* msg)
 	exit(1);
 }
 
-void ClientLogic::SendPacket(PacketIndex type, const char* buffer)
+void ClientLogic::SendPacket(int bufferSize, const char* buffer)
 {
 	if (buffer == NULL)
 		return;
 
-	switch (type)
-	{
-	case PacketIndex::ROOM_LIST:
-	{
-		PacketRoomList packetRoomList;
-		send(_socket, (const char*)&packetRoomList, packetRoomList.headerSize, 0);
-		//RecvPacket(sizeof(RES_PacketRoomList));
-		break;
-	}
-	case PacketIndex::Login:
-	{
-		send(_socket, buffer, sizeof(PacketLogin), 0);
-		RecvPacket(sizeof(PacketLogin));
-		break;
-	}
-
-	case PacketIndex::MAKE_ROOM:
-	{
-		send(_socket, buffer, sizeof(PacketMakeRoom), 0);
-		RecvPacket(sizeof(RES_PacketMakeRoom));
-		break;
-	}
-
-	case PacketIndex::ENTER_ROOM:
-	{
-		send(_socket, buffer, sizeof(PacketEnterRoom), 0);
-		break;
-	}
-
-	case PacketIndex::CLOSE_ROOM:
-	{
-		send(_socket, buffer, sizeof(PacketCloseRoom), 0);
-		break;
-	}
-	case PacketIndex::SEND_MESSAGE:
-	{
-		send(_socket, buffer, sizeof(PacketSendMessage), 0);
-		break;
-	}
-
-	case PacketIndex::MAKE_CLIENT_ID_INFO:
-	{
-		send(_socket, buffer, sizeof(PacketClientIdInfo), 0);
-		RecvPacket(sizeof(PacketDBInsertData));
-		break;
-	}
-	default:
-		break;
-	}
+	send(_socket, buffer, sizeof(bufferSize), 0);
 }
 
 char* ClientLogic::RecvPacket(int packetSize)

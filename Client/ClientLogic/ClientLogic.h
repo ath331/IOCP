@@ -16,9 +16,10 @@ public:
 
 	void SetName(std::string name);
 	std::string GetName();
-	void SendPacket(PacketIndex type, const char* buffer);
-	char* RecvPacket(int packetSize);
+
 	char buf[4096] = { 0, };
+	char* RecvPacket(int packetSize);
+	void SendPacket(int bufferSize, const char* buffer);
 
 	SOCKET _socket;
 
@@ -40,3 +41,5 @@ private:
 
 	bool _isEnteredRoom = FALSE;
 };
+
+//#include "ClientLogic.hpp"
