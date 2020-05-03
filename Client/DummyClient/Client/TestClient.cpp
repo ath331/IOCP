@@ -103,11 +103,6 @@ void TestClient::_EnterRoom(int roomNum)
 		packetEnterRoom.roomNum = roomNum;
 		_clientLogic->SendPacket(sizeof(PacketEnterRoom), (const char*)&packetEnterRoom);
 		_isEnterRoom = true;
-
-		/*PacketSendMessage packetSendMsg;
-		_clientLogic->RecvPacket(sizeof(PacketSendMessage));
-		memcpy((void*)&packetSendMsg, &_clientLogic->buf, sizeof(PacketSendMessage));
-		std::cout << packetSendMsg.buffer << std::endl;*/
 	}
 }
 
