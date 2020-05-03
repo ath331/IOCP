@@ -6,7 +6,7 @@ using namespace std;
 DialogManager* DialogManager::_instance = NULL;
 
 
-void DialogManager::MakeDialog(DialogType dialogType, string roomName)
+void DialogManager::MakeDialog(DialogType dialogType)
 {
 	switch (dialogType)
 	{
@@ -20,7 +20,6 @@ void DialogManager::MakeDialog(DialogType dialogType, string roomName)
 		DialogBox(_hInst, MAKEINTRESOURCE(IDD_MAKE_ROOM), NULL, (DLGPROC)DlgProcMakeRoom);
 		break;
 	case DialogType::ChatRoom:
-		_instance->_roomName = roomName;
 		DialogBox(_hInst, MAKEINTRESOURCE(IDD_ChatROom), NULL, (DLGPROC)DlgProcChatRoom);
 		break;
 	case DialogType::MakeID:
@@ -219,7 +218,8 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 					packetEnterRoom.roomNum = stoi(roomNumStr);
 					_instance->_clientLogic->SendPacket(sizeof(PacketIndex), (const char*)&packetEnterRoom);
 					_instance->_clientLogic->SetIsEnteredRoom(TRUE);
-					_instance->MakeDialog(DialogType::ChatRoom, roomInfoStr);
+					_instance->MakeDialog(DialogType::ChatRoom);
+					_instance->_roomName = roomInfoStr;
 				}
 			}
 		}
@@ -311,7 +311,8 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 				tempRoomName += packetMakeRoom.roomName;
 				EndDialog(hwnd, 0);
 				_instance->_clientLogic->SetIsEnteredRoom(TRUE);
-				_instance->MakeDialog(DialogType::ChatRoom, tempRoomName);
+				_instance->MakeDialog(DialogType::ChatRoom);
+				_instance->_roomName = tempRoomName;
 			}
 		}
 		break;
