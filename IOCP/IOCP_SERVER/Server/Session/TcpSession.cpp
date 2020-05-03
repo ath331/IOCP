@@ -58,14 +58,10 @@ void TcpSession::OnRecvForIocp(int recvTransLen)
 		/*_recvBuf.buf에 packetHeader->headerSize 이상의 데이터가 있음.
 		사용할 패킷의 크기만큼만 복사하고 초과의 데이터는 앞으로 땡긴다*/
 
-		//char cpyRecvBuf[MAX_BUF_SIZE];
-		//PacketInfo tempPacketInfo = { _sock, packetHeader->index, (const char*)cpyRecvBuf };
-		//memcpy(cpyRecvBuf, _recvBuf.buf, _recvTotalLen);
-
 		char* cpyRecvBuf = new char[_recvBuf.len];
 		memcpy(cpyRecvBuf, _recvBuf.buf, _recvTotalLen);
 		PacketInfo tempPacketInfo = { _sock, packetHeader->index, cpyRecvBuf };
-		//delete[] cpyRecvBuf;
+		delete[] cpyRecvBuf;
 
 		if (packetHeader->index < PacketIndex::DB_INDEX)
 		{
