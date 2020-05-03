@@ -73,7 +73,7 @@ void ClientLogic::SendPacket(int bufferSize, const char* buffer)
 	if (buffer == NULL)
 		return;
 
-	send(_socket, buffer, sizeof(bufferSize), 0);
+	send(_socket, buffer, bufferSize, 0);
 }
 
 char* ClientLogic::RecvPacket(int packetSize)
