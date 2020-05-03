@@ -13,7 +13,7 @@ void RoomManager::MakeRoom(string roomName, int maxClientCount, bool privateRoom
 
 void RoomManager::EnterRoom(int roomNum, ClientInfo* clientInfo)
 {
-	if (roomNum < 0 || roomNum > GetRoomVecSize())
+	if (roomNum < 0 )
 		return;
 	if (_roomVec.empty())
 		return;
@@ -50,23 +50,23 @@ Room RoomManager::GetRoomInfoByCountNum(int count)
 }
 
 
-bool RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
+void RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
 {
-	if (roomNum < 0 || roomNum > GetRoomVecSize())
-		return TRUE;
+	if (roomNum < 0)
+		return;
 
 	auto iter = find_if(_roomVec.begin(), _roomVec.end(), _SearchRoom(roomNum));
 	if (iter != _roomVec.end())
 	{
 		int temp = iter->OutClientInRoom(clientSock, roomNum); //temp = 방의 남은 인원
-		if (temp == 0)
+		if (temp <= 0)
 		{
 			_roomVec.erase(iter);
-			return FALSE;
+			//return FALSE;
 		}
-		return TRUE;
+		//return TRUE;
 	}
-	return FALSE;
+	//return FALSE;
 }
 
 int RoomManager::GetRoomCount()
