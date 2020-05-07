@@ -5,6 +5,8 @@
 
 void RoomManager::MakeRoom(string roomName, int maxClientCount, bool privateRoom)
 {
+	LockGuard _roomLockGuard(_roomLock);
+
 	Room room(_roomCount, roomName, maxClientCount, privateRoom);
 	_roomVec.push_back(room);
 	cout << _roomCount << "번방 " << roomName << "생성" << endl;
@@ -13,6 +15,8 @@ void RoomManager::MakeRoom(string roomName, int maxClientCount, bool privateRoom
 
 void RoomManager::EnterRoom(int roomNum, ClientInfo* clientInfo)
 {
+	LockGuard _roomLockGuard(_roomLock);
+
 	if (roomNum < 0 )
 		return;
 	if (_roomVec.empty())
@@ -29,11 +33,15 @@ void RoomManager::EnterRoom(int roomNum, ClientInfo* clientInfo)
 
 int RoomManager::GetRoomVecSize()
 {
+	LockGuard _roomLockGuard(_roomLock);
+
 	return static_cast<int>(_roomVec.size());
 }
 
 Room RoomManager::GetRoomInfoByRoomNum(int roomNum)
 {
+	LockGuard _roomLockGuard(_roomLock);
+
 	auto iter = (find_if(_roomVec.begin(), _roomVec.end(), _SearchRoom(roomNum)));
 	if (iter != _roomVec.end())
 		return *iter;
@@ -46,12 +54,16 @@ Room RoomManager::GetRoomInfoByRoomNum(int roomNum)
 
 Room RoomManager::GetRoomInfoByCountNum(int count)
 {
+	LockGuard _roomLockGuard(_roomLock);
+
 	return _roomVec[count];
 }
 
 
 void RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
 {
+	LockGuard _roomLockGuard(_roomLock);
+
 	if (roomNum < 0)
 		return;
 
@@ -62,20 +74,21 @@ void RoomManager::OutClientInRoom(SOCKET clientSock, int roomNum)
 		if (temp <= 0)
 		{
 			_roomVec.erase(iter);
-			//return FALSE;
 		}
-		//return TRUE;
 	}
-	//return FALSE;
 }
 
 int RoomManager::GetRoomCount()
 {
+	LockGuard _roomLockGuard(_roomLock);
+
 	return _roomCount;
 }
 
 void RoomManager::SettingRoomList(RES_PacketRoomList& resPacketRoomList)
 {
+	LockGuard _roomLockGuard(_roomLock);
+
 	resPacketRoomList.maxRoomCount = static_cast<int>(_roomVec.size());
 
 	if (resPacketRoomList.maxRoomCount > MAX_ROOM_COUNT)
