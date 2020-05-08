@@ -18,7 +18,7 @@ public:
 	std::string GetName();
 
 	char buf[4096] = { 0, };
-	char* RecvPacket(int packetSize);
+	void RecvPacket(int packetSize);
 	void SendPacket(int bufferSize, const char* buffer);
 
 	SOCKET _socket;

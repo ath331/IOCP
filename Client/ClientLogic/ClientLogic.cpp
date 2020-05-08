@@ -76,7 +76,7 @@ void ClientLogic::SendPacket(int bufferSize, const char* buffer)
 	send(_socket, buffer, bufferSize, 0);
 }
 
-char* ClientLogic::RecvPacket(int packetSize)
+void ClientLogic::RecvPacket(int packetSize)
 {
 	Sleep(100);
 	std::fill_n(buf, 4096, 0);
@@ -85,5 +85,4 @@ char* ClientLogic::RecvPacket(int packetSize)
 	{
 		recvLen += recv(_socket, (char*)buf[recvLen], 1, 0);
 	}
-	return buf;
 }
