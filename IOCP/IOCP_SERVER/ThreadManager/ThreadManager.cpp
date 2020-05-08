@@ -249,8 +249,7 @@ void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
 	PacketSendMessage packetSendMessage;
 	memmove(&packetSendMessage, pckBuf, sizeof(PacketSendMessage));
 
-	ClientInfo* clientInfo = _clientManager->GetClientInfo(sock);
-	int roomNum = clientInfo->roomNum;
+	int roomNum = packetSendMessage.roomNum;
 
 	Room room = _roomManager->GetRoomInfoByRoomNum(roomNum);
 	int clientCount = static_cast<int>(room.clientInfoVec.size());
@@ -259,7 +258,7 @@ void ThreadManager::_SendMessageToClient(SOCKET sock, const char* pckBuf)
 	packetInfo.packetBuffer = packetSendMessage.buffer;
 	for (int i = 0; i < clientCount; i++)
 	{
-		SOCKET sock = _roomManager->GetRoomInfoByRoomNum(roomNum).clientInfoVec[i]->clientSock;
+		SOCKET sock = room.clientInfoVec[i]->clientSock;
 		_clientManager->GetClientSession(sock)->PushSendVec(packetInfo, sizeof(PacketSendMessage));
 		Log log(LogIndex::LOG, "Send Message");
 	}
