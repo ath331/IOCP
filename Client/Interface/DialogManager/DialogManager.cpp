@@ -123,8 +123,6 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 }
 BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	WSAAsyncSelect(_instance->_clientLogic->_socket, hwnd, MWM_SOCKET, FD_READ | FD_CLOSE);
-
 	int msgboxID = 0;
 	HBRUSH g_hbrBackground = _instance->g_hbrBackground;
 
@@ -175,7 +173,7 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 				PacketClientIdInfo packetClientIdInfo;
 				memcpy((void*)&packetClientIdInfo.name, tempNameStr.c_str(), sizeof(tempNameStr.c_str()));
 				packetClientIdInfo.isChangeName = TRUE;
-				_instance->_clientLogic->SendPacket(sizeof(PacketIndex), (const char*)&packetClientIdInfo);
+				_instance->_clientLogic->SendPacket(sizeof(PacketClientIdInfo), (const char*)&packetClientIdInfo);
 				msgboxID = MessageBox(hwnd, "닉네임이 변경되었습니다!", "닉네임변경", MB_OK);
 				if (msgboxID == 6) //확인버튼 누름
 					EndDialog(hwnd, 0);
@@ -188,9 +186,10 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 			HWND listBox = GetDlgItem(hwnd, IDC_LIST_ROOM);
 			SendMessageA(listBox, LB_RESETCONTENT, 0, 0);
 
+			PacketRoomList packetRoomList;
+			_instance->_clientLogic->SendPacket(sizeof(PacketRoomList), (const char*)&packetRoomList);
 			RES_PacketRoomList resPacketRoomList;
-			_instance->_clientLogic->SendPacket(sizeof(PacketIndex), (const char*)&resPacketRoomList);
-			_instance->_clientLogic->RecvPacket(sizeof(PacketIndex));
+			_instance->_clientLogic->RecvPacket(sizeof(RES_PacketRoomList));
 			memcpy(&resPacketRoomList, &_instance->_clientLogic->buf, sizeof(RES_PacketRoomList));
 			if (resPacketRoomList.maxRoomCount != 0)
 			{
@@ -216,10 +215,10 @@ BOOL CALLBACK DialogManager::DlgProcMain(HWND hwnd, UINT message, WPARAM wParam,
 					string roomNumStr = roomInfoStr.substr(0, 2);
 					PacketEnterRoom packetEnterRoom;
 					packetEnterRoom.roomNum = stoi(roomNumStr);
-					_instance->_clientLogic->SendPacket(sizeof(PacketIndex), (const char*)&packetEnterRoom);
+					_instance->_clientLogic->SendPacket(sizeof(PacketEnterRoom), (const char*)&packetEnterRoom);
 					_instance->_clientLogic->SetIsEnteredRoom(TRUE);
-					_instance->MakeDialog(DialogType::ChatRoom);
 					_instance->_roomName = roomInfoStr;
+					_instance->MakeDialog(DialogType::ChatRoom);
 				}
 			}
 		}
@@ -309,10 +308,17 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 				string tempRoomName = to_string(resPacketRoomList.roomNum);
 				tempRoomName += "번방 ";
 				tempRoomName += packetMakeRoom.roomName;
-				EndDialog(hwnd, 0);
 				_instance->_clientLogic->SetIsEnteredRoom(TRUE);
-				_instance->MakeDialog(DialogType::ChatRoom);
 				_instance->_roomName = tempRoomName;
+
+				PacketEnterRoom packetEnterRoom;
+				packetEnterRoom.roomNum = resPacketRoomList.roomNum;
+				_instance->_clientLogic->SendPacket(sizeof(PacketEnterRoom), (const char*)&packetEnterRoom);
+				_instance->_clientLogic->SetIsEnteredRoom(TRUE);
+
+				EndDialog(hwnd, 0);
+
+				_instance->MakeDialog(DialogType::ChatRoom);
 			}
 		}
 		break;
@@ -333,12 +339,13 @@ BOOL CALLBACK DialogManager::DlgProcMakeRoom(HWND hwnd, UINT message, WPARAM wPa
 }
 BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	WSAAsyncSelect(_instance->_clientLogic->_socket, hwnd, MWM_SOCKET, FD_READ);
 	HBRUSH g_hbrBackground = _instance->g_hbrBackground;
 
 	switch (message)
 	{
 	case WM_INITDIALOG:
+	{
+		WSAAsyncSelect(_instance->_clientLogic->_socket, hwnd, MWM_SOCKET, FD_READ);
 		g_hbrBackground = CreateSolidBrush(RGB(128, 128, 128));
 
 		SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(NULL,
@@ -346,7 +353,8 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(NULL,
 			MAKEINTRESOURCE(IDI_APPLICATION)));
 		SetWindowText(hwnd, (LPCSTR)_instance->_roomName.c_str());
-		break;
+	}
+	break;
 	case WM_CLOSE:
 	{
 		PacketCloseRoom packetCloseRoom;
@@ -374,14 +382,14 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 		case FD_READ:
 		{
 			_instance->_clientLogic->RecvPacket(sizeof(PacketSendMessage));
-			PacketSendMessage packetSendMessage;
-			memcpy(&packetSendMessage, &_instance->_clientLogic->buf, sizeof(PacketSendMessage));
-			HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
-			if (packetSendMessage.buffer != " ")
+			if (strcmp((const char*)&_instance->_clientLogic->buf[0],"") != 0)
 			{
-				SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)packetSendMessage.buffer);
-				int maxListBoxSize = SendMessageA(listBox, LB_GETCOUNT, 0, 0);
-				SendMessageA(listBox, LB_SETTOPINDEX, maxListBoxSize - 1, 0);
+				PacketSendMessage packetSendMessage;
+				memcpy((void*)&packetSendMessage.buffer, &_instance->_clientLogic->buf, sizeof(PacketSendMessage));
+				HWND listBox = GetDlgItem(hwnd, IDC_LIST2);
+				int i = 0;
+				i = SendMessage(listBox, LB_GETCURSEL, 0, 0);
+				SendMessage(listBox, LB_ADDSTRING, i, (LPARAM)packetSendMessage.buffer);
 			}
 		}
 		break;
@@ -422,7 +430,7 @@ BOOL CALLBACK DialogManager::DlgProcChatRoom(HWND hwnd, UINT message, WPARAM wPa
 			EndDialog(hwnd, 0);
 			_instance->_clientLogic->SetIsEnteredRoom(FALSE);
 		}
-			break;
+		break;
 
 		}
 		break;
