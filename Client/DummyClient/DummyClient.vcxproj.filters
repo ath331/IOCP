@@ -19,6 +19,9 @@
     <Filter Include="Random">
       <UniqueIdentifier>{45009a52-48d8-4f88-b29a-2125d413f3c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Thread">
+      <UniqueIdentifier>{22de9a20-1bb3-4b53-adcf-10cffa18849f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -30,6 +33,9 @@
     <ClCompile Include="Random\SafeRandom.cpp">
       <Filter>Random</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadManager\ThreadManager.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\TestClient.h">
@@ -37,6 +43,9 @@
     </ClInclude>
     <ClInclude Include="Random\SafeRandom.h">
       <Filter>Random</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadManager\ThreadManager.h">
+      <Filter>Thread</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

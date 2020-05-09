@@ -143,10 +143,12 @@
     <ClCompile Include="Client\TestClient.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Random\SafeRandom.cpp" />
+    <ClCompile Include="ThreadManager\ThreadManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\TestClient.h" />
     <ClInclude Include="Random\SafeRandom.h" />
+    <ClInclude Include="ThreadManager\ThreadManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClientLogic\ClientLogic.vcxproj">

@@ -5,13 +5,14 @@ Dummy Client를 만들어서 서버성능을 테스트해보기위한 프로젝트.
 */
 
 #include <iostream>
-#include "Client/TestClient.h"
+#include "ThreadManager/ThreadManager.h"
 
 using namespace std;
 
 int main()
 {
 	cout << "Dummy Client Project" << endl;
-	TestClient testClient;
-	testClient.RunTestClient();
+	ThreadManager threadManager;
+	threadManager.Init();
+	threadManager.Start();
 }
