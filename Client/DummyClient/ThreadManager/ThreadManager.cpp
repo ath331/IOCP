@@ -9,12 +9,7 @@ void ThreadManager::Init()
 	{
 		TestClient* test = new TestClient;
 
-		//thread th(&TestClient::RunTestClient, test);
-
 		_threadVec.push_back(thread(&TestClient::RunTestClient, test));
-		//_threadVec[i].join();
-
-		cout << i << " thread run!" << endl;
 	}
 }
 
