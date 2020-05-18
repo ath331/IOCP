@@ -30,6 +30,7 @@ void ClientManager::CloseClient(SOCKET sock)
 
 	LockGuard clientMapLockGuard(_clientMapLock);
 
+	delete _clientSessionMap.find(sock)->second;
 	_clientSessionMap.erase(sock);
 }
 
