@@ -94,7 +94,11 @@ void RoomManager::SettingRoomList(RES_PacketRoomList& resPacketRoomList)
 	if (resPacketRoomList.maxRoomCount > MAX_ROOM_COUNT)
 		resPacketRoomList.maxRoomCount = MAX_ROOM_COUNT;
 
-	for (int i = 0; i < _roomVec.size(); i++)
+	int roomCount = static_cast<int>(_roomVec.size());
+	if (_roomVec.size() > MAX_ROOM_COUNT)
+		roomCount = MAX_ROOM_COUNT;
+
+	for (int i = 0; i < roomCount; i++)
 	{
 		resPacketRoomList.roomInfoList[i].roomNum = GetRoomInfoByCountNum(i).GetRoomNum();
 		memcpy(&resPacketRoomList.roomInfoList[i].roomName, GetRoomInfoByCountNum(i).GetRoomName().c_str(), strlen(GetRoomInfoByCountNum(i).GetRoomName().c_str()));
