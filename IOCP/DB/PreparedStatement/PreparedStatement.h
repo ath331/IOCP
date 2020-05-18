@@ -14,7 +14,7 @@ public:
 		_preStmt = con->prepareStatement(str.c_str());
 	}
 
-	~PreparedStatement()
+	virtual ~PreparedStatement()
 	{
 		delete _preStmt;
 	}

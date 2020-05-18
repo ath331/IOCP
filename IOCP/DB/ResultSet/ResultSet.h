@@ -19,7 +19,7 @@ public:
 		_ExecuteQuery();
 	}
 
-	~ResultSet()
+	virtual ~ResultSet()
 	{
 		delete _res;
 	}
