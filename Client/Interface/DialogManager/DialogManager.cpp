@@ -44,6 +44,13 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 		SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(NULL,
 			MAKEINTRESOURCE(IDI_APPLICATION)));
 
+		if (_instance->_clientLogic->Connect() != 0)
+		{
+			msgboxID = MessageBox(hwnd, "서버와 연결실패", "연결실패", MB_OK);
+			if (msgboxID == 6)
+				EndDialog(hwnd, 0);
+		}
+
 		break;
 	case WM_CLOSE:
 		EndDialog(hwnd, 0);
@@ -63,12 +70,12 @@ BOOL CALLBACK DialogManager::DlgProcLogin(HWND hwnd, UINT message, WPARAM wParam
 		{
 		case ID_ENTER:
 		{
-			if (_instance->_clientLogic->Connect() != 0)
+			/*if (_instance->_clientLogic->Connect() != 0)
 			{
 				msgboxID = MessageBox(hwnd, "서버와 연결실패", "연결실패", MB_OK);
 				if (msgboxID == 6)
 					EndDialog(hwnd, 0);
-			}
+			}*/
 
 			char id[20], pw[20];
 			GetDlgItemText(hwnd, ID_ID, id, 20);
@@ -499,6 +506,7 @@ BOOL CALLBACK DialogManager::DlgProcMakeID(HWND hwnd, UINT message, WPARAM wPara
 
 			_instance->_clientLogic->SendPacket(sizeof(PacketClientIdInfo), (const char*)&packetClientIdInfo);
 
+			_instance->_clientLogic->RecvPacket(sizeof(PacketDBInsertData));
 			PacketDBInsertData packetDbInsertData;
 			memcpy((void*)&packetDbInsertData, &_instance->_clientLogic->buf, sizeof(PacketDBInsertData));
 			if (packetDbInsertData.isSuccessInsertData)
